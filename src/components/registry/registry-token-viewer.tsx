@@ -181,7 +181,7 @@ export function RegistryTokenViewer() {
     };
 
     return (
-        <Card className="w-full max-w-2xl mx-auto">
+        <Card className="w-full max-w-4xl mx-auto">
             <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                     <Package className="h-5 w-5" />

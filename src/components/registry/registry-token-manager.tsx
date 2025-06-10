@@ -210,10 +210,9 @@ export function RegistryTokenManager() {
         try {
             const balanceInPlancks = BigInt(Math.floor(Number(balance) * 10 ** 10));
             const weightInvestmentNum = parseInt(weightInvestment);
-            const tierNum = parseInt(tier);
-
+            
             await updateTokenTx.signAndSend({
-                args: [tokenIdNum, balanceInPlancks, weightInvestmentNum, tierNum],
+                args: [tokenIdNum, balanceInPlancks, weightInvestmentNum],
                 callback: (progress) => {
                     if (progress.status.type === 'BestChainBlockIncluded') {
                         if (progress.dispatchError) {
@@ -385,8 +384,8 @@ export function RegistryTokenManager() {
                             { value: 'remove', label: 'Remove Token', icon: Trash2, color: 'red' }
                         ].map(({ value, label, icon: Icon, color }) => (
                             <label key={value} className={`flex items-center space-x-2 cursor-pointer p-3 rounded-lg border transition-all ${managementType === value
-                                    ? `border-${color}-300 bg-${color}-50 dark:bg-${color}-900/20`
-                                    : 'border-gray-200 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800'
+                                ? `border-${color}-300 bg-${color}-50 dark:bg-${color}-900/20`
+                                : 'border-gray-200 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800'
                                 }`}>
                                 <input
                                     type="radio"
@@ -410,18 +409,18 @@ export function RegistryTokenManager() {
                 {/* Status Message */}
                 {managementState.type !== 'idle' && (
                     <div className={`p-4 rounded-lg border flex items-start space-x-3 ${managementState.type === 'pending'
-                            ? 'bg-blue-50 border-blue-200 dark:bg-blue-900/20 dark:border-blue-800'
-                            : managementState.type === 'success'
-                                ? 'bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-800'
-                                : 'bg-red-50 border-red-200 dark:bg-red-900/20 dark:border-red-800'
+                        ? 'bg-blue-50 border-blue-200 dark:bg-blue-900/20 dark:border-blue-800'
+                        : managementState.type === 'success'
+                            ? 'bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-800'
+                            : 'bg-red-50 border-red-200 dark:bg-red-900/20 dark:border-red-800'
                         }`}>
                         {getStateIcon()}
                         <div className="flex-1">
                             <p className={`text-sm font-medium ${managementState.type === 'pending'
-                                    ? 'text-blue-800 dark:text-blue-200'
-                                    : managementState.type === 'success'
-                                        ? 'text-green-800 dark:text-green-200'
-                                        : 'text-red-800 dark:text-red-200'
+                                ? 'text-blue-800 dark:text-blue-200'
+                                : managementState.type === 'success'
+                                    ? 'text-green-800 dark:text-green-200'
+                                    : 'text-red-800 dark:text-red-200'
                                 }`}>
                                 {managementState.message}
                             </p>

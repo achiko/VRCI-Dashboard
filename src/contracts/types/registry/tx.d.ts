@@ -8,7 +8,11 @@ import type {
   ContractTxOptions,
   ContractSubmittableExtrinsic,
 } from "dedot/contracts";
-import type { SharedRole } from "./types.js";
+import type {
+  SharedRole,
+  RegistryTier,
+  RegistryTierThresholds,
+} from "./types.js";
 
 export interface ContractTx<ChainApi extends GenericSubstrateApi>
   extends GenericContractTx<ChainApi> {
@@ -49,7 +53,7 @@ export interface ContractTx<ChainApi extends GenericSubstrateApi>
   >;
 
   /**
-   * Add a new token to the registry
+   * Add a new token to the registry with automatic tier calculation
    *
    * @param {AccountId32Like} tokenContract
    * @param {AccountId32Like} oracleContract
@@ -67,12 +71,11 @@ export interface ContractTx<ChainApi extends GenericSubstrateApi>
   >;
 
   /**
-   * Update token balance and investment data
+   * Update token balance and investment data with automatic tier recalculation
    *
    * @param {number} tokenId
    * @param {bigint} balance
    * @param {number} weightInvestment
-   * @param {number} tier
    * @param {ContractTxOptions} options
    *
    * @selector 0x90c3ef3a
@@ -83,7 +86,6 @@ export interface ContractTx<ChainApi extends GenericSubstrateApi>
       tokenId: number,
       balance: bigint,
       weightInvestment: number,
-      tier: number,
       options: ContractTxOptions,
     ) => ContractSubmittableExtrinsic<ChainApi>
   >;
@@ -100,6 +102,166 @@ export interface ContractTx<ChainApi extends GenericSubstrateApi>
     ChainApi,
     (
       tokenId: number,
+      options: ContractTxOptions,
+    ) => ContractSubmittableExtrinsic<ChainApi>
+  >;
+
+  /**
+   * Manually update tier for a specific token (owner only)
+   *
+   * @param {number} tokenId
+   * @param {ContractTxOptions} options
+   *
+   * @selector 0xb11eb1ae
+   **/
+  updateTokenTier: GenericContractTxCall<
+    ChainApi,
+    (
+      tokenId: number,
+      options: ContractTxOptions,
+    ) => ContractSubmittableExtrinsic<ChainApi>
+  >;
+
+  /**
+   * Emergency tier override - bypasses grace period (owner only)
+   *
+   * @param {number} tokenId
+   * @param {RegistryTier} newTier
+   * @param {string} reason
+   * @param {ContractTxOptions} options
+   *
+   * @selector 0xe67d97ff
+   **/
+  emergencyTierOverride: GenericContractTxCall<
+    ChainApi,
+    (
+      tokenId: number,
+      newTier: RegistryTier,
+      reason: string,
+      options: ContractTxOptions,
+    ) => ContractSubmittableExtrinsic<ChainApi>
+  >;
+
+  /**
+   * Emergency tier override to calculated tier - bypasses grace period (owner only)
+   *
+   * @param {number} tokenId
+   * @param {string} reason
+   * @param {ContractTxOptions} options
+   *
+   * @selector 0x5b5a3d00
+   **/
+  emergencyTierOverrideToCalculated: GenericContractTxCall<
+    ChainApi,
+    (
+      tokenId: number,
+      reason: string,
+      options: ContractTxOptions,
+    ) => ContractSubmittableExtrinsic<ChainApi>
+  >;
+
+  /**
+   * Clear pending tier change (owner only)
+   *
+   * @param {number} tokenId
+   * @param {ContractTxOptions} options
+   *
+   * @selector 0x53bba34a
+   **/
+  clearPendingTierChange: GenericContractTxCall<
+    ChainApi,
+    (
+      tokenId: number,
+      options: ContractTxOptions,
+    ) => ContractSubmittableExtrinsic<ChainApi>
+  >;
+
+  /**
+   * Set grace period duration (owner only)
+   *
+   * @param {bigint} periodMs
+   * @param {ContractTxOptions} options
+   *
+   * @selector 0x86200a8b
+   **/
+  setGracePeriod: GenericContractTxCall<
+    ChainApi,
+    (
+      periodMs: bigint,
+      options: ContractTxOptions,
+    ) => ContractSubmittableExtrinsic<ChainApi>
+  >;
+
+  /**
+   * Batch update tiers for all tokens (gas-intensive)
+   *
+   * @param {ContractTxOptions} options
+   *
+   * @selector 0x8646ff68
+   **/
+  refreshAllTiers: GenericContractTxCall<
+    ChainApi,
+    (options: ContractTxOptions) => ContractSubmittableExtrinsic<ChainApi>
+  >;
+
+  /**
+   * Process tokens with expired grace periods (updated to use dynamic grace period)
+   *
+   * @param {ContractTxOptions} options
+   *
+   * @selector 0x39150c26
+   **/
+  processGracePeriods: GenericContractTxCall<
+    ChainApi,
+    (options: ContractTxOptions) => ContractSubmittableExtrinsic<ChainApi>
+  >;
+
+  /**
+   * Execute tier shift (automatic or manual)
+   *
+   * @param {RegistryTier} newTier
+   * @param {string} reason
+   * @param {ContractTxOptions} options
+   *
+   * @selector 0x71f99599
+   **/
+  shiftActiveTier: GenericContractTxCall<
+    ChainApi,
+    (
+      newTier: RegistryTier,
+      reason: string,
+      options: ContractTxOptions,
+    ) => ContractSubmittableExtrinsic<ChainApi>
+  >;
+
+  /**
+   * Set DOT/USD oracle contract (owner only)
+   *
+   * @param {AccountId32Like} oracleContract
+   * @param {ContractTxOptions} options
+   *
+   * @selector 0x819b20a3
+   **/
+  setDotUsdOracle: GenericContractTxCall<
+    ChainApi,
+    (
+      oracleContract: AccountId32Like,
+      options: ContractTxOptions,
+    ) => ContractSubmittableExtrinsic<ChainApi>
+  >;
+
+  /**
+   * Update tier thresholds in USD (owner only)
+   *
+   * @param {RegistryTierThresholds} thresholds
+   * @param {ContractTxOptions} options
+   *
+   * @selector 0xe2d49881
+   **/
+  setTierThresholds: GenericContractTxCall<
+    ChainApi,
+    (
+      thresholds: RegistryTierThresholds,
       options: ContractTxOptions,
     ) => ContractSubmittableExtrinsic<ChainApi>
   >;

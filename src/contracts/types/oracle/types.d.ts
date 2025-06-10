@@ -39,9 +39,15 @@ export type InkPrimitivesLangError = "CouldNotReadInput";
 
 export type SharedError =
   | "Unauthorized"
+  | "UnauthorizedRole"
   | "TokenNotFound"
-  | "OracleCallFailed"
+  | "TokenAlreadyExists"
+  | "InvalidTokenContract"
+  | "ZeroAddress"
+  | "InvalidWeight"
+  | "InvalidTier"
   | "InvalidParameter"
+  | "OracleCallFailed"
   | "InsufficientBalance";
 
 export type InkEnvNoChainExtension = null;

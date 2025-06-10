@@ -1,6 +1,6 @@
 {
   "source": {
-    "hash": "0x3c167e3735b71a1e50657329c9b1027165fccc15c5185168327eb2aa826e7f0f",
+    "hash": "0x51ccec9f021339f47ef68bb74912dd9f96d2fadab0ccaa6735e6e544d77fb51a",
     "language": "ink! 5.1.1",
     "compiler": "rustc 1.86.0",
     "build_info": {
@@ -523,20 +523,44 @@
                 "index": 0
               },
               {
-                "name": "TokenNotFound",
+                "name": "UnauthorizedRole",
                 "index": 1
               },
               {
-                "name": "OracleCallFailed",
+                "name": "TokenNotFound",
                 "index": 2
               },
               {
-                "name": "InvalidParameter",
+                "name": "TokenAlreadyExists",
                 "index": 3
               },
               {
-                "name": "InsufficientBalance",
+                "name": "InvalidTokenContract",
                 "index": 4
+              },
+              {
+                "name": "ZeroAddress",
+                "index": 5
+              },
+              {
+                "name": "InvalidWeight",
+                "index": 6
+              },
+              {
+                "name": "InvalidTier",
+                "index": 7
+              },
+              {
+                "name": "InvalidParameter",
+                "index": 8
+              },
+              {
+                "name": "OracleCallFailed",
+                "index": 9
+              },
+              {
+                "name": "InsufficientBalance",
+                "index": 10
               }
             ]
           }
@@ -594,81 +618,6 @@
         "params": [
           {
             "name": "T",
-            "type": 6
-          }
-        ],
-        "def": {
-          "variant": {
-            "variants": [
-              {
-                "name": "None",
-                "index": 0
-              },
-              {
-                "name": "Some",
-                "fields": [
-                  {
-                    "type": 6
-                  }
-                ],
-                "index": 1
-              }
-            ]
-          }
-        }
-      }
-    },
-    {
-      "id": 25,
-      "type": {
-        "path": [
-          "Result"
-        ],
-        "params": [
-          {
-            "name": "T",
-            "type": 26
-          },
-          {
-            "name": "E",
-            "type": 19
-          }
-        ],
-        "def": {
-          "variant": {
-            "variants": [
-              {
-                "name": "Ok",
-                "fields": [
-                  {
-                    "type": 26
-                  }
-                ],
-                "index": 0
-              },
-              {
-                "name": "Err",
-                "fields": [
-                  {
-                    "type": 19
-                  }
-                ],
-                "index": 1
-              }
-            ]
-          }
-        }
-      }
-    },
-    {
-      "id": 26,
-      "type": {
-        "path": [
-          "Option"
-        ],
-        "params": [
-          {
-            "name": "T",
             "type": 0
           }
         ],
@@ -694,7 +643,7 @@
       }
     },
     {
-      "id": 27,
+      "id": 25,
       "type": {
         "path": [
           "Result"
@@ -736,7 +685,7 @@
       }
     },
     {
-      "id": 28,
+      "id": 26,
       "type": {
         "path": [
           "Result"
@@ -744,7 +693,7 @@
         "params": [
           {
             "name": "T",
-            "type": 29
+            "type": 27
           },
           {
             "name": "E",
@@ -758,7 +707,7 @@
                 "name": "Ok",
                 "fields": [
                   {
-                    "type": 29
+                    "type": 27
                   }
                 ],
                 "index": 0
@@ -778,7 +727,7 @@
       }
     },
     {
-      "id": 29,
+      "id": 27,
       "type": {
         "path": [
           "Option"
@@ -811,7 +760,124 @@
       }
     },
     {
+      "id": 28,
+      "type": {
+        "path": [
+          "Result"
+        ],
+        "params": [
+          {
+            "name": "T",
+            "type": 3
+          },
+          {
+            "name": "E",
+            "type": 19
+          }
+        ],
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "name": "Ok",
+                "fields": [
+                  {
+                    "type": 3
+                  }
+                ],
+                "index": 0
+              },
+              {
+                "name": "Err",
+                "fields": [
+                  {
+                    "type": 19
+                  }
+                ],
+                "index": 1
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 29,
+      "type": {
+        "path": [
+          "Result"
+        ],
+        "params": [
+          {
+            "name": "T",
+            "type": 30
+          },
+          {
+            "name": "E",
+            "type": 19
+          }
+        ],
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "name": "Ok",
+                "fields": [
+                  {
+                    "type": 30
+                  }
+                ],
+                "index": 0
+              },
+              {
+                "name": "Err",
+                "fields": [
+                  {
+                    "type": 19
+                  }
+                ],
+                "index": 1
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
       "id": 30,
+      "type": {
+        "path": [
+          "Option"
+        ],
+        "params": [
+          {
+            "name": "T",
+            "type": 6
+          }
+        ],
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "name": "None",
+                "index": 0
+              },
+              {
+                "name": "Some",
+                "fields": [
+                  {
+                    "type": 6
+                  }
+                ],
+                "index": 1
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 31,
       "type": {
         "path": [
           "Result"
@@ -853,7 +919,7 @@
       }
     },
     {
-      "id": 31,
+      "id": 32,
       "type": {
         "path": [
           "Result"
@@ -895,7 +961,7 @@
       }
     },
     {
-      "id": 32,
+      "id": 33,
       "type": {
         "path": [
           "Result"
@@ -918,48 +984,6 @@
                 "fields": [
                   {
                     "type": 1
-                  }
-                ],
-                "index": 0
-              },
-              {
-                "name": "Err",
-                "fields": [
-                  {
-                    "type": 19
-                  }
-                ],
-                "index": 1
-              }
-            ]
-          }
-        }
-      }
-    },
-    {
-      "id": 33,
-      "type": {
-        "path": [
-          "Result"
-        ],
-        "params": [
-          {
-            "name": "T",
-            "type": 3
-          },
-          {
-            "name": "E",
-            "type": 19
-          }
-        ],
-        "def": {
-          "variant": {
-            "variants": [
-              {
-                "name": "Ok",
-                "fields": [
-                  {
-                    "type": 3
                   }
                 ],
                 "index": 0
@@ -1204,6 +1228,162 @@
     ],
     "messages": [
       {
+        "label": "update_dot_usd_price",
+        "selector": "0x942bcd32",
+        "mutates": true,
+        "payable": false,
+        "args": [
+          {
+            "label": "usd_price",
+            "type": {
+              "type": 0,
+              "displayName": [
+                "u128"
+              ]
+            }
+          }
+        ],
+        "returnType": {
+          "type": 20,
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ]
+        },
+        "docs": [
+          " Update DOT price in USD (for registry tier calculations)"
+        ],
+        "default": false
+      },
+      {
+        "label": "get_dot_usd_price",
+        "selector": "0x411d43c6",
+        "mutates": false,
+        "payable": false,
+        "args": [],
+        "returnType": {
+          "type": 23,
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ]
+        },
+        "docs": [
+          " Get current DOT price in USD"
+        ],
+        "default": false
+      },
+      {
+        "label": "is_dot_price_stale",
+        "selector": "0x6e4aefbf",
+        "mutates": false,
+        "payable": false,
+        "args": [],
+        "returnType": {
+          "type": 25,
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ]
+        },
+        "docs": [
+          " Check if DOT price data is stale"
+        ],
+        "default": false
+      },
+      {
+        "label": "get_dot_price_last_update",
+        "selector": "0x51e08e0a",
+        "mutates": false,
+        "payable": false,
+        "args": [],
+        "returnType": {
+          "type": 26,
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ]
+        },
+        "docs": [
+          " Get DOT price last update timestamp"
+        ],
+        "default": false
+      },
+      {
+        "label": "emergency_dot_price_override",
+        "selector": "0x4d69f2a9",
+        "mutates": true,
+        "payable": false,
+        "args": [
+          {
+            "label": "usd_price",
+            "type": {
+              "type": 0,
+              "displayName": [
+                "u128"
+              ]
+            }
+          }
+        ],
+        "returnType": {
+          "type": 20,
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ]
+        },
+        "docs": [
+          " Emergency DOT price override (owner only)"
+        ],
+        "default": false
+      },
+      {
+        "label": "is_dot_token",
+        "selector": "0x9cacaee9",
+        "mutates": false,
+        "payable": false,
+        "args": [
+          {
+            "label": "token",
+            "type": {
+              "type": 3,
+              "displayName": [
+                "AccountId"
+              ]
+            }
+          }
+        ],
+        "returnType": {
+          "type": 25,
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ]
+        },
+        "docs": [
+          " Check if given token is the DOT price token"
+        ],
+        "default": false
+      },
+      {
+        "label": "get_dot_token_address",
+        "selector": "0x99eb096a",
+        "mutates": false,
+        "payable": false,
+        "args": [],
+        "returnType": {
+          "type": 28,
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ]
+        },
+        "docs": [
+          " Get the DOT token address used for USD price feeds"
+        ],
+        "default": false
+      },
+      {
         "label": "update_token_data",
         "selector": "0x57dfaa13",
         "mutates": true,
@@ -1275,7 +1455,7 @@
           }
         ],
         "returnType": {
-          "type": 23,
+          "type": 29,
           "displayName": [
             "ink",
             "MessageResult"
@@ -1303,7 +1483,7 @@
           }
         ],
         "returnType": {
-          "type": 25,
+          "type": 23,
           "displayName": [
             "ink",
             "MessageResult"
@@ -1331,7 +1511,7 @@
           }
         ],
         "returnType": {
-          "type": 25,
+          "type": 23,
           "displayName": [
             "ink",
             "MessageResult"
@@ -1359,7 +1539,7 @@
           }
         ],
         "returnType": {
-          "type": 25,
+          "type": 23,
           "displayName": [
             "ink",
             "MessageResult"
@@ -1387,7 +1567,7 @@
           }
         ],
         "returnType": {
-          "type": 27,
+          "type": 25,
           "displayName": [
             "ink",
             "MessageResult"
@@ -1415,7 +1595,7 @@
           }
         ],
         "returnType": {
-          "type": 28,
+          "type": 26,
           "displayName": [
             "ink",
             "MessageResult"
@@ -1499,7 +1679,7 @@
           }
         ],
         "returnType": {
-          "type": 27,
+          "type": 25,
           "displayName": [
             "ink",
             "MessageResult"
@@ -1632,7 +1812,7 @@
         "payable": false,
         "args": [],
         "returnType": {
-          "type": 30,
+          "type": 31,
           "displayName": [
             "ink",
             "MessageResult"
@@ -1650,7 +1830,7 @@
         "payable": false,
         "args": [],
         "returnType": {
-          "type": 31,
+          "type": 32,
           "displayName": [
             "ink",
             "MessageResult"
@@ -1668,7 +1848,7 @@
         "payable": false,
         "args": [],
         "returnType": {
-          "type": 32,
+          "type": 33,
           "displayName": [
             "ink",
             "MessageResult"
@@ -1686,7 +1866,7 @@
         "payable": false,
         "args": [],
         "returnType": {
-          "type": 32,
+          "type": 33,
           "displayName": [
             "ink",
             "MessageResult"
@@ -1795,7 +1975,7 @@
         "payable": false,
         "args": [],
         "returnType": {
-          "type": 27,
+          "type": 25,
           "displayName": [
             "ink",
             "MessageResult"
@@ -1896,7 +2076,7 @@
         "payable": false,
         "args": [],
         "returnType": {
-          "type": 33,
+          "type": 28,
           "displayName": [
             "ink",
             "MessageResult"
@@ -2162,6 +2342,105 @@
           },
           {
             "label": "min_update_interval",
+            "indexed": false,
+            "type": {
+              "type": 1,
+              "displayName": [
+                "u64"
+              ]
+            },
+            "docs": []
+          }
+        ],
+        "docs": []
+      },
+      {
+        "label": "DotUsdPriceUpdated",
+        "module_path": "oracle::oracle",
+        "signature_topic": "0xb45a4b42edaae14316ff2209a2f245cd6920643232f49165646f4fe6a7f2d487",
+        "args": [
+          {
+            "label": "usd_price",
+            "indexed": false,
+            "type": {
+              "type": 0,
+              "displayName": [
+                "u128"
+              ]
+            },
+            "docs": [
+              "USD price in scaled format (e.g., 6.50 USD = 6_500_000_000 with 9 decimals)"
+            ]
+          },
+          {
+            "label": "timestamp",
+            "indexed": false,
+            "type": {
+              "type": 1,
+              "displayName": [
+                "u64"
+              ]
+            },
+            "docs": [
+              "Timestamp of the update"
+            ]
+          },
+          {
+            "label": "updated_by",
+            "indexed": false,
+            "type": {
+              "type": 3,
+              "displayName": [
+                "AccountId"
+              ]
+            },
+            "docs": [
+              "Account that updated the price"
+            ]
+          }
+        ],
+        "docs": []
+      },
+      {
+        "label": "DotPriceValidationFailed",
+        "module_path": "oracle::oracle",
+        "signature_topic": "0x0fedeed03009016b3bfb5c142e9998dc515844915e44affc89829bf37e7d1c1d",
+        "args": [
+          {
+            "label": "reason",
+            "indexed": false,
+            "type": {
+              "type": 34,
+              "displayName": [
+                "String"
+              ]
+            },
+            "docs": []
+          },
+          {
+            "label": "attempted_price",
+            "indexed": false,
+            "type": {
+              "type": 0,
+              "displayName": [
+                "u128"
+              ]
+            },
+            "docs": []
+          },
+          {
+            "label": "current_price",
+            "indexed": false,
+            "type": {
+              "type": 0,
+              "displayName": [
+                "u128"
+              ]
+            },
+            "docs": []
+          },
+          {
+            "label": "timestamp",
             "indexed": false,
             "type": {
               "type": 1,

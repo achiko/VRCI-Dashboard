@@ -6,13 +6,13 @@ import type {
   GenericContractEvents,
   GenericContractEvent,
 } from "dedot/contracts";
-import type { SharedRole, SharedError } from "./types.js";
+import type { RegistryTier, SharedRole, SharedError } from "./types.js";
 
 export interface ContractEvents<ChainApi extends GenericSubstrateApi>
   extends GenericContractEvents<ChainApi> {
   /**
    *
-   * @signature_topic: 0x9944b3f8fc4ed5f29562b3360554c433884be77858aad348ec1c1a34113d2d3f
+   * @signature_topic: 0x879b84c69371b1cbca1aaf626b9a5bae70d65551412eec2049b189791fce3f35
    **/
   TokenAdded: GenericContractEvent<
     "TokenAdded",
@@ -36,13 +36,18 @@ export interface ContractEvents<ChainApi extends GenericSubstrateApi>
        *
        * @indexed: false
        **/
+      initialTier: RegistryTier;
+      /**
+       *
+       * @indexed: false
+       **/
       addedBy: AccountId32;
     }
   >;
 
   /**
    *
-   * @signature_topic: 0xa09bc17ded368581e008f40f8951270f07eeb36c3d5b9af68bdfbd64688863fd
+   * @signature_topic: 0x3278daa81e270ed3f60e05cd3d5bb3d06cac374cefa6083ce3151c2f61ebf65a
    **/
   TokenUpdated: GenericContractEvent<
     "TokenUpdated",
@@ -66,7 +71,12 @@ export interface ContractEvents<ChainApi extends GenericSubstrateApi>
        *
        * @indexed: false
        **/
-      tier: number;
+      oldTier: RegistryTier;
+      /**
+       *
+       * @indexed: false
+       **/
+      newTier: RegistryTier;
       /**
        *
        * @indexed: false
@@ -77,7 +87,7 @@ export interface ContractEvents<ChainApi extends GenericSubstrateApi>
 
   /**
    *
-   * @signature_topic: 0x3c36aaf9d02ef8cf29c9e88caa03477015774640e4dfd5e87cdc264da8ccec84
+   * @signature_topic: 0x44a809cade9556001bbf35364352a4727ef39e954371f7997125c6f92c9a8aed
    **/
   TokenRemoved: GenericContractEvent<
     "TokenRemoved",
@@ -96,7 +106,227 @@ export interface ContractEvents<ChainApi extends GenericSubstrateApi>
        *
        * @indexed: false
        **/
+      tier: RegistryTier;
+      /**
+       *
+       * @indexed: false
+       **/
       removedBy: AccountId32;
+    }
+  >;
+
+  /**
+   *
+   * @signature_topic: 0xff5e2438cebd75db169012d0888fb798184d0b8d4662e4c7a01b8d00539ce604
+   **/
+  TokenTierChanged: GenericContractEvent<
+    "TokenTierChanged",
+    {
+      /**
+       *
+       * @indexed: true
+       **/
+      tokenId: number;
+      /**
+       *
+       * @indexed: true
+       **/
+      tokenContract: AccountId32;
+      /**
+       *
+       * @indexed: false
+       **/
+      oldTier: RegistryTier;
+      /**
+       *
+       * @indexed: false
+       **/
+      newTier: RegistryTier;
+      /**
+       *
+       * @indexed: false
+       **/
+      marketCap: bigint;
+      /**
+       *
+       * @indexed: false
+       **/
+      volume: bigint;
+      /**
+       *
+       * @indexed: false
+       **/
+      reason: string;
+    }
+  >;
+
+  /**
+   *
+   * @signature_topic: 0x2ac413bb0739072cb11c004ec3c71c4bbbee2ac040877b0e3010a28056c4b73b
+   **/
+  ActiveTierShifted: GenericContractEvent<
+    "ActiveTierShifted",
+    {
+      /**
+       *
+       * @indexed: false
+       **/
+      oldTier: RegistryTier;
+      /**
+       *
+       * @indexed: false
+       **/
+      newTier: RegistryTier;
+      /**
+       *
+       * @indexed: false
+       **/
+      triggerReason: string;
+      /**
+       *
+       * @indexed: false
+       **/
+      timestamp: bigint;
+      /**
+       *
+       * @indexed: false
+       **/
+      tokensQualifying: number;
+      /**
+       *
+       * @indexed: false
+       **/
+      totalTokens: number;
+    }
+  >;
+
+  /**
+   *
+   * @signature_topic: 0x3f2630d2943d2d6f58f5a0d0f308a6a6a23f40e22cb9f27ec3d94928371bc009
+   **/
+  TierThresholdsUpdated: GenericContractEvent<
+    "TierThresholdsUpdated",
+    {
+      /**
+       *
+       * @indexed: false
+       **/
+      updatedBy: AccountId32;
+      /**
+       *
+       * @indexed: false
+       **/
+      timestamp: bigint;
+      /**
+       *
+       * @indexed: false
+       **/
+      newUsdRate: bigint;
+    }
+  >;
+
+  /**
+   *
+   * @signature_topic: 0x2d20004d99b063a83344cef2a0fa58b94b8ecf9f3aa2a257cbb8a16e790ebc12
+   **/
+  GracePeriodStarted: GenericContractEvent<
+    "GracePeriodStarted",
+    {
+      /**
+       *
+       * @indexed: true
+       **/
+      tokenId: number;
+      /**
+       *
+       * @indexed: false
+       **/
+      currentTier: RegistryTier;
+      /**
+       *
+       * @indexed: false
+       **/
+      pendingTier: RegistryTier;
+      /**
+       *
+       * @indexed: false
+       **/
+      graceEndTime: bigint;
+    }
+  >;
+
+  /**
+   *
+   * @signature_topic: 0x7591530cd4bb05adc3d9c00be16b485cc1d812c480264847b2e57b44fa3e2d6e
+   **/
+  GracePeriodUpdated: GenericContractEvent<
+    "GracePeriodUpdated",
+    {
+      /**
+       *
+       * @indexed: false
+       **/
+      oldPeriodMs: bigint;
+      /**
+       *
+       * @indexed: false
+       **/
+      newPeriodMs: bigint;
+      /**
+       *
+       * @indexed: false
+       **/
+      updatedBy: AccountId32;
+      /**
+       *
+       * @indexed: false
+       **/
+      timestamp: bigint;
+    }
+  >;
+
+  /**
+   *
+   * @signature_topic: 0x11fee6352788521f84a758237ad7e7064e413ae5d56b7087eacba0a8e3a3a8f2
+   **/
+  EmergencyTierOverride: GenericContractEvent<
+    "EmergencyTierOverride",
+    {
+      /**
+       *
+       * @indexed: true
+       **/
+      tokenId: number;
+      /**
+       *
+       * @indexed: true
+       **/
+      tokenContract: AccountId32;
+      /**
+       *
+       * @indexed: false
+       **/
+      oldTier: RegistryTier;
+      /**
+       *
+       * @indexed: false
+       **/
+      newTier: RegistryTier;
+      /**
+       *
+       * @indexed: false
+       **/
+      overriddenBy: AccountId32;
+      /**
+       *
+       * @indexed: false
+       **/
+      timestamp: bigint;
+      /**
+       *
+       * @indexed: false
+       **/
+      reason: string;
     }
   >;
 

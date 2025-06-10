@@ -9,7 +9,7 @@ import type { RegistryContractApi } from '@/contracts/types/registry';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Search, Package, TrendingUp, DollarSign, Layers, RefreshCw, AlertCircle, CheckCircle, XCircle, Loader2 } from 'lucide-react';
+import { Search, Package, TrendingUp, DollarSign, Layers, RefreshCw, AlertCircle, CheckCircle, XCircle, Loader2, Clock } from 'lucide-react';
 
 interface QueryState {
     type: 'idle' | 'pending' | 'success' | 'error';
@@ -73,6 +73,7 @@ export function RegistryTokenViewer() {
             }
 
             if (data && typeof data === 'object') {
+                console.log('Tier*', data)
                 const cleanData = {
                     tokenContract: (data as any).tokenContract?.address() || '',
                     oracleContract: (data as any).oracleContract?.address() || '',
@@ -84,11 +85,38 @@ export function RegistryTokenViewer() {
                     price: (data as any).price?.toString() || '0'
                 };
 
-                setQueryState({
-                    type: 'success',
-                    message: `Successfully fetched enriched data for token ID ${tokenIdNum}`,
-                    data: { type: 'enriched', data: cleanData, tokenId: tokenIdNum }
-                });
+                // Check grace period status
+                try {
+                    const [endTimeResult, remainingResult, expiredResult] = await Promise.all([
+                        registryContract.query.getGracePeriodEndTime(tokenIdNum),
+                        registryContract.query.getGracePeriodRemaining(tokenIdNum),
+                        registryContract.query.isGracePeriodExpired(tokenIdNum)
+                    ]);
+
+                    const graceInfo = {
+                        endTime: endTimeResult.data || null,
+                        remaining: remainingResult.data || null,
+                        expired: expiredResult.data || false
+                    };
+
+                    setQueryState({
+                        type: 'success',
+                        message: `Successfully fetched enriched data for token ID ${tokenIdNum}`,
+                        data: {
+                            type: 'enriched',
+                            data: cleanData,
+                            tokenId: tokenIdNum,
+                            graceInfo
+                        }
+                    });
+                } catch {
+                    // Fallback without grace info if query fails
+                    setQueryState({
+                        type: 'success',
+                        message: `Successfully fetched enriched data for token ID ${tokenIdNum}`,
+                        data: { type: 'enriched', data: cleanData, tokenId: tokenIdNum }
+                    });
+                }
             } else {
                 setQueryState({ type: 'error', message: 'Token not found or no data available' });
             }
@@ -600,6 +628,43 @@ export function RegistryTokenViewer() {
                                                     }
                                                 </div>
                                             </div>
+                                        </div>
+                                    </div>
+                                )}
+                                {queryState.data.graceInfo && (
+                                    <div className="space-y-3">
+                                        <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                            Grace Period Status
+                                        </div>
+                                        <div className="p-4 bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/20 dark:to-amber-800/20 rounded-lg border border-amber-200 dark:border-amber-800">
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center space-x-2">
+                                                    <Clock className="h-4 w-4 text-amber-600" />
+                                                    <span className="text-sm font-medium text-amber-800 dark:text-amber-200">
+                                                        Grace Period
+                                                    </span>
+                                                </div>
+                                                <div className="text-right">
+                                                    {queryState.data.graceInfo.remaining !== null && Number(queryState.data.graceInfo.remaining) > 0 ? (
+                                                        <div className="text-sm font-medium text-amber-800 dark:text-amber-200">
+                                                            {Math.floor(Number(queryState.data.graceInfo.remaining) / (24 * 60 * 60 * 1000))}d {Math.floor((Number(queryState.data.graceInfo.remaining) % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000))}h remaining
+                                                        </div>
+                                                    ) : queryState.data.graceInfo.expired ? (
+                                                        <div className="text-sm font-medium text-red-600">
+                                                            Grace period expired
+                                                        </div>
+                                                    ) : (
+                                                        <div className="text-sm font-medium text-gray-500">
+                                                            No active grace period
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            {queryState.data.graceInfo.endTime && (
+                                                <div className="text-xs text-amber-600 dark:text-amber-400 mt-2">
+                                                    Ends: {new Date(Number(queryState.data.graceInfo.endTime)).toLocaleString()}
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 )}

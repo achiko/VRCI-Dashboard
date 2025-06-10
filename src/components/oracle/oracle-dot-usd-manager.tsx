@@ -1,0 +1,334 @@
+// src/components/oracle/oracle-dot-usd-manager.tsx
+
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useContract, useContractTx } from 'typink';
+import { ContractId } from '@/contracts/deployments';
+import type { OracleContractApi } from '@/contracts/types/oracle';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { DollarSign, Clock, AlertTriangle, RefreshCw, TrendingUp } from 'lucide-react';
+import { txToaster } from '@/utils/txToaster';
+
+export function OracleDotUsdManager() {
+    const { contract: oracleContract } = useContract<OracleContractApi>(ContractId.ORACLE);
+    const [dotPrice, setDotPrice] = useState<string>('');
+    const [emergencyPrice, setEmergencyPrice] = useState<string>('');
+    const [currentPrice, setCurrentPrice] = useState<string | null>(null);
+    const [lastUpdate, setLastUpdate] = useState<number | null>(null);
+    const [isStale, setIsStale] = useState<boolean | null>(null);
+    const [error, setError] = useState<string | null>(null);
+
+    const updateDotUsdPriceTx = useContractTx(oracleContract, 'updateDotUsdPrice');
+    const emergencyDotPriceOverrideTx = useContractTx(oracleContract, 'emergencyDotPriceOverride');
+
+    const toaster = txToaster();
+
+    const loadDotPriceData = async () => {
+        if (!oracleContract) return;
+
+        try {
+            const [priceResult, lastUpdateResult, staleResult] = await Promise.all([
+                oracleContract.query.getDotUsdPrice(),
+                oracleContract.query.getDotPriceLastUpdate(),
+                oracleContract.query.isDotPriceStale()
+            ]);
+
+            setCurrentPrice(priceResult.data ? (Number(priceResult.data) / 1_000_000_000).toFixed(2) : null);
+            setLastUpdate(lastUpdateResult.data ? Number(lastUpdateResult.data) : null);
+            setIsStale(staleResult.data || false);
+        } catch (err) {
+            console.error('Error loading DOT price data:', err);
+        }
+    };
+
+    const handleUpdateDotPrice = async () => {
+        if (!oracleContract || !dotPrice) {
+            setError('Please enter a valid DOT price');
+            return;
+        }
+
+        const priceNum = Number(dotPrice);
+        if (isNaN(priceNum) || priceNum <= 0) {
+            setError('Price must be a positive number');
+            return;
+        }
+
+        setError(null);
+        try {
+            // Convert to scaled format (9 decimal places)
+            const scaledPrice = BigInt(Math.floor(priceNum * 1_000_000_000));
+
+            await updateDotUsdPriceTx.signAndSend({
+                args: [scaledPrice],
+                callback: (progress) => {
+                    toaster.onTxProgress(progress);
+                    if (progress.status.type === 'BestChainBlockIncluded') {
+                        setDotPrice('');
+                        loadDotPriceData();
+                    }
+                }
+            });
+        } catch (err) {
+            const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
+            setError(`Error: ${errorMessage}`);
+            toaster.onTxError(err instanceof Error ? err : new Error(errorMessage));
+        }
+    };
+
+    const handleEmergencyOverride = async () => {
+        if (!oracleContract || !emergencyPrice) {
+            setError('Please enter a valid emergency price');
+            return;
+        }
+
+        const priceNum = Number(emergencyPrice);
+        if (isNaN(priceNum) || priceNum <= 0) {
+            setError('Price must be a positive number');
+            return;
+        }
+
+        setError(null);
+        try {
+            const scaledPrice = BigInt(Math.floor(priceNum * 1_000_000_000));
+
+            await emergencyDotPriceOverrideTx.signAndSend({
+                args: [scaledPrice],
+                callback: (progress) => {
+                    toaster.onTxProgress(progress);
+                    if (progress.status.type === 'BestChainBlockIncluded') {
+                        setEmergencyPrice('');
+                        loadDotPriceData();
+                    }
+                }
+            });
+        } catch (err) {
+            const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
+            setError(`Error: ${errorMessage}`);
+            toaster.onTxError(err instanceof Error ? err : new Error(errorMessage));
+        }
+    };
+
+    const isLoading = updateDotUsdPriceTx.inBestBlockProgress || emergencyDotPriceOverrideTx.inBestBlockProgress;
+
+    useEffect(() => {
+        loadDotPriceData();
+    }, [oracleContract]);
+
+    return (
+        <div className="space-y-6">
+            {/* Current DOT Price Status */}
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center space-x-2">
+                        <DollarSign className="h-5 w-5" />
+                        <span>DOT/USD Price Feed</span>
+                    </CardTitle>
+                    <CardDescription>
+                        Manage DOT price in USD for registry tier calculations
+                    </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                    <div className="flex justify-between items-center">
+                        <Button
+                            onClick={loadDotPriceData}
+                            disabled={!oracleContract}
+                            variant="outline"
+                            size="sm"
+                        >
+                            <RefreshCw className="h-4 w-4 mr-2" />
+                            Refresh Data
+                        </Button>
+                    </div>
+
+                    {/* Current Price Display */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="p-4 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                            <div className="flex items-center justify-between mb-2">
+                                <div className="text-sm text-blue-600 dark:text-blue-400 font-medium">Current Price</div>
+                                <DollarSign className="h-4 w-4 text-blue-500" />
+                            </div>
+                            <div className="text-lg font-bold text-blue-900 dark:text-blue-100">
+                                {currentPrice ? `$${currentPrice}` : 'No data'}
+                            </div>
+                        </div>
+
+                        <div className="p-4 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-lg border border-green-200 dark:border-green-800">
+                            <div className="flex items-center justify-between mb-2">
+                                <div className="text-sm text-green-600 dark:text-green-400 font-medium">Last Update</div>
+                                <Clock className="h-4 w-4 text-green-500" />
+                            </div>
+                            <div className="text-lg font-bold text-green-900 dark:text-green-100">
+                                {lastUpdate ? new Date(lastUpdate).toLocaleString() : 'Never'}
+                            </div>
+                        </div>
+
+                        <div className="p-4 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-lg border border-purple-200 dark:border-purple-800">
+                            <div className="flex items-center justify-between mb-2">
+                                <div className="text-sm text-purple-600 dark:text-purple-400 font-medium">Status</div>
+                                <div className={`w-3 h-3 rounded-full ${isStale ? 'bg-red-500' : 'bg-green-500'}`}></div>
+                            </div>
+                            <div className={`text-lg font-bold ${isStale ? 'text-red-900 dark:text-red-100' : 'text-green-900 dark:text-green-100'}`}>
+                                {isStale ? 'Stale' : 'Fresh'}
+                            </div>
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
+
+            {/* Update DOT Price */}
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center space-x-2">
+                        <TrendingUp className="h-5 w-5" />
+                        <span>Update DOT Price</span>
+                    </CardTitle>
+                    <CardDescription>
+                        Update the DOT/USD price feed (authorized updaters only)
+                    </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                        <div className="space-y-4">
+                            <div className="space-y-2">
+                                <label htmlFor="dotPrice" className="text-sm font-medium">
+                                    DOT Price in USD
+                                </label>
+                                <Input
+                                    id="dotPrice"
+                                    type="number"
+                                    step="0.01"
+                                    min="0"
+                                    placeholder="e.g., 6.50"
+                                    value={dotPrice}
+                                    onChange={(e) => setDotPrice(e.target.value)}
+                                    disabled={isLoading}
+                                />
+                                <p className="text-xs text-gray-500">
+                                    Enter the current DOT price in USD (e.g., 6.50 for $6.50)
+                                </p>
+                            </div>
+
+                            <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded border border-blue-300 dark:border-blue-700">
+                                <p className="text-xs text-blue-800 dark:text-blue-200">
+                                    💡 <strong>Info:</strong> This price is used to convert USD thresholds to plancks for tier calculations in the registry contract.
+                                </p>
+                            </div>
+
+                            <Button
+                                onClick={handleUpdateDotPrice}
+                                disabled={!oracleContract || !dotPrice || isLoading}
+                                className="w-full"
+                            >
+                                <DollarSign className="h-4 w-4 mr-2" />
+                                {isLoading ? 'Updating...' : 'Update DOT Price'}
+                            </Button>
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
+
+            {/* Emergency Override */}
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center space-x-2">
+                        <AlertTriangle className="h-5 w-5 text-red-500" />
+                        <span>Emergency DOT Price Override</span>
+                    </CardTitle>
+                    <CardDescription>
+                        Emergency override for DOT price (owner only)
+                    </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <div className="p-4 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
+                        <div className="space-y-4">
+                            <div className="space-y-2">
+                                <label htmlFor="emergencyPrice" className="text-sm font-medium text-red-700">
+                                    Emergency DOT Price (USD)
+                                </label>
+                                <Input
+                                    id="emergencyPrice"
+                                    type="number"
+                                    step="0.01"
+                                    min="0"
+                                    placeholder="e.g., 6.50"
+                                    value={emergencyPrice}
+                                    onChange={(e) => setEmergencyPrice(e.target.value)}
+                                    disabled={isLoading}
+                                />
+                            </div>
+
+                            <div className="bg-red-100 dark:bg-red-900/30 p-3 rounded border border-red-300 dark:border-red-700">
+                                <p className="text-xs text-red-800 dark:text-red-200">
+                                    ⚠️ <strong>WARNING:</strong> Emergency override bypasses all validation checks. Use only when normal price updates fail.
+                                </p>
+                            </div>
+
+                            <Button
+                                onClick={handleEmergencyOverride}
+                                disabled={!oracleContract || !emergencyPrice || isLoading}
+                                variant="destructive"
+                                className="w-full"
+                            >
+                                <AlertTriangle className="h-4 w-4 mr-2" />
+                                Execute Emergency Override
+                            </Button>
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
+
+            {/* Quick Fill Options */}
+            <Card>
+                <CardHeader>
+                    <CardTitle className="text-sm">Quick Fill Sample Prices</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                        <Button
+                            onClick={() => setDotPrice('5.00')}
+                            variant="outline"
+                            size="sm"
+                            disabled={isLoading}
+                        >
+                            $5.00
+                        </Button>
+                        <Button
+                            onClick={() => setDotPrice('6.50')}
+                            variant="outline"
+                            size="sm"
+                            disabled={isLoading}
+                        >
+                            $6.50
+                        </Button>
+                        <Button
+                            onClick={() => setDotPrice('8.00')}
+                            variant="outline"
+                            size="sm"
+                            disabled={isLoading}
+                        >
+                            $8.00
+                        </Button>
+                        <Button
+                            onClick={() => setDotPrice('10.25')}
+                            variant="outline"
+                            size="sm"
+                            disabled={isLoading}
+                        >
+                            $10.25
+                        </Button>
+                    </div>
+                </CardContent>
+            </Card>
+
+            {/* Error Display */}
+            {error && (
+                <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                    <p className="text-sm text-red-800 dark:text-red-200">{error}</p>
+                </div>
+            )}
+        </div>
+    );
+}

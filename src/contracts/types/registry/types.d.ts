@@ -4,13 +4,17 @@ import type { AccountId32, AccountId32Like } from "dedot/codecs";
 
 export type InkStorageLazyMapping = {};
 
-export type SharedTokenData = {
+export type RegistryEnhancedTokenData = {
   tokenContract: AccountId32;
   oracleContract: AccountId32;
   balance: bigint;
   weightInvestment: number;
-  tier: number;
+  tier: RegistryTier;
+  tierChangeTimestamp?: bigint | undefined;
+  pendingTierChange?: RegistryTier | undefined;
 };
+
+export type RegistryTier = "None" | "Tier1" | "Tier2" | "Tier3" | "Tier4";
 
 export type InkStorageTraitsImplsResolverKey = {};
 
@@ -24,13 +28,30 @@ export type SharedRole =
   | "EmergencyController";
 
 export type Registry = {
-  tokens: { get(arg: number): Promise<SharedTokenData | undefined> };
+  tokens: { get(arg: number): Promise<RegistryEnhancedTokenData | undefined> };
   tokenContractToId: { get(arg: AccountId32Like): Promise<number | undefined> };
   roleMembers: {
     get(arg: [SharedRole, AccountId32Like]): Promise<boolean | undefined>;
   };
   nextTokenId: number;
   owner: AccountId32;
+  activeTier: RegistryTier;
+  tierThresholds: RegistryTierThresholds;
+  tierDistribution: { get(arg: RegistryTier): Promise<number | undefined> };
+  lastTierChange?: bigint | undefined;
+  dotUsdOracle?: AccountId32 | undefined;
+  gracePeriodMs: bigint;
+};
+
+export type RegistryTierThresholds = {
+  tier1MarketCapUsd: bigint;
+  tier1VolumeUsd: bigint;
+  tier2MarketCapUsd: bigint;
+  tier2VolumeUsd: bigint;
+  tier3MarketCapUsd: bigint;
+  tier3VolumeUsd: bigint;
+  tier4MarketCapUsd: bigint;
+  tier4VolumeUsd: bigint;
 };
 
 export type InkPrimitivesLangError = "CouldNotReadInput";
@@ -57,6 +78,14 @@ export type SharedEnrichedTokenData = {
   marketCap: bigint;
   marketVolume: bigint;
   price: bigint;
+};
+
+export type SharedTokenData = {
+  tokenContract: AccountId32;
+  oracleContract: AccountId32;
+  balance: bigint;
+  weightInvestment: number;
+  tier: number;
 };
 
 export type InkEnvNoChainExtension = null;

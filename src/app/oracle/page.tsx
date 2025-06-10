@@ -11,11 +11,12 @@ import { OracleAuthorizationManager } from '@/components/oracle/oracle-authoriza
 import { OracleEmergencyControls } from '@/components/oracle/oracle-emergency-controls';
 import { OracleInfoViewer } from '@/components/oracle/oracle-info-viewer';
 import { OracleAdvancedDataManager } from '@/components/oracle/oracle-advanced-data-manager';
+import { OracleDotUsdManager } from '@/components/oracle/oracle-dot-usd-manager';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useTypink } from 'typink';
-import { Search, Upload, BarChart3, Settings, Shield, Clock, Database, Users, AlertTriangle, Info } from 'lucide-react';
+import { Search, Upload, BarChart3, Settings, Shield, Clock, Database, Users, AlertTriangle, Info, DollarSign } from 'lucide-react';
 
-const validTabs = ['query', 'update', 'advanced', 'config', 'auth', 'emergency', 'info'] as const;
+const validTabs = ['query', 'update', 'advanced', 'dot-usd', 'config', 'auth', 'emergency', 'info'] as const;
 type ValidTab = typeof validTabs[number];
 
 function OraclePageContent() {
@@ -108,7 +109,7 @@ function OraclePageContent() {
                         <Tabs value={activeTab} onValueChange={handleTabChange}>
                             {/* Tab Navigation */}
                             <div className="flex flex-col sm:flex-row sm:items-center justify-center mb-6">
-                                <TabsList className="mt-4 sm:mt-0 grid grid-cols-3 lg:grid-cols-7 w-full sm:w-auto">
+                                <TabsList className="mt-4 sm:mt-0 grid grid-cols-4 lg:grid-cols-8 w-full sm:w-auto">
                                     <TabsTrigger value="query" className="flex items-center space-x-1 text-xs">
                                         <Search className="h-3 w-3" />
                                         <span className="hidden sm:inline">Query</span>
@@ -120,6 +121,10 @@ function OraclePageContent() {
                                     <TabsTrigger value="advanced" className="flex items-center space-x-1 text-xs">
                                         <Database className="h-3 w-3" />
                                         <span className="hidden sm:inline">Advanced</span>
+                                    </TabsTrigger>
+                                    <TabsTrigger value="dot-usd" className="flex items-center space-x-1 text-xs">
+                                        <DollarSign className="h-3 w-3" />
+                                        <span className="hidden sm:inline">DOT/USD</span>
                                     </TabsTrigger>
                                     <TabsTrigger value="config" className="flex items-center space-x-1 text-xs">
                                         <Settings className="h-3 w-3" />
@@ -153,6 +158,10 @@ function OraclePageContent() {
                                 <OracleAdvancedDataManager />
                             </TabsContent>
 
+                            <TabsContent value="dot-usd">
+                                <OracleDotUsdManager />
+                            </TabsContent>
+
                             <TabsContent value="config">
                                 <OracleConfigManager />
                             </TabsContent>
@@ -179,7 +188,27 @@ function OraclePageContent() {
                             <p className="text-gray-600 mb-6">
                                 Connect your wallet to interact with the oracle contract
                             </p>
-                            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mt-6">
+                            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 mt-6">
+                                <div className="p-4 bg-gray-50 rounded-lg">
+                                    <Search className="h-6 w-6 text-gray-400 mx-auto mb-2" />
+                                    <div className="text-xs font-medium text-gray-700">Query</div>
+                                    <div className="text-xs text-gray-500 mt-1">Price data</div>
+                                </div>
+                                <div className="p-4 bg-gray-50 rounded-lg">
+                                    <Upload className="h-6 w-6 text-gray-400 mx-auto mb-2" />
+                                    <div className="text-xs font-medium text-gray-700">Update</div>
+                                    <div className="text-xs text-gray-500 mt-1">Token prices</div>
+                                </div>
+                                <div className="p-4 bg-gray-50 rounded-lg">
+                                    <Database className="h-6 w-6 text-gray-400 mx-auto mb-2" />
+                                    <div className="text-xs font-medium text-gray-700">Advanced</div>
+                                    <div className="text-xs text-gray-500 mt-1">Bulk updates</div>
+                                </div>
+                                <div className="p-4 bg-gray-50 rounded-lg">
+                                    <DollarSign className="h-6 w-6 text-gray-400 mx-auto mb-2" />
+                                    <div className="text-xs font-medium text-gray-700">DOT/USD</div>
+                                    <div className="text-xs text-gray-500 mt-1">Rate feed</div>
+                                </div>
                                 <div className="p-4 bg-gray-50 rounded-lg">
                                     <Settings className="h-6 w-6 text-gray-400 mx-auto mb-2" />
                                     <div className="text-xs font-medium text-gray-700">Config</div>
@@ -206,7 +235,7 @@ function OraclePageContent() {
                 )}
 
                 {/* Function Categories Overview */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                     <div className="card bg-gradient-to-br p-4 rounded-2xl from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 border-blue-200 dark:border-blue-800">
                         <h3 className="text-lg font-semibold text-blue-800 dark:text-blue-200 mb-3 flex items-center space-x-2">
                             <Search className="h-5 w-5" />
@@ -232,6 +261,21 @@ function OraclePageContent() {
                             <div>• update_market_data(token, cap, vol) → Result&lt;(), Error&gt;</div>
                             <div>• update_token_data(token, price, cap, vol) → Result&lt;(), Error&gt;</div>
                             <div>• emergency_price_override(...) → Result&lt;(), Error&gt;</div>
+                        </div>
+                    </div>
+
+                    <div className="card p-4 rounded-2xl bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 border-orange-200 dark:border-orange-800">
+                        <h3 className="text-lg font-semibold text-orange-800 dark:text-orange-200 mb-3 flex items-center space-x-2">
+                            <DollarSign className="h-5 w-5" />
+                            <span>DOT/USD Functions</span>
+                        </h3>
+                        <div className="space-y-2 text-xs text-orange-700 dark:text-orange-300">
+                            <div>• update_dot_usd_price(price) → Result&lt;(), Error&gt;</div>
+                            <div>• get_dot_usd_price() → Option&lt;u128&gt;</div>
+                            <div>• is_dot_price_stale() → bool</div>
+                            <div>• get_dot_price_last_update() → Option&lt;u64&gt;</div>
+                            <div>• emergency_dot_price_override(price) → Result&lt;(), Error&gt;</div>
+                            <div>• get_dot_token_address() → AccountId</div>
                         </div>
                     </div>
 
@@ -273,6 +317,10 @@ function OraclePageContent() {
                                 <div className="flex justify-between">
                                     <span className="text-gray-600">Price Unit:</span>
                                     <span className="text-gray-900">Plancks (1 PAS = 10^10 plancks)</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span className="text-gray-600">DOT/USD Scale:</span>
+                                    <span className="text-gray-900">9 decimals (1 USD = 10^9 units)</span>
                                 </div>
                                 <div className="flex justify-between">
                                     <span className="text-gray-600">Timestamp:</span>

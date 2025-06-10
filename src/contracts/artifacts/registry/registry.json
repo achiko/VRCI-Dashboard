@@ -1,6 +1,6 @@
 {
   "source": {
-    "hash": "0x8b504c735164c5ccd7a9241077832abff3ccd0a1ead83df382ee9fb08edfed36",
+    "hash": "0x41b84f949cb6e8594a0e373c8a8288f36e4b492dfa00536dc160356e01b6d52b",
     "language": "ink! 5.1.1",
     "compiler": "rustc 1.86.0",
     "build_info": {
@@ -81,6 +81,14 @@
     {
       "id": 5,
       "type": {
+        "def": {
+          "primitive": "u64"
+        }
+      }
+    },
+    {
+      "id": 6,
+      "type": {
         "path": [
           "ink_storage",
           "lazy",
@@ -94,11 +102,11 @@
           },
           {
             "name": "V",
-            "type": 6
+            "type": 7
           },
           {
             "name": "KeyType",
-            "type": 7
+            "type": 11
           }
         ],
         "def": {
@@ -107,11 +115,12 @@
       }
     },
     {
-      "id": 6,
+      "id": 7,
       "type": {
         "path": [
-          "shared",
-          "TokenData"
+          "registry",
+          "registry",
+          "EnhancedTokenData"
         ],
         "def": {
           "composite": {
@@ -138,8 +147,18 @@
               },
               {
                 "name": "tier",
-                "type": 4,
-                "typeName": "u32"
+                "type": 8,
+                "typeName": "Tier"
+              },
+              {
+                "name": "tier_change_timestamp",
+                "type": 9,
+                "typeName": "Option<u64>"
+              },
+              {
+                "name": "pending_tier_change",
+                "type": 10,
+                "typeName": "Option<Tier>"
               }
             ]
           }
@@ -147,7 +166,109 @@
       }
     },
     {
-      "id": 7,
+      "id": 8,
+      "type": {
+        "path": [
+          "registry",
+          "registry",
+          "Tier"
+        ],
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "name": "None",
+                "index": 0
+              },
+              {
+                "name": "Tier1",
+                "index": 1
+              },
+              {
+                "name": "Tier2",
+                "index": 2
+              },
+              {
+                "name": "Tier3",
+                "index": 3
+              },
+              {
+                "name": "Tier4",
+                "index": 4
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 9,
+      "type": {
+        "path": [
+          "Option"
+        ],
+        "params": [
+          {
+            "name": "T",
+            "type": 5
+          }
+        ],
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "name": "None",
+                "index": 0
+              },
+              {
+                "name": "Some",
+                "fields": [
+                  {
+                    "type": 5
+                  }
+                ],
+                "index": 1
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 10,
+      "type": {
+        "path": [
+          "Option"
+        ],
+        "params": [
+          {
+            "name": "T",
+            "type": 8
+          }
+        ],
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "name": "None",
+                "index": 0
+              },
+              {
+                "name": "Some",
+                "fields": [
+                  {
+                    "type": 8
+                  }
+                ],
+                "index": 1
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 11,
       "type": {
         "path": [
           "ink_storage_traits",
@@ -157,11 +278,11 @@
         "params": [
           {
             "name": "L",
-            "type": 8
+            "type": 12
           },
           {
             "name": "R",
-            "type": 9
+            "type": 13
           }
         ],
         "def": {
@@ -170,7 +291,7 @@
       }
     },
     {
-      "id": 8,
+      "id": 12,
       "type": {
         "path": [
           "ink_storage_traits",
@@ -183,7 +304,7 @@
       }
     },
     {
-      "id": 9,
+      "id": 13,
       "type": {
         "path": [
           "ink_storage_traits",
@@ -193,7 +314,7 @@
         "params": [
           {
             "name": "ParentKey",
-            "type": 10
+            "type": 14
           }
         ],
         "def": {
@@ -202,7 +323,7 @@
       }
     },
     {
-      "id": 10,
+      "id": 14,
       "type": {
         "def": {
           "tuple": []
@@ -210,7 +331,7 @@
       }
     },
     {
-      "id": 11,
+      "id": 15,
       "type": {
         "path": [
           "ink_storage",
@@ -229,85 +350,7 @@
           },
           {
             "name": "KeyType",
-            "type": 12
-          }
-        ],
-        "def": {
-          "composite": {}
-        }
-      }
-    },
-    {
-      "id": 12,
-      "type": {
-        "path": [
-          "ink_storage_traits",
-          "impls",
-          "ResolverKey"
-        ],
-        "params": [
-          {
-            "name": "L",
-            "type": 8
-          },
-          {
-            "name": "R",
-            "type": 13
-          }
-        ],
-        "def": {
-          "composite": {}
-        }
-      }
-    },
-    {
-      "id": 13,
-      "type": {
-        "path": [
-          "ink_storage_traits",
-          "impls",
-          "ManualKey"
-        ],
-        "params": [
-          {
-            "name": "ParentKey",
-            "type": 10
-          }
-        ],
-        "def": {
-          "composite": {}
-        }
-      }
-    },
-    {
-      "id": 14,
-      "type": {
-        "def": {
-          "primitive": "bool"
-        }
-      }
-    },
-    {
-      "id": 15,
-      "type": {
-        "path": [
-          "ink_storage",
-          "lazy",
-          "mapping",
-          "Mapping"
-        ],
-        "params": [
-          {
-            "name": "K",
             "type": 16
-          },
-          {
-            "name": "V",
-            "type": 14
-          },
-          {
-            "name": "KeyType",
-            "type": 18
           }
         ],
         "def": {
@@ -318,16 +361,94 @@
     {
       "id": 16,
       "type": {
+        "path": [
+          "ink_storage_traits",
+          "impls",
+          "ResolverKey"
+        ],
+        "params": [
+          {
+            "name": "L",
+            "type": 12
+          },
+          {
+            "name": "R",
+            "type": 17
+          }
+        ],
+        "def": {
+          "composite": {}
+        }
+      }
+    },
+    {
+      "id": 17,
+      "type": {
+        "path": [
+          "ink_storage_traits",
+          "impls",
+          "ManualKey"
+        ],
+        "params": [
+          {
+            "name": "ParentKey",
+            "type": 14
+          }
+        ],
+        "def": {
+          "composite": {}
+        }
+      }
+    },
+    {
+      "id": 18,
+      "type": {
+        "def": {
+          "primitive": "bool"
+        }
+      }
+    },
+    {
+      "id": 19,
+      "type": {
+        "path": [
+          "ink_storage",
+          "lazy",
+          "mapping",
+          "Mapping"
+        ],
+        "params": [
+          {
+            "name": "K",
+            "type": 20
+          },
+          {
+            "name": "V",
+            "type": 18
+          },
+          {
+            "name": "KeyType",
+            "type": 22
+          }
+        ],
+        "def": {
+          "composite": {}
+        }
+      }
+    },
+    {
+      "id": 20,
+      "type": {
         "def": {
           "tuple": [
-            17,
+            21,
             0
           ]
         }
       }
     },
     {
-      "id": 17,
+      "id": 21,
       "type": {
         "path": [
           "shared",
@@ -354,7 +475,7 @@
       }
     },
     {
-      "id": 18,
+      "id": 22,
       "type": {
         "path": [
           "ink_storage_traits",
@@ -364,11 +485,11 @@
         "params": [
           {
             "name": "L",
-            "type": 8
+            "type": 12
           },
           {
             "name": "R",
-            "type": 19
+            "type": 23
           }
         ],
         "def": {
@@ -377,7 +498,7 @@
       }
     },
     {
-      "id": 19,
+      "id": 23,
       "type": {
         "path": [
           "ink_storage_traits",
@@ -387,7 +508,7 @@
         "params": [
           {
             "name": "ParentKey",
-            "type": 10
+            "type": 14
           }
         ],
         "def": {
@@ -396,7 +517,77 @@
       }
     },
     {
-      "id": 20,
+      "id": 24,
+      "type": {
+        "path": [
+          "ink_storage",
+          "lazy",
+          "mapping",
+          "Mapping"
+        ],
+        "params": [
+          {
+            "name": "K",
+            "type": 8
+          },
+          {
+            "name": "V",
+            "type": 4
+          },
+          {
+            "name": "KeyType",
+            "type": 25
+          }
+        ],
+        "def": {
+          "composite": {}
+        }
+      }
+    },
+    {
+      "id": 25,
+      "type": {
+        "path": [
+          "ink_storage_traits",
+          "impls",
+          "ResolverKey"
+        ],
+        "params": [
+          {
+            "name": "L",
+            "type": 12
+          },
+          {
+            "name": "R",
+            "type": 26
+          }
+        ],
+        "def": {
+          "composite": {}
+        }
+      }
+    },
+    {
+      "id": 26,
+      "type": {
+        "path": [
+          "ink_storage_traits",
+          "impls",
+          "ManualKey"
+        ],
+        "params": [
+          {
+            "name": "ParentKey",
+            "type": 14
+          }
+        ],
+        "def": {
+          "composite": {}
+        }
+      }
+    },
+    {
+      "id": 27,
       "type": {
         "path": [
           "registry",
@@ -408,17 +599,17 @@
             "fields": [
               {
                 "name": "tokens",
-                "type": 5,
-                "typeName": "<Mapping<u32, TokenData> as::ink::storage::traits::\nAutoStorableHint<::ink::storage::traits::ManualKey<3940217661u32,\n()>,>>::Type"
+                "type": 6,
+                "typeName": "<Mapping<u32, EnhancedTokenData> as::ink::storage::traits::\nAutoStorableHint<::ink::storage::traits::ManualKey<3940217661u32,\n()>,>>::Type"
               },
               {
                 "name": "token_contract_to_id",
-                "type": 11,
+                "type": 15,
                 "typeName": "<Mapping<AccountId, u32> as::ink::storage::traits::\nAutoStorableHint<::ink::storage::traits::ManualKey<1263838047u32,\n()>,>>::Type"
               },
               {
                 "name": "role_members",
-                "type": 15,
+                "type": 19,
                 "typeName": "<Mapping<(Role, AccountId), bool> as::ink::storage::traits::\nAutoStorableHint<::ink::storage::traits::ManualKey<467678002u32, ()\n>,>>::Type"
               },
               {
@@ -430,6 +621,36 @@
                 "name": "owner",
                 "type": 0,
                 "typeName": "<AccountId as::ink::storage::traits::AutoStorableHint<::ink::\nstorage::traits::ManualKey<1361180433u32, ()>,>>::Type"
+              },
+              {
+                "name": "active_tier",
+                "type": 8,
+                "typeName": "<Tier as::ink::storage::traits::AutoStorableHint<::ink::storage\n::traits::ManualKey<2965643008u32, ()>,>>::Type"
+              },
+              {
+                "name": "tier_thresholds",
+                "type": 28,
+                "typeName": "<TierThresholds as::ink::storage::traits::AutoStorableHint<::ink\n::storage::traits::ManualKey<1327517551u32, ()>,>>::Type"
+              },
+              {
+                "name": "tier_distribution",
+                "type": 24,
+                "typeName": "<Mapping<Tier, u32> as::ink::storage::traits::AutoStorableHint<\n::ink::storage::traits::ManualKey<1042867876u32, ()>,>>::Type"
+              },
+              {
+                "name": "last_tier_change",
+                "type": 9,
+                "typeName": "<Option<u64> as::ink::storage::traits::AutoStorableHint<::ink\n::storage::traits::ManualKey<3963550738u32, ()>,>>::Type"
+              },
+              {
+                "name": "dot_usd_oracle",
+                "type": 29,
+                "typeName": "<Option<AccountId> as::ink::storage::traits::AutoStorableHint<::\nink::storage::traits::ManualKey<934402947u32, ()>,>>::Type"
+              },
+              {
+                "name": "grace_period_ms",
+                "type": 5,
+                "typeName": "<u64 as::ink::storage::traits::AutoStorableHint<::ink::storage\n::traits::ManualKey<2039964198u32, ()>,>>::Type"
               }
             ]
           }
@@ -437,38 +658,85 @@
       }
     },
     {
-      "id": 21,
+      "id": 28,
       "type": {
         "path": [
-          "Result"
+          "registry",
+          "registry",
+          "TierThresholds"
+        ],
+        "def": {
+          "composite": {
+            "fields": [
+              {
+                "name": "tier1_market_cap_usd",
+                "type": 3,
+                "typeName": "u128"
+              },
+              {
+                "name": "tier1_volume_usd",
+                "type": 3,
+                "typeName": "u128"
+              },
+              {
+                "name": "tier2_market_cap_usd",
+                "type": 3,
+                "typeName": "u128"
+              },
+              {
+                "name": "tier2_volume_usd",
+                "type": 3,
+                "typeName": "u128"
+              },
+              {
+                "name": "tier3_market_cap_usd",
+                "type": 3,
+                "typeName": "u128"
+              },
+              {
+                "name": "tier3_volume_usd",
+                "type": 3,
+                "typeName": "u128"
+              },
+              {
+                "name": "tier4_market_cap_usd",
+                "type": 3,
+                "typeName": "u128"
+              },
+              {
+                "name": "tier4_volume_usd",
+                "type": 3,
+                "typeName": "u128"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 29,
+      "type": {
+        "path": [
+          "Option"
         ],
         "params": [
           {
             "name": "T",
-            "type": 10
-          },
-          {
-            "name": "E",
-            "type": 22
+            "type": 0
           }
         ],
         "def": {
           "variant": {
             "variants": [
               {
-                "name": "Ok",
-                "fields": [
-                  {
-                    "type": 10
-                  }
-                ],
+                "name": "None",
                 "index": 0
               },
               {
-                "name": "Err",
+                "name": "Some",
                 "fields": [
                   {
-                    "type": 22
+                    "type": 0
                   }
                 ],
                 "index": 1
@@ -479,7 +747,49 @@
       }
     },
     {
-      "id": 22,
+      "id": 30,
+      "type": {
+        "path": [
+          "Result"
+        ],
+        "params": [
+          {
+            "name": "T",
+            "type": 14
+          },
+          {
+            "name": "E",
+            "type": 31
+          }
+        ],
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "name": "Ok",
+                "fields": [
+                  {
+                    "type": 14
+                  }
+                ],
+                "index": 0
+              },
+              {
+                "name": "Err",
+                "fields": [
+                  {
+                    "type": 31
+                  }
+                ],
+                "index": 1
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 31,
       "type": {
         "path": [
           "ink_primitives",
@@ -498,7 +808,7 @@
       }
     },
     {
-      "id": 23,
+      "id": 32,
       "type": {
         "path": [
           "Result"
@@ -506,11 +816,11 @@
         "params": [
           {
             "name": "T",
-            "type": 24
+            "type": 33
           },
           {
             "name": "E",
-            "type": 22
+            "type": 31
           }
         ],
         "def": {
@@ -520,7 +830,7 @@
                 "name": "Ok",
                 "fields": [
                   {
-                    "type": 24
+                    "type": 33
                   }
                 ],
                 "index": 0
@@ -529,7 +839,7 @@
                 "name": "Err",
                 "fields": [
                   {
-                    "type": 22
+                    "type": 31
                   }
                 ],
                 "index": 1
@@ -540,7 +850,7 @@
       }
     },
     {
-      "id": 24,
+      "id": 33,
       "type": {
         "path": [
           "Result"
@@ -548,11 +858,11 @@
         "params": [
           {
             "name": "T",
-            "type": 10
+            "type": 14
           },
           {
             "name": "E",
-            "type": 25
+            "type": 34
           }
         ],
         "def": {
@@ -562,7 +872,7 @@
                 "name": "Ok",
                 "fields": [
                   {
-                    "type": 10
+                    "type": 14
                   }
                 ],
                 "index": 0
@@ -571,7 +881,7 @@
                 "name": "Err",
                 "fields": [
                   {
-                    "type": 25
+                    "type": 34
                   }
                 ],
                 "index": 1
@@ -582,7 +892,7 @@
       }
     },
     {
-      "id": 25,
+      "id": 34,
       "type": {
         "path": [
           "shared",
@@ -641,7 +951,7 @@
       }
     },
     {
-      "id": 26,
+      "id": 35,
       "type": {
         "path": [
           "Result"
@@ -649,11 +959,11 @@
         "params": [
           {
             "name": "T",
-            "type": 14
+            "type": 18
           },
           {
             "name": "E",
-            "type": 22
+            "type": 31
           }
         ],
         "def": {
@@ -663,7 +973,7 @@
                 "name": "Ok",
                 "fields": [
                   {
-                    "type": 14
+                    "type": 18
                   }
                 ],
                 "index": 0
@@ -672,7 +982,7 @@
                 "name": "Err",
                 "fields": [
                   {
-                    "type": 22
+                    "type": 31
                   }
                 ],
                 "index": 1
@@ -683,7 +993,7 @@
       }
     },
     {
-      "id": 27,
+      "id": 36,
       "type": {
         "path": [
           "Result"
@@ -691,11 +1001,11 @@
         "params": [
           {
             "name": "T",
-            "type": 28
+            "type": 37
           },
           {
             "name": "E",
-            "type": 22
+            "type": 31
           }
         ],
         "def": {
@@ -705,7 +1015,7 @@
                 "name": "Ok",
                 "fields": [
                   {
-                    "type": 28
+                    "type": 37
                   }
                 ],
                 "index": 0
@@ -714,7 +1024,7 @@
                 "name": "Err",
                 "fields": [
                   {
-                    "type": 22
+                    "type": 31
                   }
                 ],
                 "index": 1
@@ -725,7 +1035,7 @@
       }
     },
     {
-      "id": 28,
+      "id": 37,
       "type": {
         "path": [
           "Result"
@@ -737,7 +1047,7 @@
           },
           {
             "name": "E",
-            "type": 25
+            "type": 34
           }
         ],
         "def": {
@@ -756,7 +1066,7 @@
                 "name": "Err",
                 "fields": [
                   {
-                    "type": 25
+                    "type": 34
                   }
                 ],
                 "index": 1
@@ -767,7 +1077,7 @@
       }
     },
     {
-      "id": 29,
+      "id": 38,
       "type": {
         "path": [
           "Result"
@@ -775,11 +1085,11 @@
         "params": [
           {
             "name": "T",
-            "type": 30
+            "type": 39
           },
           {
             "name": "E",
-            "type": 22
+            "type": 31
           }
         ],
         "def": {
@@ -789,58 +1099,58 @@
                 "name": "Ok",
                 "fields": [
                   {
-                    "type": 30
+                    "type": 39
                   }
                 ],
                 "index": 0
               },
               {
                 "name": "Err",
-                "fields": [
-                  {
-                    "type": 22
-                  }
-                ],
-                "index": 1
-              }
-            ]
-          }
-        }
-      }
-    },
-    {
-      "id": 30,
-      "type": {
-        "path": [
-          "Result"
-        ],
-        "params": [
-          {
-            "name": "T",
-            "type": 31
-          },
-          {
-            "name": "E",
-            "type": 25
-          }
-        ],
-        "def": {
-          "variant": {
-            "variants": [
-              {
-                "name": "Ok",
                 "fields": [
                   {
                     "type": 31
                   }
                 ],
+                "index": 1
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 39,
+      "type": {
+        "path": [
+          "Result"
+        ],
+        "params": [
+          {
+            "name": "T",
+            "type": 8
+          },
+          {
+            "name": "E",
+            "type": 34
+          }
+        ],
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "name": "Ok",
+                "fields": [
+                  {
+                    "type": 8
+                  }
+                ],
                 "index": 0
               },
               {
                 "name": "Err",
                 "fields": [
                   {
-                    "type": 25
+                    "type": 34
                   }
                 ],
                 "index": 1
@@ -851,7 +1161,626 @@
       }
     },
     {
-      "id": 31,
+      "id": 40,
+      "type": {
+        "def": {
+          "primitive": "str"
+        }
+      }
+    },
+    {
+      "id": 41,
+      "type": {
+        "path": [
+          "Result"
+        ],
+        "params": [
+          {
+            "name": "T",
+            "type": 5
+          },
+          {
+            "name": "E",
+            "type": 31
+          }
+        ],
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "name": "Ok",
+                "fields": [
+                  {
+                    "type": 5
+                  }
+                ],
+                "index": 0
+              },
+              {
+                "name": "Err",
+                "fields": [
+                  {
+                    "type": 31
+                  }
+                ],
+                "index": 1
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 42,
+      "type": {
+        "path": [
+          "Result"
+        ],
+        "params": [
+          {
+            "name": "T",
+            "type": 43
+          },
+          {
+            "name": "E",
+            "type": 31
+          }
+        ],
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "name": "Ok",
+                "fields": [
+                  {
+                    "type": 43
+                  }
+                ],
+                "index": 0
+              },
+              {
+                "name": "Err",
+                "fields": [
+                  {
+                    "type": 31
+                  }
+                ],
+                "index": 1
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 43,
+      "type": {
+        "def": {
+          "tuple": [
+            5,
+            5
+          ]
+        }
+      }
+    },
+    {
+      "id": 44,
+      "type": {
+        "path": [
+          "Result"
+        ],
+        "params": [
+          {
+            "name": "T",
+            "type": 9
+          },
+          {
+            "name": "E",
+            "type": 31
+          }
+        ],
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "name": "Ok",
+                "fields": [
+                  {
+                    "type": 9
+                  }
+                ],
+                "index": 0
+              },
+              {
+                "name": "Err",
+                "fields": [
+                  {
+                    "type": 31
+                  }
+                ],
+                "index": 1
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 45,
+      "type": {
+        "path": [
+          "Result"
+        ],
+        "params": [
+          {
+            "name": "T",
+            "type": 46
+          },
+          {
+            "name": "E",
+            "type": 31
+          }
+        ],
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "name": "Ok",
+                "fields": [
+                  {
+                    "type": 46
+                  }
+                ],
+                "index": 0
+              },
+              {
+                "name": "Err",
+                "fields": [
+                  {
+                    "type": 31
+                  }
+                ],
+                "index": 1
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 46,
+      "type": {
+        "def": {
+          "sequence": {
+            "type": 47
+          }
+        }
+      }
+    },
+    {
+      "id": 47,
+      "type": {
+        "def": {
+          "tuple": [
+            8,
+            4
+          ]
+        }
+      }
+    },
+    {
+      "id": 48,
+      "type": {
+        "path": [
+          "Result"
+        ],
+        "params": [
+          {
+            "name": "T",
+            "type": 10
+          },
+          {
+            "name": "E",
+            "type": 31
+          }
+        ],
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "name": "Ok",
+                "fields": [
+                  {
+                    "type": 10
+                  }
+                ],
+                "index": 0
+              },
+              {
+                "name": "Err",
+                "fields": [
+                  {
+                    "type": 31
+                  }
+                ],
+                "index": 1
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 49,
+      "type": {
+        "path": [
+          "Result"
+        ],
+        "params": [
+          {
+            "name": "T",
+            "type": 29
+          },
+          {
+            "name": "E",
+            "type": 31
+          }
+        ],
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "name": "Ok",
+                "fields": [
+                  {
+                    "type": 29
+                  }
+                ],
+                "index": 0
+              },
+              {
+                "name": "Err",
+                "fields": [
+                  {
+                    "type": 31
+                  }
+                ],
+                "index": 1
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 50,
+      "type": {
+        "path": [
+          "Result"
+        ],
+        "params": [
+          {
+            "name": "T",
+            "type": 28
+          },
+          {
+            "name": "E",
+            "type": 31
+          }
+        ],
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "name": "Ok",
+                "fields": [
+                  {
+                    "type": 28
+                  }
+                ],
+                "index": 0
+              },
+              {
+                "name": "Err",
+                "fields": [
+                  {
+                    "type": 31
+                  }
+                ],
+                "index": 1
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 51,
+      "type": {
+        "path": [
+          "Result"
+        ],
+        "params": [
+          {
+            "name": "T",
+            "type": 8
+          },
+          {
+            "name": "E",
+            "type": 31
+          }
+        ],
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "name": "Ok",
+                "fields": [
+                  {
+                    "type": 8
+                  }
+                ],
+                "index": 0
+              },
+              {
+                "name": "Err",
+                "fields": [
+                  {
+                    "type": 31
+                  }
+                ],
+                "index": 1
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 52,
+      "type": {
+        "path": [
+          "Result"
+        ],
+        "params": [
+          {
+            "name": "T",
+            "type": 53
+          },
+          {
+            "name": "E",
+            "type": 31
+          }
+        ],
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "name": "Ok",
+                "fields": [
+                  {
+                    "type": 53
+                  }
+                ],
+                "index": 0
+              },
+              {
+                "name": "Err",
+                "fields": [
+                  {
+                    "type": 31
+                  }
+                ],
+                "index": 1
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 53,
+      "type": {
+        "path": [
+          "Option"
+        ],
+        "params": [
+          {
+            "name": "T",
+            "type": 3
+          }
+        ],
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "name": "None",
+                "index": 0
+              },
+              {
+                "name": "Some",
+                "fields": [
+                  {
+                    "type": 3
+                  }
+                ],
+                "index": 1
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 54,
+      "type": {
+        "path": [
+          "Result"
+        ],
+        "params": [
+          {
+            "name": "T",
+            "type": 55
+          },
+          {
+            "name": "E",
+            "type": 31
+          }
+        ],
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "name": "Ok",
+                "fields": [
+                  {
+                    "type": 55
+                  }
+                ],
+                "index": 0
+              },
+              {
+                "name": "Err",
+                "fields": [
+                  {
+                    "type": 31
+                  }
+                ],
+                "index": 1
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 55,
+      "type": {
+        "path": [
+          "Result"
+        ],
+        "params": [
+          {
+            "name": "T",
+            "type": 7
+          },
+          {
+            "name": "E",
+            "type": 34
+          }
+        ],
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "name": "Ok",
+                "fields": [
+                  {
+                    "type": 7
+                  }
+                ],
+                "index": 0
+              },
+              {
+                "name": "Err",
+                "fields": [
+                  {
+                    "type": 34
+                  }
+                ],
+                "index": 1
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 56,
+      "type": {
+        "path": [
+          "Result"
+        ],
+        "params": [
+          {
+            "name": "T",
+            "type": 57
+          },
+          {
+            "name": "E",
+            "type": 31
+          }
+        ],
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "name": "Ok",
+                "fields": [
+                  {
+                    "type": 57
+                  }
+                ],
+                "index": 0
+              },
+              {
+                "name": "Err",
+                "fields": [
+                  {
+                    "type": 31
+                  }
+                ],
+                "index": 1
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 57,
+      "type": {
+        "path": [
+          "Result"
+        ],
+        "params": [
+          {
+            "name": "T",
+            "type": 58
+          },
+          {
+            "name": "E",
+            "type": 34
+          }
+        ],
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "name": "Ok",
+                "fields": [
+                  {
+                    "type": 58
+                  }
+                ],
+                "index": 0
+              },
+              {
+                "name": "Err",
+                "fields": [
+                  {
+                    "type": 34
+                  }
+                ],
+                "index": 1
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 58,
       "type": {
         "path": [
           "shared",
@@ -906,7 +1835,124 @@
       }
     },
     {
-      "id": 32,
+      "id": 59,
+      "type": {
+        "path": [
+          "Result"
+        ],
+        "params": [
+          {
+            "name": "T",
+            "type": 60
+          },
+          {
+            "name": "E",
+            "type": 31
+          }
+        ],
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "name": "Ok",
+                "fields": [
+                  {
+                    "type": 60
+                  }
+                ],
+                "index": 0
+              },
+              {
+                "name": "Err",
+                "fields": [
+                  {
+                    "type": 31
+                  }
+                ],
+                "index": 1
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 60,
+      "type": {
+        "def": {
+          "sequence": {
+            "type": 4
+          }
+        }
+      }
+    },
+    {
+      "id": 61,
+      "type": {
+        "path": [
+          "Result"
+        ],
+        "params": [
+          {
+            "name": "T",
+            "type": 62
+          },
+          {
+            "name": "E",
+            "type": 31
+          }
+        ],
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "name": "Ok",
+                "fields": [
+                  {
+                    "type": 62
+                  }
+                ],
+                "index": 0
+              },
+              {
+                "name": "Err",
+                "fields": [
+                  {
+                    "type": 31
+                  }
+                ],
+                "index": 1
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 62,
+      "type": {
+        "def": {
+          "sequence": {
+            "type": 63
+          }
+        }
+      }
+    },
+    {
+      "id": 63,
+      "type": {
+        "def": {
+          "tuple": [
+            4,
+            8,
+            8,
+            5
+          ]
+        }
+      }
+    },
+    {
+      "id": 64,
       "type": {
         "path": [
           "Result"
@@ -918,7 +1964,7 @@
           },
           {
             "name": "E",
-            "type": 22
+            "type": 31
           }
         ],
         "def": {
@@ -937,7 +1983,7 @@
                 "name": "Err",
                 "fields": [
                   {
-                    "type": 22
+                    "type": 31
                   }
                 ],
                 "index": 1
@@ -948,7 +1994,7 @@
       }
     },
     {
-      "id": 33,
+      "id": 65,
       "type": {
         "path": [
           "Result"
@@ -960,7 +2006,7 @@
           },
           {
             "name": "E",
-            "type": 22
+            "type": 31
           }
         ],
         "def": {
@@ -979,7 +2025,7 @@
                 "name": "Err",
                 "fields": [
                   {
-                    "type": 22
+                    "type": 31
                   }
                 ],
                 "index": 1
@@ -990,7 +2036,7 @@
       }
     },
     {
-      "id": 34,
+      "id": 66,
       "type": {
         "path": [
           "Result"
@@ -998,11 +2044,11 @@
         "params": [
           {
             "name": "T",
-            "type": 35
+            "type": 67
           },
           {
             "name": "E",
-            "type": 22
+            "type": 31
           }
         ],
         "def": {
@@ -1012,7 +2058,7 @@
                 "name": "Ok",
                 "fields": [
                   {
-                    "type": 35
+                    "type": 67
                   }
                 ],
                 "index": 0
@@ -1021,7 +2067,7 @@
                 "name": "Err",
                 "fields": [
                   {
-                    "type": 22
+                    "type": 31
                   }
                 ],
                 "index": 1
@@ -1032,7 +2078,7 @@
       }
     },
     {
-      "id": 35,
+      "id": 67,
       "type": {
         "path": [
           "Result"
@@ -1040,11 +2086,11 @@
         "params": [
           {
             "name": "T",
-            "type": 6
+            "type": 68
           },
           {
             "name": "E",
-            "type": 25
+            "type": 34
           }
         ],
         "def": {
@@ -1054,7 +2100,7 @@
                 "name": "Ok",
                 "fields": [
                   {
-                    "type": 6
+                    "type": 68
                   }
                 ],
                 "index": 0
@@ -1063,7 +2109,7 @@
                 "name": "Err",
                 "fields": [
                   {
-                    "type": 25
+                    "type": 34
                   }
                 ],
                 "index": 1
@@ -1074,7 +2120,47 @@
       }
     },
     {
-      "id": 36,
+      "id": 68,
+      "type": {
+        "path": [
+          "shared",
+          "TokenData"
+        ],
+        "def": {
+          "composite": {
+            "fields": [
+              {
+                "name": "token_contract",
+                "type": 0,
+                "typeName": "AccountId"
+              },
+              {
+                "name": "oracle_contract",
+                "type": 0,
+                "typeName": "AccountId"
+              },
+              {
+                "name": "balance",
+                "type": 3,
+                "typeName": "u128"
+              },
+              {
+                "name": "weight_investment",
+                "type": 4,
+                "typeName": "u32"
+              },
+              {
+                "name": "tier",
+                "type": 4,
+                "typeName": "u32"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 69,
       "type": {
         "path": [
           "Result"
@@ -1082,11 +2168,11 @@
         "params": [
           {
             "name": "T",
-            "type": 37
+            "type": 70
           },
           {
             "name": "E",
-            "type": 22
+            "type": 31
           }
         ],
         "def": {
@@ -1096,7 +2182,7 @@
                 "name": "Ok",
                 "fields": [
                   {
-                    "type": 37
+                    "type": 70
                   }
                 ],
                 "index": 0
@@ -1105,7 +2191,7 @@
                 "name": "Err",
                 "fields": [
                   {
-                    "type": 22
+                    "type": 31
                   }
                 ],
                 "index": 1
@@ -1116,7 +2202,7 @@
       }
     },
     {
-      "id": 37,
+      "id": 70,
       "type": {
         "path": [
           "Option"
@@ -1149,15 +2235,7 @@
       }
     },
     {
-      "id": 38,
-      "type": {
-        "def": {
-          "primitive": "str"
-        }
-      }
-    },
-    {
-      "id": 39,
+      "id": 71,
       "type": {
         "path": [
           "ink_primitives",
@@ -1177,15 +2255,7 @@
       }
     },
     {
-      "id": 40,
-      "type": {
-        "def": {
-          "primitive": "u64"
-        }
-      }
-    },
-    {
-      "id": 41,
+      "id": 72,
       "type": {
         "path": [
           "ink_env",
@@ -1212,7 +2282,7 @@
                   "root_key": "0x3df3daea",
                   "layout": {
                     "struct": {
-                      "name": "TokenData",
+                      "name": "EnhancedTokenData",
                       "fields": [
                         {
                           "name": "token_contract",
@@ -1253,16 +2323,118 @@
                         {
                           "name": "tier",
                           "layout": {
-                            "leaf": {
-                              "key": "0x3df3daea",
-                              "ty": 4
+                            "enum": {
+                              "name": "Tier",
+                              "dispatchKey": "0x3df3daea",
+                              "variants": {
+                                "0": {
+                                  "name": "None",
+                                  "fields": []
+                                },
+                                "1": {
+                                  "name": "Tier1",
+                                  "fields": []
+                                },
+                                "2": {
+                                  "name": "Tier2",
+                                  "fields": []
+                                },
+                                "3": {
+                                  "name": "Tier3",
+                                  "fields": []
+                                },
+                                "4": {
+                                  "name": "Tier4",
+                                  "fields": []
+                                }
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "name": "tier_change_timestamp",
+                          "layout": {
+                            "enum": {
+                              "name": "Option",
+                              "dispatchKey": "0x3df3daea",
+                              "variants": {
+                                "0": {
+                                  "name": "None",
+                                  "fields": []
+                                },
+                                "1": {
+                                  "name": "Some",
+                                  "fields": [
+                                    {
+                                      "name": "0",
+                                      "layout": {
+                                        "leaf": {
+                                          "key": "0x3df3daea",
+                                          "ty": 5
+                                        }
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "name": "pending_tier_change",
+                          "layout": {
+                            "enum": {
+                              "name": "Option",
+                              "dispatchKey": "0x3df3daea",
+                              "variants": {
+                                "0": {
+                                  "name": "None",
+                                  "fields": []
+                                },
+                                "1": {
+                                  "name": "Some",
+                                  "fields": [
+                                    {
+                                      "name": "0",
+                                      "layout": {
+                                        "enum": {
+                                          "name": "Tier",
+                                          "dispatchKey": "0x3df3daea",
+                                          "variants": {
+                                            "0": {
+                                              "name": "None",
+                                              "fields": []
+                                            },
+                                            "1": {
+                                              "name": "Tier1",
+                                              "fields": []
+                                            },
+                                            "2": {
+                                              "name": "Tier2",
+                                              "fields": []
+                                            },
+                                            "3": {
+                                              "name": "Tier3",
+                                              "fields": []
+                                            },
+                                            "4": {
+                                              "name": "Tier4",
+                                              "fields": []
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
                             }
                           }
                         }
                       ]
                     }
                   },
-                  "ty": 5
+                  "ty": 6
                 }
               }
             },
@@ -1277,7 +2449,7 @@
                       "ty": 4
                     }
                   },
-                  "ty": 11
+                  "ty": 15
                 }
               }
             },
@@ -1289,10 +2461,10 @@
                   "layout": {
                     "leaf": {
                       "key": "0x3233e01b",
-                      "ty": 14
+                      "ty": 18
                     }
                   },
-                  "ty": 15
+                  "ty": 19
                 }
               }
             },
@@ -1313,11 +2485,206 @@
                   "ty": 0
                 }
               }
+            },
+            {
+              "name": "active_tier",
+              "layout": {
+                "enum": {
+                  "name": "Tier",
+                  "dispatchKey": "0x00000000",
+                  "variants": {
+                    "0": {
+                      "name": "None",
+                      "fields": []
+                    },
+                    "1": {
+                      "name": "Tier1",
+                      "fields": []
+                    },
+                    "2": {
+                      "name": "Tier2",
+                      "fields": []
+                    },
+                    "3": {
+                      "name": "Tier3",
+                      "fields": []
+                    },
+                    "4": {
+                      "name": "Tier4",
+                      "fields": []
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "name": "tier_thresholds",
+              "layout": {
+                "struct": {
+                  "name": "TierThresholds",
+                  "fields": [
+                    {
+                      "name": "tier1_market_cap_usd",
+                      "layout": {
+                        "leaf": {
+                          "key": "0x00000000",
+                          "ty": 3
+                        }
+                      }
+                    },
+                    {
+                      "name": "tier1_volume_usd",
+                      "layout": {
+                        "leaf": {
+                          "key": "0x00000000",
+                          "ty": 3
+                        }
+                      }
+                    },
+                    {
+                      "name": "tier2_market_cap_usd",
+                      "layout": {
+                        "leaf": {
+                          "key": "0x00000000",
+                          "ty": 3
+                        }
+                      }
+                    },
+                    {
+                      "name": "tier2_volume_usd",
+                      "layout": {
+                        "leaf": {
+                          "key": "0x00000000",
+                          "ty": 3
+                        }
+                      }
+                    },
+                    {
+                      "name": "tier3_market_cap_usd",
+                      "layout": {
+                        "leaf": {
+                          "key": "0x00000000",
+                          "ty": 3
+                        }
+                      }
+                    },
+                    {
+                      "name": "tier3_volume_usd",
+                      "layout": {
+                        "leaf": {
+                          "key": "0x00000000",
+                          "ty": 3
+                        }
+                      }
+                    },
+                    {
+                      "name": "tier4_market_cap_usd",
+                      "layout": {
+                        "leaf": {
+                          "key": "0x00000000",
+                          "ty": 3
+                        }
+                      }
+                    },
+                    {
+                      "name": "tier4_volume_usd",
+                      "layout": {
+                        "leaf": {
+                          "key": "0x00000000",
+                          "ty": 3
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "tier_distribution",
+              "layout": {
+                "root": {
+                  "root_key": "0xa4e6283e",
+                  "layout": {
+                    "leaf": {
+                      "key": "0xa4e6283e",
+                      "ty": 4
+                    }
+                  },
+                  "ty": 24
+                }
+              }
+            },
+            {
+              "name": "last_tier_change",
+              "layout": {
+                "enum": {
+                  "name": "Option",
+                  "dispatchKey": "0x00000000",
+                  "variants": {
+                    "0": {
+                      "name": "None",
+                      "fields": []
+                    },
+                    "1": {
+                      "name": "Some",
+                      "fields": [
+                        {
+                          "name": "0",
+                          "layout": {
+                            "leaf": {
+                              "key": "0x00000000",
+                              "ty": 5
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "name": "dot_usd_oracle",
+              "layout": {
+                "enum": {
+                  "name": "Option",
+                  "dispatchKey": "0x00000000",
+                  "variants": {
+                    "0": {
+                      "name": "None",
+                      "fields": []
+                    },
+                    "1": {
+                      "name": "Some",
+                      "fields": [
+                        {
+                          "name": "0",
+                          "layout": {
+                            "leaf": {
+                              "key": "0x00000000",
+                              "ty": 0
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "name": "grace_period_ms",
+              "layout": {
+                "leaf": {
+                  "key": "0x00000000",
+                  "ty": 5
+                }
+              }
             }
           ]
         }
       },
-      "ty": 20
+      "ty": 27
     }
   },
   "spec": {
@@ -1328,7 +2695,7 @@
         "payable": false,
         "args": [],
         "returnType": {
-          "type": 21,
+          "type": 30,
           "displayName": [
             "ink_primitives",
             "ConstructorResult"
@@ -1350,7 +2717,7 @@
           {
             "label": "role",
             "type": {
-              "type": 17,
+              "type": 21,
               "displayName": [
                 "Role"
               ]
@@ -1367,7 +2734,7 @@
           }
         ],
         "returnType": {
-          "type": 23,
+          "type": 32,
           "displayName": [
             "ink",
             "MessageResult"
@@ -1387,7 +2754,7 @@
           {
             "label": "role",
             "type": {
-              "type": 17,
+              "type": 21,
               "displayName": [
                 "Role"
               ]
@@ -1404,7 +2771,7 @@
           }
         ],
         "returnType": {
-          "type": 23,
+          "type": 32,
           "displayName": [
             "ink",
             "MessageResult"
@@ -1424,7 +2791,7 @@
           {
             "label": "role",
             "type": {
-              "type": 17,
+              "type": 21,
               "displayName": [
                 "Role"
               ]
@@ -1441,7 +2808,7 @@
           }
         ],
         "returnType": {
-          "type": 26,
+          "type": 35,
           "displayName": [
             "ink",
             "MessageResult"
@@ -1478,14 +2845,14 @@
           }
         ],
         "returnType": {
-          "type": 27,
+          "type": 36,
           "displayName": [
             "ink",
             "MessageResult"
           ]
         },
         "docs": [
-          " Add a new token to the registry"
+          " Add a new token to the registry with automatic tier calculation"
         ],
         "default": false
       },
@@ -1521,26 +2888,17 @@
                 "u32"
               ]
             }
-          },
-          {
-            "label": "tier",
-            "type": {
-              "type": 4,
-              "displayName": [
-                "u32"
-              ]
-            }
           }
         ],
         "returnType": {
-          "type": 23,
+          "type": 32,
           "displayName": [
             "ink",
             "MessageResult"
           ]
         },
         "docs": [
-          " Update token balance and investment data"
+          " Update token balance and investment data with automatic tier recalculation"
         ],
         "default": false
       },
@@ -1561,7 +2919,7 @@
           }
         ],
         "returnType": {
-          "type": 23,
+          "type": 32,
           "displayName": [
             "ink",
             "MessageResult"
@@ -1569,6 +2927,640 @@
         },
         "docs": [
           " Remove a token from the registry"
+        ],
+        "default": false
+      },
+      {
+        "label": "calculate_token_tier",
+        "selector": "0xa755bec5",
+        "mutates": false,
+        "payable": false,
+        "args": [
+          {
+            "label": "token_id",
+            "type": {
+              "type": 4,
+              "displayName": [
+                "u32"
+              ]
+            }
+          }
+        ],
+        "returnType": {
+          "type": 38,
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ]
+        },
+        "docs": [
+          " Calculate tier for a token based on market cap and volume"
+        ],
+        "default": false
+      },
+      {
+        "label": "update_token_tier",
+        "selector": "0xb11eb1ae",
+        "mutates": true,
+        "payable": false,
+        "args": [
+          {
+            "label": "token_id",
+            "type": {
+              "type": 4,
+              "displayName": [
+                "u32"
+              ]
+            }
+          }
+        ],
+        "returnType": {
+          "type": 38,
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ]
+        },
+        "docs": [
+          " Manually update tier for a specific token (owner only)"
+        ],
+        "default": false
+      },
+      {
+        "label": "emergency_tier_override",
+        "selector": "0xe67d97ff",
+        "mutates": true,
+        "payable": false,
+        "args": [
+          {
+            "label": "token_id",
+            "type": {
+              "type": 4,
+              "displayName": [
+                "u32"
+              ]
+            }
+          },
+          {
+            "label": "new_tier",
+            "type": {
+              "type": 8,
+              "displayName": [
+                "Tier"
+              ]
+            }
+          },
+          {
+            "label": "reason",
+            "type": {
+              "type": 40,
+              "displayName": [
+                "String"
+              ]
+            }
+          }
+        ],
+        "returnType": {
+          "type": 32,
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ]
+        },
+        "docs": [
+          " Emergency tier override - bypasses grace period (owner only)"
+        ],
+        "default": false
+      },
+      {
+        "label": "emergency_tier_override_to_calculated",
+        "selector": "0x5b5a3d00",
+        "mutates": true,
+        "payable": false,
+        "args": [
+          {
+            "label": "token_id",
+            "type": {
+              "type": 4,
+              "displayName": [
+                "u32"
+              ]
+            }
+          },
+          {
+            "label": "reason",
+            "type": {
+              "type": 40,
+              "displayName": [
+                "String"
+              ]
+            }
+          }
+        ],
+        "returnType": {
+          "type": 38,
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ]
+        },
+        "docs": [
+          " Emergency tier override to calculated tier - bypasses grace period (owner only)"
+        ],
+        "default": false
+      },
+      {
+        "label": "clear_pending_tier_change",
+        "selector": "0x53bba34a",
+        "mutates": true,
+        "payable": false,
+        "args": [
+          {
+            "label": "token_id",
+            "type": {
+              "type": 4,
+              "displayName": [
+                "u32"
+              ]
+            }
+          }
+        ],
+        "returnType": {
+          "type": 32,
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ]
+        },
+        "docs": [
+          " Clear pending tier change (owner only)"
+        ],
+        "default": false
+      },
+      {
+        "label": "set_grace_period",
+        "selector": "0x86200a8b",
+        "mutates": true,
+        "payable": false,
+        "args": [
+          {
+            "label": "period_ms",
+            "type": {
+              "type": 5,
+              "displayName": [
+                "u64"
+              ]
+            }
+          }
+        ],
+        "returnType": {
+          "type": 32,
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ]
+        },
+        "docs": [
+          " Set grace period duration (owner only)"
+        ],
+        "default": false
+      },
+      {
+        "label": "get_grace_period",
+        "selector": "0x8ec39146",
+        "mutates": false,
+        "payable": false,
+        "args": [],
+        "returnType": {
+          "type": 41,
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ]
+        },
+        "docs": [
+          " Get current grace period duration in milliseconds"
+        ],
+        "default": false
+      },
+      {
+        "label": "get_grace_period_days",
+        "selector": "0xae9bc01a",
+        "mutates": false,
+        "payable": false,
+        "args": [],
+        "returnType": {
+          "type": 41,
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ]
+        },
+        "docs": [
+          " Get grace period duration in days (for convenience)"
+        ],
+        "default": false
+      },
+      {
+        "label": "get_grace_period_hours",
+        "selector": "0x7dc7dbbe",
+        "mutates": false,
+        "payable": false,
+        "args": [],
+        "returnType": {
+          "type": 41,
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ]
+        },
+        "docs": [
+          " Get grace period duration in hours (for convenience)"
+        ],
+        "default": false
+      },
+      {
+        "label": "get_grace_period_limits",
+        "selector": "0x22f73d30",
+        "mutates": false,
+        "payable": false,
+        "args": [],
+        "returnType": {
+          "type": 42,
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ]
+        },
+        "docs": [
+          " Get grace period limits (min/max allowed)"
+        ],
+        "default": false
+      },
+      {
+        "label": "get_grace_period_end_time",
+        "selector": "0x8eee05ca",
+        "mutates": false,
+        "payable": false,
+        "args": [
+          {
+            "label": "token_id",
+            "type": {
+              "type": 4,
+              "displayName": [
+                "u32"
+              ]
+            }
+          }
+        ],
+        "returnType": {
+          "type": 44,
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ]
+        },
+        "docs": [
+          " Calculate grace period end time for a token"
+        ],
+        "default": false
+      },
+      {
+        "label": "get_grace_period_remaining",
+        "selector": "0x2645f97f",
+        "mutates": false,
+        "payable": false,
+        "args": [
+          {
+            "label": "token_id",
+            "type": {
+              "type": 4,
+              "displayName": [
+                "u32"
+              ]
+            }
+          }
+        ],
+        "returnType": {
+          "type": 44,
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ]
+        },
+        "docs": [
+          " Check how much time is left in grace period for a token"
+        ],
+        "default": false
+      },
+      {
+        "label": "is_grace_period_expired",
+        "selector": "0x2f44c657",
+        "mutates": false,
+        "payable": false,
+        "args": [
+          {
+            "label": "token_id",
+            "type": {
+              "type": 4,
+              "displayName": [
+                "u32"
+              ]
+            }
+          }
+        ],
+        "returnType": {
+          "type": 35,
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ]
+        },
+        "docs": [
+          " Check if grace period has expired for a token"
+        ],
+        "default": false
+      },
+      {
+        "label": "refresh_all_tiers",
+        "selector": "0x8646ff68",
+        "mutates": true,
+        "payable": false,
+        "args": [],
+        "returnType": {
+          "type": 36,
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ]
+        },
+        "docs": [
+          " Batch update tiers for all tokens (gas-intensive)"
+        ],
+        "default": false
+      },
+      {
+        "label": "process_grace_periods",
+        "selector": "0x39150c26",
+        "mutates": true,
+        "payable": false,
+        "args": [],
+        "returnType": {
+          "type": 36,
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ]
+        },
+        "docs": [
+          " Process tokens with expired grace periods (updated to use dynamic grace period)"
+        ],
+        "default": false
+      },
+      {
+        "label": "get_tier_distribution",
+        "selector": "0xdf68aa7e",
+        "mutates": false,
+        "payable": false,
+        "args": [],
+        "returnType": {
+          "type": 45,
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ]
+        },
+        "docs": [
+          " Get current distribution of tokens across tiers"
+        ],
+        "default": false
+      },
+      {
+        "label": "should_shift_tier",
+        "selector": "0xda628aff",
+        "mutates": false,
+        "payable": false,
+        "args": [],
+        "returnType": {
+          "type": 48,
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ]
+        },
+        "docs": [
+          " Check if 80% rule should trigger tier shift"
+        ],
+        "default": false
+      },
+      {
+        "label": "shift_active_tier",
+        "selector": "0x71f99599",
+        "mutates": true,
+        "payable": false,
+        "args": [
+          {
+            "label": "new_tier",
+            "type": {
+              "type": 8,
+              "displayName": [
+                "Tier"
+              ]
+            }
+          },
+          {
+            "label": "reason",
+            "type": {
+              "type": 40,
+              "displayName": [
+                "String"
+              ]
+            }
+          }
+        ],
+        "returnType": {
+          "type": 32,
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ]
+        },
+        "docs": [
+          " Execute tier shift (automatic or manual)"
+        ],
+        "default": false
+      },
+      {
+        "label": "set_dot_usd_oracle",
+        "selector": "0x819b20a3",
+        "mutates": true,
+        "payable": false,
+        "args": [
+          {
+            "label": "oracle_contract",
+            "type": {
+              "type": 0,
+              "displayName": [
+                "AccountId"
+              ]
+            }
+          }
+        ],
+        "returnType": {
+          "type": 32,
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ]
+        },
+        "docs": [
+          " Set DOT/USD oracle contract (owner only)"
+        ],
+        "default": false
+      },
+      {
+        "label": "get_dot_usd_oracle",
+        "selector": "0x14ae30fd",
+        "mutates": false,
+        "payable": false,
+        "args": [],
+        "returnType": {
+          "type": 49,
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ]
+        },
+        "docs": [
+          " Get current DOT/USD oracle contract"
+        ],
+        "default": false
+      },
+      {
+        "label": "set_tier_thresholds",
+        "selector": "0xe2d49881",
+        "mutates": true,
+        "payable": false,
+        "args": [
+          {
+            "label": "thresholds",
+            "type": {
+              "type": 28,
+              "displayName": [
+                "TierThresholds"
+              ]
+            }
+          }
+        ],
+        "returnType": {
+          "type": 32,
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ]
+        },
+        "docs": [
+          " Update tier thresholds in USD (owner only)"
+        ],
+        "default": false
+      },
+      {
+        "label": "get_tier_thresholds",
+        "selector": "0x19a4c86d",
+        "mutates": false,
+        "payable": false,
+        "args": [],
+        "returnType": {
+          "type": 50,
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ]
+        },
+        "docs": [
+          " Get current tier thresholds"
+        ],
+        "default": false
+      },
+      {
+        "label": "get_active_tier",
+        "selector": "0x700681c2",
+        "mutates": false,
+        "payable": false,
+        "args": [],
+        "returnType": {
+          "type": 51,
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ]
+        },
+        "docs": [
+          " Get current active tier"
+        ],
+        "default": false
+      },
+      {
+        "label": "get_last_tier_change",
+        "selector": "0xd930ef30",
+        "mutates": false,
+        "payable": false,
+        "args": [],
+        "returnType": {
+          "type": 44,
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ]
+        },
+        "docs": [
+          " Get last tier change timestamp"
+        ],
+        "default": false
+      },
+      {
+        "label": "get_current_usd_rate",
+        "selector": "0x80c4ad2d",
+        "mutates": false,
+        "payable": false,
+        "args": [],
+        "returnType": {
+          "type": 52,
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ]
+        },
+        "docs": [
+          " Get current USD to plancks conversion rate from oracle"
+        ],
+        "default": false
+      },
+      {
+        "label": "get_enhanced_token_data",
+        "selector": "0x6c09403c",
+        "mutates": false,
+        "payable": false,
+        "args": [
+          {
+            "label": "token_id",
+            "type": {
+              "type": 4,
+              "displayName": [
+                "u32"
+              ]
+            }
+          }
+        ],
+        "returnType": {
+          "type": 54,
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ]
+        },
+        "docs": [
+          " Get enhanced token data with tier information"
         ],
         "default": false
       },
@@ -1589,14 +3581,60 @@
           }
         ],
         "returnType": {
-          "type": 29,
+          "type": 56,
           "displayName": [
             "ink",
             "MessageResult"
           ]
         },
         "docs": [
-          " Get token data with live oracle prices"
+          " Get token data with live oracle prices (backward compatibility)"
+        ],
+        "default": false
+      },
+      {
+        "label": "get_tokens_by_tier",
+        "selector": "0xa50575b0",
+        "mutates": false,
+        "payable": false,
+        "args": [
+          {
+            "label": "tier",
+            "type": {
+              "type": 8,
+              "displayName": [
+                "Tier"
+              ]
+            }
+          }
+        ],
+        "returnType": {
+          "type": 59,
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ]
+        },
+        "docs": [
+          " Get tokens by tier"
+        ],
+        "default": false
+      },
+      {
+        "label": "get_tokens_with_pending_changes",
+        "selector": "0x6a6b4a70",
+        "mutates": false,
+        "payable": false,
+        "args": [],
+        "returnType": {
+          "type": 61,
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ]
+        },
+        "docs": [
+          " Get tokens with pending tier changes"
         ],
         "default": false
       },
@@ -1607,7 +3645,7 @@
         "payable": false,
         "args": [],
         "returnType": {
-          "type": 32,
+          "type": 64,
           "displayName": [
             "ink",
             "MessageResult"
@@ -1625,7 +3663,7 @@
         "payable": false,
         "args": [],
         "returnType": {
-          "type": 33,
+          "type": 65,
           "displayName": [
             "ink",
             "MessageResult"
@@ -1653,7 +3691,7 @@
           }
         ],
         "returnType": {
-          "type": 26,
+          "type": 35,
           "displayName": [
             "ink",
             "MessageResult"
@@ -1681,14 +3719,14 @@
           }
         ],
         "returnType": {
-          "type": 34,
+          "type": 66,
           "displayName": [
             "ink",
             "MessageResult"
           ]
         },
         "docs": [
-          " Get basic token data without oracle calls"
+          " Get basic token data without oracle calls (backward compatibility)"
         ],
         "default": false
       },
@@ -1709,7 +3747,7 @@
           }
         ],
         "returnType": {
-          "type": 36,
+          "type": 69,
           "displayName": [
             "ink",
             "MessageResult"
@@ -1725,7 +3763,7 @@
       {
         "label": "TokenAdded",
         "module_path": "registry::registry",
-        "signature_topic": "0x9944b3f8fc4ed5f29562b3360554c433884be77858aad348ec1c1a34113d2d3f",
+        "signature_topic": "0x879b84c69371b1cbca1aaf626b9a5bae70d65551412eec2049b189791fce3f35",
         "args": [
           {
             "label": "token_id",
@@ -1761,6 +3799,17 @@
             "docs": []
           },
           {
+            "label": "initial_tier",
+            "indexed": false,
+            "type": {
+              "type": 8,
+              "displayName": [
+                "Tier"
+              ]
+            },
+            "docs": []
+          },
+          {
             "label": "added_by",
             "indexed": false,
             "type": {
@@ -1777,7 +3826,7 @@
       {
         "label": "TokenUpdated",
         "module_path": "registry::registry",
-        "signature_topic": "0xa09bc17ded368581e008f40f8951270f07eeb36c3d5b9af68bdfbd64688863fd",
+        "signature_topic": "0x3278daa81e270ed3f60e05cd3d5bb3d06cac374cefa6083ce3151c2f61ebf65a",
         "args": [
           {
             "label": "token_id",
@@ -1813,12 +3862,23 @@
             "docs": []
           },
           {
-            "label": "tier",
+            "label": "old_tier",
             "indexed": false,
             "type": {
-              "type": 4,
+              "type": 8,
               "displayName": [
-                "u32"
+                "Tier"
+              ]
+            },
+            "docs": []
+          },
+          {
+            "label": "new_tier",
+            "indexed": false,
+            "type": {
+              "type": 8,
+              "displayName": [
+                "Tier"
               ]
             },
             "docs": []
@@ -1840,7 +3900,7 @@
       {
         "label": "TokenRemoved",
         "module_path": "registry::registry",
-        "signature_topic": "0x3c36aaf9d02ef8cf29c9e88caa03477015774640e4dfd5e87cdc264da8ccec84",
+        "signature_topic": "0x44a809cade9556001bbf35364352a4727ef39e954371f7997125c6f92c9a8aed",
         "args": [
           {
             "label": "token_id",
@@ -1865,12 +3925,412 @@
             "docs": []
           },
           {
+            "label": "tier",
+            "indexed": false,
+            "type": {
+              "type": 8,
+              "displayName": [
+                "Tier"
+              ]
+            },
+            "docs": []
+          },
+          {
             "label": "removed_by",
             "indexed": false,
             "type": {
               "type": 0,
               "displayName": [
                 "AccountId"
+              ]
+            },
+            "docs": []
+          }
+        ],
+        "docs": []
+      },
+      {
+        "label": "TokenTierChanged",
+        "module_path": "registry::registry",
+        "signature_topic": "0xff5e2438cebd75db169012d0888fb798184d0b8d4662e4c7a01b8d00539ce604",
+        "args": [
+          {
+            "label": "token_id",
+            "indexed": true,
+            "type": {
+              "type": 4,
+              "displayName": [
+                "u32"
+              ]
+            },
+            "docs": []
+          },
+          {
+            "label": "token_contract",
+            "indexed": true,
+            "type": {
+              "type": 0,
+              "displayName": [
+                "AccountId"
+              ]
+            },
+            "docs": []
+          },
+          {
+            "label": "old_tier",
+            "indexed": false,
+            "type": {
+              "type": 8,
+              "displayName": [
+                "Tier"
+              ]
+            },
+            "docs": []
+          },
+          {
+            "label": "new_tier",
+            "indexed": false,
+            "type": {
+              "type": 8,
+              "displayName": [
+                "Tier"
+              ]
+            },
+            "docs": []
+          },
+          {
+            "label": "market_cap",
+            "indexed": false,
+            "type": {
+              "type": 3,
+              "displayName": [
+                "u128"
+              ]
+            },
+            "docs": []
+          },
+          {
+            "label": "volume",
+            "indexed": false,
+            "type": {
+              "type": 3,
+              "displayName": [
+                "u128"
+              ]
+            },
+            "docs": []
+          },
+          {
+            "label": "reason",
+            "indexed": false,
+            "type": {
+              "type": 40,
+              "displayName": [
+                "String"
+              ]
+            },
+            "docs": []
+          }
+        ],
+        "docs": []
+      },
+      {
+        "label": "ActiveTierShifted",
+        "module_path": "registry::registry",
+        "signature_topic": "0x2ac413bb0739072cb11c004ec3c71c4bbbee2ac040877b0e3010a28056c4b73b",
+        "args": [
+          {
+            "label": "old_tier",
+            "indexed": false,
+            "type": {
+              "type": 8,
+              "displayName": [
+                "Tier"
+              ]
+            },
+            "docs": []
+          },
+          {
+            "label": "new_tier",
+            "indexed": false,
+            "type": {
+              "type": 8,
+              "displayName": [
+                "Tier"
+              ]
+            },
+            "docs": []
+          },
+          {
+            "label": "trigger_reason",
+            "indexed": false,
+            "type": {
+              "type": 40,
+              "displayName": [
+                "String"
+              ]
+            },
+            "docs": []
+          },
+          {
+            "label": "timestamp",
+            "indexed": false,
+            "type": {
+              "type": 5,
+              "displayName": [
+                "u64"
+              ]
+            },
+            "docs": []
+          },
+          {
+            "label": "tokens_qualifying",
+            "indexed": false,
+            "type": {
+              "type": 4,
+              "displayName": [
+                "u32"
+              ]
+            },
+            "docs": []
+          },
+          {
+            "label": "total_tokens",
+            "indexed": false,
+            "type": {
+              "type": 4,
+              "displayName": [
+                "u32"
+              ]
+            },
+            "docs": []
+          }
+        ],
+        "docs": []
+      },
+      {
+        "label": "TierThresholdsUpdated",
+        "module_path": "registry::registry",
+        "signature_topic": "0x3f2630d2943d2d6f58f5a0d0f308a6a6a23f40e22cb9f27ec3d94928371bc009",
+        "args": [
+          {
+            "label": "updated_by",
+            "indexed": false,
+            "type": {
+              "type": 0,
+              "displayName": [
+                "AccountId"
+              ]
+            },
+            "docs": []
+          },
+          {
+            "label": "timestamp",
+            "indexed": false,
+            "type": {
+              "type": 5,
+              "displayName": [
+                "u64"
+              ]
+            },
+            "docs": []
+          },
+          {
+            "label": "new_usd_rate",
+            "indexed": false,
+            "type": {
+              "type": 3,
+              "displayName": [
+                "u128"
+              ]
+            },
+            "docs": []
+          }
+        ],
+        "docs": []
+      },
+      {
+        "label": "GracePeriodStarted",
+        "module_path": "registry::registry",
+        "signature_topic": "0x2d20004d99b063a83344cef2a0fa58b94b8ecf9f3aa2a257cbb8a16e790ebc12",
+        "args": [
+          {
+            "label": "token_id",
+            "indexed": true,
+            "type": {
+              "type": 4,
+              "displayName": [
+                "u32"
+              ]
+            },
+            "docs": []
+          },
+          {
+            "label": "current_tier",
+            "indexed": false,
+            "type": {
+              "type": 8,
+              "displayName": [
+                "Tier"
+              ]
+            },
+            "docs": []
+          },
+          {
+            "label": "pending_tier",
+            "indexed": false,
+            "type": {
+              "type": 8,
+              "displayName": [
+                "Tier"
+              ]
+            },
+            "docs": []
+          },
+          {
+            "label": "grace_end_time",
+            "indexed": false,
+            "type": {
+              "type": 5,
+              "displayName": [
+                "u64"
+              ]
+            },
+            "docs": []
+          }
+        ],
+        "docs": []
+      },
+      {
+        "label": "GracePeriodUpdated",
+        "module_path": "registry::registry",
+        "signature_topic": "0x7591530cd4bb05adc3d9c00be16b485cc1d812c480264847b2e57b44fa3e2d6e",
+        "args": [
+          {
+            "label": "old_period_ms",
+            "indexed": false,
+            "type": {
+              "type": 5,
+              "displayName": [
+                "u64"
+              ]
+            },
+            "docs": []
+          },
+          {
+            "label": "new_period_ms",
+            "indexed": false,
+            "type": {
+              "type": 5,
+              "displayName": [
+                "u64"
+              ]
+            },
+            "docs": []
+          },
+          {
+            "label": "updated_by",
+            "indexed": false,
+            "type": {
+              "type": 0,
+              "displayName": [
+                "AccountId"
+              ]
+            },
+            "docs": []
+          },
+          {
+            "label": "timestamp",
+            "indexed": false,
+            "type": {
+              "type": 5,
+              "displayName": [
+                "u64"
+              ]
+            },
+            "docs": []
+          }
+        ],
+        "docs": []
+      },
+      {
+        "label": "EmergencyTierOverride",
+        "module_path": "registry::registry",
+        "signature_topic": "0x11fee6352788521f84a758237ad7e7064e413ae5d56b7087eacba0a8e3a3a8f2",
+        "args": [
+          {
+            "label": "token_id",
+            "indexed": true,
+            "type": {
+              "type": 4,
+              "displayName": [
+                "u32"
+              ]
+            },
+            "docs": []
+          },
+          {
+            "label": "token_contract",
+            "indexed": true,
+            "type": {
+              "type": 0,
+              "displayName": [
+                "AccountId"
+              ]
+            },
+            "docs": []
+          },
+          {
+            "label": "old_tier",
+            "indexed": false,
+            "type": {
+              "type": 8,
+              "displayName": [
+                "Tier"
+              ]
+            },
+            "docs": []
+          },
+          {
+            "label": "new_tier",
+            "indexed": false,
+            "type": {
+              "type": 8,
+              "displayName": [
+                "Tier"
+              ]
+            },
+            "docs": []
+          },
+          {
+            "label": "overridden_by",
+            "indexed": false,
+            "type": {
+              "type": 0,
+              "displayName": [
+                "AccountId"
+              ]
+            },
+            "docs": []
+          },
+          {
+            "label": "timestamp",
+            "indexed": false,
+            "type": {
+              "type": 5,
+              "displayName": [
+                "u64"
+              ]
+            },
+            "docs": []
+          },
+          {
+            "label": "reason",
+            "indexed": false,
+            "type": {
+              "type": 40,
+              "displayName": [
+                "String"
               ]
             },
             "docs": []
@@ -1887,7 +4347,7 @@
             "label": "role",
             "indexed": true,
             "type": {
-              "type": 17,
+              "type": 21,
               "displayName": [
                 "Role"
               ]
@@ -1928,7 +4388,7 @@
             "label": "role",
             "indexed": true,
             "type": {
-              "type": 17,
+              "type": 21,
               "displayName": [
                 "Role"
               ]
@@ -1969,7 +4429,7 @@
             "label": "operation",
             "indexed": false,
             "type": {
-              "type": 38,
+              "type": 40,
               "displayName": [
                 "String"
               ]
@@ -1980,7 +4440,7 @@
             "label": "error",
             "indexed": false,
             "type": {
-              "type": 25,
+              "type": 34,
               "displayName": [
                 "Error"
               ]
@@ -2004,7 +4464,7 @@
     ],
     "docs": [],
     "lang_error": {
-      "type": 22,
+      "type": 31,
       "displayName": [
         "ink",
         "LangError"
@@ -2024,13 +4484,13 @@
         ]
       },
       "hash": {
-        "type": 39,
+        "type": 71,
         "displayName": [
           "Hash"
         ]
       },
       "timestamp": {
-        "type": 40,
+        "type": 5,
         "displayName": [
           "Timestamp"
         ]
@@ -2042,7 +4502,7 @@
         ]
       },
       "chainExtension": {
-        "type": 41,
+        "type": 72,
         "displayName": [
           "ChainExtension"
         ]

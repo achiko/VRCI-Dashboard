@@ -13,6 +13,9 @@ import type {
   SharedRole,
   SharedError,
   InkPrimitivesLangError,
+  RegistryTier,
+  RegistryTierThresholds,
+  RegistryEnhancedTokenData,
   SharedEnrichedTokenData,
   SharedTokenData,
 } from "./types.js";
@@ -86,7 +89,7 @@ export interface ContractQuery<ChainApi extends GenericSubstrateApi>
   >;
 
   /**
-   * Add a new token to the registry
+   * Add a new token to the registry with automatic tier calculation
    *
    * @param {AccountId32Like} tokenContract
    * @param {AccountId32Like} oracleContract
@@ -109,12 +112,11 @@ export interface ContractQuery<ChainApi extends GenericSubstrateApi>
   >;
 
   /**
-   * Update token balance and investment data
+   * Update token balance and investment data with automatic tier recalculation
    *
    * @param {number} tokenId
    * @param {bigint} balance
    * @param {number} weightInvestment
-   * @param {number} tier
    * @param {ContractCallOptions} options
    *
    * @selector 0x90c3ef3a
@@ -125,7 +127,6 @@ export interface ContractQuery<ChainApi extends GenericSubstrateApi>
       tokenId: number,
       balance: bigint,
       weightInvestment: number,
-      tier: number,
       options?: ContractCallOptions,
     ) => Promise<
       GenericContractCallResult<
@@ -157,7 +158,517 @@ export interface ContractQuery<ChainApi extends GenericSubstrateApi>
   >;
 
   /**
-   * Get token data with live oracle prices
+   * Calculate tier for a token based on market cap and volume
+   *
+   * @param {number} tokenId
+   * @param {ContractCallOptions} options
+   *
+   * @selector 0xa755bec5
+   **/
+  calculateTokenTier: GenericContractQueryCall<
+    ChainApi,
+    (
+      tokenId: number,
+      options?: ContractCallOptions,
+    ) => Promise<
+      GenericContractCallResult<
+        Result<RegistryTier, SharedError>,
+        ContractCallResult<ChainApi>
+      >
+    >
+  >;
+
+  /**
+   * Manually update tier for a specific token (owner only)
+   *
+   * @param {number} tokenId
+   * @param {ContractCallOptions} options
+   *
+   * @selector 0xb11eb1ae
+   **/
+  updateTokenTier: GenericContractQueryCall<
+    ChainApi,
+    (
+      tokenId: number,
+      options?: ContractCallOptions,
+    ) => Promise<
+      GenericContractCallResult<
+        Result<RegistryTier, SharedError>,
+        ContractCallResult<ChainApi>
+      >
+    >
+  >;
+
+  /**
+   * Emergency tier override - bypasses grace period (owner only)
+   *
+   * @param {number} tokenId
+   * @param {RegistryTier} newTier
+   * @param {string} reason
+   * @param {ContractCallOptions} options
+   *
+   * @selector 0xe67d97ff
+   **/
+  emergencyTierOverride: GenericContractQueryCall<
+    ChainApi,
+    (
+      tokenId: number,
+      newTier: RegistryTier,
+      reason: string,
+      options?: ContractCallOptions,
+    ) => Promise<
+      GenericContractCallResult<
+        Result<[], SharedError>,
+        ContractCallResult<ChainApi>
+      >
+    >
+  >;
+
+  /**
+   * Emergency tier override to calculated tier - bypasses grace period (owner only)
+   *
+   * @param {number} tokenId
+   * @param {string} reason
+   * @param {ContractCallOptions} options
+   *
+   * @selector 0x5b5a3d00
+   **/
+  emergencyTierOverrideToCalculated: GenericContractQueryCall<
+    ChainApi,
+    (
+      tokenId: number,
+      reason: string,
+      options?: ContractCallOptions,
+    ) => Promise<
+      GenericContractCallResult<
+        Result<RegistryTier, SharedError>,
+        ContractCallResult<ChainApi>
+      >
+    >
+  >;
+
+  /**
+   * Clear pending tier change (owner only)
+   *
+   * @param {number} tokenId
+   * @param {ContractCallOptions} options
+   *
+   * @selector 0x53bba34a
+   **/
+  clearPendingTierChange: GenericContractQueryCall<
+    ChainApi,
+    (
+      tokenId: number,
+      options?: ContractCallOptions,
+    ) => Promise<
+      GenericContractCallResult<
+        Result<[], SharedError>,
+        ContractCallResult<ChainApi>
+      >
+    >
+  >;
+
+  /**
+   * Set grace period duration (owner only)
+   *
+   * @param {bigint} periodMs
+   * @param {ContractCallOptions} options
+   *
+   * @selector 0x86200a8b
+   **/
+  setGracePeriod: GenericContractQueryCall<
+    ChainApi,
+    (
+      periodMs: bigint,
+      options?: ContractCallOptions,
+    ) => Promise<
+      GenericContractCallResult<
+        Result<[], SharedError>,
+        ContractCallResult<ChainApi>
+      >
+    >
+  >;
+
+  /**
+   * Get current grace period duration in milliseconds
+   *
+   * @param {ContractCallOptions} options
+   *
+   * @selector 0x8ec39146
+   **/
+  getGracePeriod: GenericContractQueryCall<
+    ChainApi,
+    (
+      options?: ContractCallOptions,
+    ) => Promise<
+      GenericContractCallResult<bigint, ContractCallResult<ChainApi>>
+    >
+  >;
+
+  /**
+   * Get grace period duration in days (for convenience)
+   *
+   * @param {ContractCallOptions} options
+   *
+   * @selector 0xae9bc01a
+   **/
+  getGracePeriodDays: GenericContractQueryCall<
+    ChainApi,
+    (
+      options?: ContractCallOptions,
+    ) => Promise<
+      GenericContractCallResult<bigint, ContractCallResult<ChainApi>>
+    >
+  >;
+
+  /**
+   * Get grace period duration in hours (for convenience)
+   *
+   * @param {ContractCallOptions} options
+   *
+   * @selector 0x7dc7dbbe
+   **/
+  getGracePeriodHours: GenericContractQueryCall<
+    ChainApi,
+    (
+      options?: ContractCallOptions,
+    ) => Promise<
+      GenericContractCallResult<bigint, ContractCallResult<ChainApi>>
+    >
+  >;
+
+  /**
+   * Get grace period limits (min/max allowed)
+   *
+   * @param {ContractCallOptions} options
+   *
+   * @selector 0x22f73d30
+   **/
+  getGracePeriodLimits: GenericContractQueryCall<
+    ChainApi,
+    (
+      options?: ContractCallOptions,
+    ) => Promise<
+      GenericContractCallResult<[bigint, bigint], ContractCallResult<ChainApi>>
+    >
+  >;
+
+  /**
+   * Calculate grace period end time for a token
+   *
+   * @param {number} tokenId
+   * @param {ContractCallOptions} options
+   *
+   * @selector 0x8eee05ca
+   **/
+  getGracePeriodEndTime: GenericContractQueryCall<
+    ChainApi,
+    (
+      tokenId: number,
+      options?: ContractCallOptions,
+    ) => Promise<
+      GenericContractCallResult<
+        bigint | undefined,
+        ContractCallResult<ChainApi>
+      >
+    >
+  >;
+
+  /**
+   * Check how much time is left in grace period for a token
+   *
+   * @param {number} tokenId
+   * @param {ContractCallOptions} options
+   *
+   * @selector 0x2645f97f
+   **/
+  getGracePeriodRemaining: GenericContractQueryCall<
+    ChainApi,
+    (
+      tokenId: number,
+      options?: ContractCallOptions,
+    ) => Promise<
+      GenericContractCallResult<
+        bigint | undefined,
+        ContractCallResult<ChainApi>
+      >
+    >
+  >;
+
+  /**
+   * Check if grace period has expired for a token
+   *
+   * @param {number} tokenId
+   * @param {ContractCallOptions} options
+   *
+   * @selector 0x2f44c657
+   **/
+  isGracePeriodExpired: GenericContractQueryCall<
+    ChainApi,
+    (
+      tokenId: number,
+      options?: ContractCallOptions,
+    ) => Promise<
+      GenericContractCallResult<boolean, ContractCallResult<ChainApi>>
+    >
+  >;
+
+  /**
+   * Batch update tiers for all tokens (gas-intensive)
+   *
+   * @param {ContractCallOptions} options
+   *
+   * @selector 0x8646ff68
+   **/
+  refreshAllTiers: GenericContractQueryCall<
+    ChainApi,
+    (
+      options?: ContractCallOptions,
+    ) => Promise<
+      GenericContractCallResult<
+        Result<number, SharedError>,
+        ContractCallResult<ChainApi>
+      >
+    >
+  >;
+
+  /**
+   * Process tokens with expired grace periods (updated to use dynamic grace period)
+   *
+   * @param {ContractCallOptions} options
+   *
+   * @selector 0x39150c26
+   **/
+  processGracePeriods: GenericContractQueryCall<
+    ChainApi,
+    (
+      options?: ContractCallOptions,
+    ) => Promise<
+      GenericContractCallResult<
+        Result<number, SharedError>,
+        ContractCallResult<ChainApi>
+      >
+    >
+  >;
+
+  /**
+   * Get current distribution of tokens across tiers
+   *
+   * @param {ContractCallOptions} options
+   *
+   * @selector 0xdf68aa7e
+   **/
+  getTierDistribution: GenericContractQueryCall<
+    ChainApi,
+    (
+      options?: ContractCallOptions,
+    ) => Promise<
+      GenericContractCallResult<
+        Array<[RegistryTier, number]>,
+        ContractCallResult<ChainApi>
+      >
+    >
+  >;
+
+  /**
+   * Check if 80% rule should trigger tier shift
+   *
+   * @param {ContractCallOptions} options
+   *
+   * @selector 0xda628aff
+   **/
+  shouldShiftTier: GenericContractQueryCall<
+    ChainApi,
+    (
+      options?: ContractCallOptions,
+    ) => Promise<
+      GenericContractCallResult<
+        RegistryTier | undefined,
+        ContractCallResult<ChainApi>
+      >
+    >
+  >;
+
+  /**
+   * Execute tier shift (automatic or manual)
+   *
+   * @param {RegistryTier} newTier
+   * @param {string} reason
+   * @param {ContractCallOptions} options
+   *
+   * @selector 0x71f99599
+   **/
+  shiftActiveTier: GenericContractQueryCall<
+    ChainApi,
+    (
+      newTier: RegistryTier,
+      reason: string,
+      options?: ContractCallOptions,
+    ) => Promise<
+      GenericContractCallResult<
+        Result<[], SharedError>,
+        ContractCallResult<ChainApi>
+      >
+    >
+  >;
+
+  /**
+   * Set DOT/USD oracle contract (owner only)
+   *
+   * @param {AccountId32Like} oracleContract
+   * @param {ContractCallOptions} options
+   *
+   * @selector 0x819b20a3
+   **/
+  setDotUsdOracle: GenericContractQueryCall<
+    ChainApi,
+    (
+      oracleContract: AccountId32Like,
+      options?: ContractCallOptions,
+    ) => Promise<
+      GenericContractCallResult<
+        Result<[], SharedError>,
+        ContractCallResult<ChainApi>
+      >
+    >
+  >;
+
+  /**
+   * Get current DOT/USD oracle contract
+   *
+   * @param {ContractCallOptions} options
+   *
+   * @selector 0x14ae30fd
+   **/
+  getDotUsdOracle: GenericContractQueryCall<
+    ChainApi,
+    (
+      options?: ContractCallOptions,
+    ) => Promise<
+      GenericContractCallResult<
+        AccountId32 | undefined,
+        ContractCallResult<ChainApi>
+      >
+    >
+  >;
+
+  /**
+   * Update tier thresholds in USD (owner only)
+   *
+   * @param {RegistryTierThresholds} thresholds
+   * @param {ContractCallOptions} options
+   *
+   * @selector 0xe2d49881
+   **/
+  setTierThresholds: GenericContractQueryCall<
+    ChainApi,
+    (
+      thresholds: RegistryTierThresholds,
+      options?: ContractCallOptions,
+    ) => Promise<
+      GenericContractCallResult<
+        Result<[], SharedError>,
+        ContractCallResult<ChainApi>
+      >
+    >
+  >;
+
+  /**
+   * Get current tier thresholds
+   *
+   * @param {ContractCallOptions} options
+   *
+   * @selector 0x19a4c86d
+   **/
+  getTierThresholds: GenericContractQueryCall<
+    ChainApi,
+    (
+      options?: ContractCallOptions,
+    ) => Promise<
+      GenericContractCallResult<
+        RegistryTierThresholds,
+        ContractCallResult<ChainApi>
+      >
+    >
+  >;
+
+  /**
+   * Get current active tier
+   *
+   * @param {ContractCallOptions} options
+   *
+   * @selector 0x700681c2
+   **/
+  getActiveTier: GenericContractQueryCall<
+    ChainApi,
+    (
+      options?: ContractCallOptions,
+    ) => Promise<
+      GenericContractCallResult<RegistryTier, ContractCallResult<ChainApi>>
+    >
+  >;
+
+  /**
+   * Get last tier change timestamp
+   *
+   * @param {ContractCallOptions} options
+   *
+   * @selector 0xd930ef30
+   **/
+  getLastTierChange: GenericContractQueryCall<
+    ChainApi,
+    (
+      options?: ContractCallOptions,
+    ) => Promise<
+      GenericContractCallResult<
+        bigint | undefined,
+        ContractCallResult<ChainApi>
+      >
+    >
+  >;
+
+  /**
+   * Get current USD to plancks conversion rate from oracle
+   *
+   * @param {ContractCallOptions} options
+   *
+   * @selector 0x80c4ad2d
+   **/
+  getCurrentUsdRate: GenericContractQueryCall<
+    ChainApi,
+    (
+      options?: ContractCallOptions,
+    ) => Promise<
+      GenericContractCallResult<
+        bigint | undefined,
+        ContractCallResult<ChainApi>
+      >
+    >
+  >;
+
+  /**
+   * Get enhanced token data with tier information
+   *
+   * @param {number} tokenId
+   * @param {ContractCallOptions} options
+   *
+   * @selector 0x6c09403c
+   **/
+  getEnhancedTokenData: GenericContractQueryCall<
+    ChainApi,
+    (
+      tokenId: number,
+      options?: ContractCallOptions,
+    ) => Promise<
+      GenericContractCallResult<
+        Result<RegistryEnhancedTokenData, SharedError>,
+        ContractCallResult<ChainApi>
+      >
+    >
+  >;
+
+  /**
+   * Get token data with live oracle prices (backward compatibility)
    *
    * @param {number} tokenId
    * @param {ContractCallOptions} options
@@ -172,6 +683,43 @@ export interface ContractQuery<ChainApi extends GenericSubstrateApi>
     ) => Promise<
       GenericContractCallResult<
         Result<SharedEnrichedTokenData, SharedError>,
+        ContractCallResult<ChainApi>
+      >
+    >
+  >;
+
+  /**
+   * Get tokens by tier
+   *
+   * @param {RegistryTier} tier
+   * @param {ContractCallOptions} options
+   *
+   * @selector 0xa50575b0
+   **/
+  getTokensByTier: GenericContractQueryCall<
+    ChainApi,
+    (
+      tier: RegistryTier,
+      options?: ContractCallOptions,
+    ) => Promise<
+      GenericContractCallResult<Array<number>, ContractCallResult<ChainApi>>
+    >
+  >;
+
+  /**
+   * Get tokens with pending tier changes
+   *
+   * @param {ContractCallOptions} options
+   *
+   * @selector 0x6a6b4a70
+   **/
+  getTokensWithPendingChanges: GenericContractQueryCall<
+    ChainApi,
+    (
+      options?: ContractCallOptions,
+    ) => Promise<
+      GenericContractCallResult<
+        Array<[number, RegistryTier, RegistryTier, bigint]>,
         ContractCallResult<ChainApi>
       >
     >
@@ -228,7 +776,7 @@ export interface ContractQuery<ChainApi extends GenericSubstrateApi>
   >;
 
   /**
-   * Get basic token data without oracle calls
+   * Get basic token data without oracle calls (backward compatibility)
    *
    * @param {number} tokenId
    * @param {ContractCallOptions} options

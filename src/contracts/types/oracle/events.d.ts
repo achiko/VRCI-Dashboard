@@ -173,4 +173,62 @@ export interface ContractEvents<ChainApi extends GenericSubstrateApi>
       minUpdateInterval: bigint;
     }
   >;
+
+  /**
+   *
+   * @signature_topic: 0xb45a4b42edaae14316ff2209a2f245cd6920643232f49165646f4fe6a7f2d487
+   **/
+  DotUsdPriceUpdated: GenericContractEvent<
+    "DotUsdPriceUpdated",
+    {
+      /**
+       * USD price in scaled format (e.g., 6.50 USD = 6_500_000_000 with 9 decimals)
+       *
+       * @indexed: false
+       **/
+      usdPrice: bigint;
+      /**
+       * Timestamp of the update
+       *
+       * @indexed: false
+       **/
+      timestamp: bigint;
+      /**
+       * Account that updated the price
+       *
+       * @indexed: false
+       **/
+      updatedBy: AccountId32;
+    }
+  >;
+
+  /**
+   *
+   * @signature_topic: 0x0fedeed03009016b3bfb5c142e9998dc515844915e44affc89829bf37e7d1c1d
+   **/
+  DotPriceValidationFailed: GenericContractEvent<
+    "DotPriceValidationFailed",
+    {
+      /**
+       *
+       * @indexed: false
+       **/
+      reason: string;
+      /**
+       *
+       * @indexed: false
+       **/
+      attemptedPrice: bigint;
+      /**
+       *
+       * @indexed: false
+       **/
+      currentPrice: bigint;
+      /**
+       *
+       * @indexed: false
+       **/
+      timestamp: bigint;
+    }
+  >;
 }

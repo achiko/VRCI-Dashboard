@@ -13,6 +13,38 @@ import type { OracleValidationConfig } from "./types.js";
 export interface ContractTx<ChainApi extends GenericSubstrateApi>
   extends GenericContractTx<ChainApi> {
   /**
+   * Update DOT price in USD (for registry tier calculations)
+   *
+   * @param {bigint} usdPrice
+   * @param {ContractTxOptions} options
+   *
+   * @selector 0x942bcd32
+   **/
+  updateDotUsdPrice: GenericContractTxCall<
+    ChainApi,
+    (
+      usdPrice: bigint,
+      options: ContractTxOptions,
+    ) => ContractSubmittableExtrinsic<ChainApi>
+  >;
+
+  /**
+   * Emergency DOT price override (owner only)
+   *
+   * @param {bigint} usdPrice
+   * @param {ContractTxOptions} options
+   *
+   * @selector 0x4d69f2a9
+   **/
+  emergencyDotPriceOverride: GenericContractTxCall<
+    ChainApi,
+    (
+      usdPrice: bigint,
+      options: ContractTxOptions,
+    ) => ContractSubmittableExtrinsic<ChainApi>
+  >;
+
+  /**
    * Update complete token data with validation
    *
    * @param {AccountId32Like} token

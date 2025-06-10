@@ -128,7 +128,7 @@ export function WalletConnector() {
                 {process.env.NODE_ENV === 'development' && (
                     <div className="absolute top-full left-0 mt-2 p-2 bg-yellow-100 border rounded text-xs">
                         <div>Signer: {signer ? '✅' : '❌'}</div>
-                        <div>Account: {connectedAccount ? '✅' : '❌'}</div>
+                        <div suppressHydrationWarning>Account: {connectedAccount ? '✅' : '❌'}</div>
                         <div>Accounts: {accounts?.length || 0}</div>
                         <div>Connecting: {isConnecting ? '⏳' : '✅'}</div>
                     </div>

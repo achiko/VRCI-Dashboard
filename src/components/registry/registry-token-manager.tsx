@@ -4,8 +4,7 @@
 
 import { useState } from 'react';
 import { useContract, useContractTx } from 'typink';
-import { ContractId } from '@/contracts/deployments';
-import type { RegistryContractApi } from '@/contracts/types/registry';
+import type { RegistryContractApi } from '@/lib/contracts/registry';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -18,7 +17,7 @@ interface ManagementState {
 }
 
 export function RegistryTokenManager() {
-    const { contract: registryContract } = useContract<RegistryContractApi>(ContractId.REGISTRY);
+    const { contract: registryContract } = useContract<RegistryContractApi>('registry');
 
     // Form states
     const [tokenContract, setTokenContract] = useState<string>('');
@@ -86,7 +85,7 @@ export function RegistryTokenManager() {
 
         try {
             await addTokenTx.signAndSend({
-                args: [tokenContract.trim(), oracleContract.trim()],
+                args: [tokenContract.trim() as `0x${string}`, oracleContract.trim() as `0x${string}`],
                 callback: (progress) => {
                     if (progress.status.type === 'BestChainBlockIncluded') {
                         if (progress.dispatchError) {

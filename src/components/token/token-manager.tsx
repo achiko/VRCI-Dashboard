@@ -4,8 +4,7 @@
 
 import { useState } from 'react';
 import { useContract, useContractTx } from 'typink';
-import { ContractId } from '@/contracts/deployments';
-import type { TokenContractApi } from '@/contracts/types/token';
+import type { TokenContractApi } from '@/lib/contracts/token';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -18,7 +17,7 @@ interface ManagementState {
 }
 
 export function TokenManager() {
-    const { contract: tokenContract } = useContract<TokenContractApi>(ContractId.TOKEN);
+    const { contract: tokenContract } = useContract<TokenContractApi>('token');
 
     // Form states
     const [recipient, setRecipient] = useState<string>('');
@@ -92,7 +91,7 @@ export function TokenManager() {
 
         try {
             await transferTx.signAndSend({
-                args: [recipient.trim(), amountInTokens, new Uint8Array(0)],
+                args: [recipient.trim() as `0x${string}`, amountInTokens, new Uint8Array(0)],
                 callback: (progress) => {
                     if (progress.status.type === 'BestChainBlockIncluded') {
                         if (progress.dispatchError) {
@@ -151,7 +150,7 @@ export function TokenManager() {
 
         try {
             await approveTx.signAndSend({
-                args: [spender.trim(), amountInTokens],
+                args: [spender.trim() as `0x${string}`, amountInTokens],
                 callback: (progress) => {
                     if (progress.status.type === 'BestChainBlockIncluded') {
                         if (progress.dispatchError) {
@@ -213,7 +212,7 @@ export function TokenManager() {
         try {
             if (mintRecipient.trim()) {
                 await mintToTx.signAndSend({
-                    args: [mintRecipient.trim(), amountInTokens],
+                    args: [mintRecipient.trim() as `0x${string}`, amountInTokens],
                     callback: (progress) => {
                         if (progress.status.type === 'BestChainBlockIncluded') {
                             if (progress.dispatchError) {
@@ -298,7 +297,7 @@ export function TokenManager() {
         try {
             if (burnTarget.trim()) {
                 await burnFromTx.signAndSend({
-                    args: [burnTarget.trim(), amountInTokens],
+                    args: [burnTarget.trim() as `0x${string}`, amountInTokens],
                     callback: (progress) => {
                         if (progress.status.type === 'BestChainBlockIncluded') {
                             if (progress.dispatchError) {

@@ -4,8 +4,7 @@
 
 import { useState } from 'react';
 import { useContract } from 'typink';
-import { ContractId } from '@/contracts/deployments';
-import type { RegistryContractApi } from '@/contracts/types/registry';
+import type { RegistryContractApi } from '@/lib/contracts/registry';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -18,7 +17,7 @@ interface QueryState {
 }
 
 export function RegistryTokenViewer() {
-    const { contract: registryContract } = useContract<RegistryContractApi>(ContractId.REGISTRY);
+    const { contract: registryContract } = useContract<RegistryContractApi>('registry');
     const [tokenId, setTokenId] = useState<string>('');
     const [contractAddress, setContractAddress] = useState<string>('');
     const [queryType, setQueryType] = useState<'enriched' | 'basic' | 'count' | 'exists' | 'byContract'>('enriched');
@@ -256,7 +255,7 @@ export function RegistryTokenViewer() {
         setQueryState({ type: 'pending', message: 'Searching for token by contract address...' });
 
         try {
-            const result = await registryContract.query.getTokenIdByContract(contractAddress.trim());
+            const result = await registryContract.query.getTokenIdByContract(contractAddress.trim() as `0x${string}`);
             const tokenId = result.data;
 
             if (tokenId !== null && tokenId !== undefined) {

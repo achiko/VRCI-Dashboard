@@ -4,8 +4,7 @@
 
 import { useState, useEffect } from 'react';
 import { useContract, useContractTx } from 'typink';
-import { ContractId } from '@/contracts/deployments';
-import type { RegistryContractApi } from '@/contracts/types/registry';
+import type { RegistryContractApi } from '@/lib/contracts/registry';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -33,7 +32,7 @@ interface TokenGraceStatus {
 }
 
 export function RegistryGracePeriodManager() {
-    const { contract: registryContract } = useContract<RegistryContractApi>(ContractId.REGISTRY);
+    const { contract: registryContract } = useContract<RegistryContractApi>('registry');
 
     const [gracePeriodInfo, setGracePeriodInfo] = useState<GracePeriodInfo | null>(null);
     const [tokenGraceStatuses, setTokenGraceStatuses] = useState<TokenGraceStatus[]>([]);

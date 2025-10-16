@@ -4,8 +4,7 @@
 
 import { useState, useEffect } from 'react';
 import { useContract, useContractTx } from 'typink';
-import { ContractId } from '@/contracts/deployments';
-import type { RegistryContractApi } from '@/contracts/types/registry';
+import type { RegistryContractApi } from '@/lib/contracts/registry';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { BarChart3, TrendingUp, Clock, RefreshCw, CheckCircle, XCircle, Loader2, AlertCircle } from 'lucide-react';
@@ -41,7 +40,7 @@ interface AnalyticsData {
 }
 
 export function RegistryAnalyticsViewer() {
-    const { contract: registryContract } = useContract<RegistryContractApi>(ContractId.REGISTRY);
+    const { contract: registryContract } = useContract<RegistryContractApi>('registry');
 
     const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
     const [analyticsState, setAnalyticsState] = useState<AnalyticsState>({ type: 'idle' });

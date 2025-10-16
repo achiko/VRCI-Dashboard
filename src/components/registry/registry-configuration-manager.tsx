@@ -4,8 +4,7 @@
 
 import { useState, useEffect } from 'react';
 import { useContract, useContractTx } from 'typink';
-import { ContractId } from '@/contracts/deployments';
-import type { RegistryContractApi } from '@/contracts/types/registry';
+import type { RegistryContractApi } from '@/lib/contracts/registry';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -35,7 +34,7 @@ interface ConfigData {
 }
 
 export function RegistryConfigurationManager() {
-    const { contract: registryContract } = useContract<RegistryContractApi>(ContractId.REGISTRY);
+    const { contract: registryContract } = useContract<RegistryContractApi>('registry');
 
     const [configData, setConfigData] = useState<ConfigData>({
         dotUsdOracle: null,
@@ -94,7 +93,7 @@ export function RegistryConfigurationManager() {
             }
 
             setConfigData({
-                dotUsdOracle: oracle?.address() || null,
+                dotUsdOracle: oracle || null,
                 tierThresholds: thresholds ? {
                     tier1MarketCapUsd: `$${Number(thresholds.tier1MarketCapUsd / BigInt(1_000_000)).toFixed(0)}M`,
                     tier1VolumeUsd: `$${Number(thresholds.tier1VolumeUsd / BigInt(1_000_000)).toFixed(0)}M`,
@@ -140,7 +139,7 @@ export function RegistryConfigurationManager() {
 
         try {
             await setOracleTx.signAndSend({
-                args: [newOracleAddress.trim()],
+                args: [newOracleAddress.trim() as `0x${string}`],
                 callback: (progress) => {
                     if (progress.status.type === 'BestChainBlockIncluded') {
                         if (progress.dispatchError) {

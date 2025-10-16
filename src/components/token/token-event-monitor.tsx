@@ -4,8 +4,7 @@
 
 import { useState, useCallback } from 'react';
 import { useContract, useWatchContractEvent } from 'typink';
-import { ContractId } from '@/contracts/deployments';
-import type { TokenContractApi } from '@/contracts/types/token';
+import type { TokenContractApi } from '@/lib/contracts/token';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -21,7 +20,7 @@ interface ContractEvent {
 }
 
 export function TokenEventMonitor() {
-    const { contract: tokenContract } = useContract<TokenContractApi>(ContractId.TOKEN);
+    const { contract: tokenContract } = useContract<TokenContractApi>('token');
     const [events, setEvents] = useState<ContractEvent[]>([]);
     const [isMonitoring, setIsMonitoring] = useState(true);
     const [eventCount, setEventCount] = useState(0);

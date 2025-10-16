@@ -3,8 +3,7 @@
 'use client';
 
 import { createContext, useContext, ReactNode } from 'react';
-import { ContractId } from '@/contracts/deployments';
-import { OracleContractApi } from '@/contracts/types/oracle';
+import { OracleContractApi } from '@/lib/contracts/oracle';
 import { Contract } from 'dedot/contracts';
 import { useContract } from 'typink';
 
@@ -23,7 +22,7 @@ interface Props {
 }
 
 export function AppProvider({ children }: Props) {
-  const { contract: oracleContract } = useContract<OracleContractApi>(ContractId.ORACLE);
+  const { contract: oracleContract } = useContract<OracleContractApi>('oracle');
 
   return (
     <AppContext.Provider

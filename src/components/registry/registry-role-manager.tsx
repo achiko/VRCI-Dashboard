@@ -4,8 +4,7 @@
 
 import { useState } from 'react';
 import { useContract, useContractTx } from 'typink';
-import { ContractId } from '@/contracts/deployments';
-import type { RegistryContractApi } from '@/contracts/types/registry';
+import type { RegistryContractApi } from '@/lib/contracts/registry';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -20,7 +19,7 @@ interface RoleManagementState {
 type Role = 'TokenManager' | 'TokenUpdater';
 
 export function RegistryRoleManager() {
-    const { contract: registryContract } = useContract<RegistryContractApi>(ContractId.REGISTRY);
+    const { contract: registryContract } = useContract<RegistryContractApi>('registry');
 
     // Form states
     const [selectedRole, setSelectedRole] = useState<Role>('TokenManager');
@@ -68,7 +67,7 @@ export function RegistryRoleManager() {
 
         try {
             await grantRoleTx.signAndSend({
-                args: [selectedRole, targetAccount.trim()],
+                args: [selectedRole, targetAccount.trim() as `0x${string}`],
                 callback: (progress) => {
                     if (progress.status.type === 'BestChainBlockIncluded') {
                         if (progress.dispatchError) {
@@ -147,7 +146,7 @@ export function RegistryRoleManager() {
 
         try {
             await revokeRoleTx.signAndSend({
-                args: [selectedRole, targetAccount.trim()],
+                args: [selectedRole, targetAccount.trim() as `0x${string}`],
                 callback: (progress) => {
                     if (progress.status.type === 'BestChainBlockIncluded') {
                         if (progress.dispatchError) {

@@ -4,8 +4,7 @@
 
 import { useState } from 'react';
 import { useContract, useContractTx } from 'typink';
-import { ContractId } from '@/contracts/deployments';
-import type { RegistryContractApi } from '@/contracts/types/registry';
+import type { RegistryContractApi } from '@/lib/contracts/registry';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -19,7 +18,7 @@ interface TierState {
 }
 
 export function RegistryTierManager() {
-    const { contract: registryContract } = useContract<RegistryContractApi>(ContractId.REGISTRY);
+    const { contract: registryContract } = useContract<RegistryContractApi>('registry');
 
     const [tokenId, setTokenId] = useState<string>('');
     const [tierOperation, setTierOperation] = useState<'calculate' | 'update' | 'refresh' | 'process'>('calculate');

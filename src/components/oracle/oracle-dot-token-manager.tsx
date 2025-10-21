@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { useContractQuery, useContractTx } from '@dedot/react';
-import { useWallet } from '@dedot/react-wallet';
+import { useContract } from 'typink';
+import type { OracleContractApi } from '@/lib/contracts/oracle';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,12 +10,8 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { CheckCircle, XCircle, Info } from 'lucide-react';
 
-interface OracleDotTokenManagerProps {
-  oracleContract: any;
-}
-
-export default function OracleDotTokenManager({ oracleContract }: OracleDotTokenManagerProps) {
-  const { selectedAccount } = useWallet();
+export default function OracleDotTokenManager() {
+  const { contract: oracleContract } = useContract<OracleContractApi>('oracle');
   const [tokenAddress, setTokenAddress] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<any>(null);

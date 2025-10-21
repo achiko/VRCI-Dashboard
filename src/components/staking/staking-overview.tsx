@@ -1,16 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { useContractQuery } from '@dedot/react';
+import { useContract } from 'typink';
+import type { StakingContractApi } from '@/lib/contracts/staking';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { CheckCircle, XCircle, Info, TrendingUp, Wallet, Clock, DollarSign } from 'lucide-react';
 
-interface StakingOverviewProps {
-  stakingContract: any;
-}
-
-export default function StakingOverview({ stakingContract }: StakingOverviewProps) {
+export default function StakingOverview() {
+  const { contract: stakingContract } = useContract<StakingContractApi>('staking');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

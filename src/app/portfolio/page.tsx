@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useContract } from '@dedot/react';
+import { useContract } from 'typink';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -72,27 +72,27 @@ export default function PortfolioPage() {
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
-          <PortfolioOverview portfolioContract={portfolioContract} />
+          <PortfolioOverview />
         </TabsContent>
 
         <TabsContent value="tokens" className="space-y-6">
-          <PortfolioTokenManager portfolioContract={portfolioContract} />
+          <PortfolioTokenManager />
         </TabsContent>
 
         <TabsContent value="composition" className="space-y-6">
-          <PortfolioCompositionViewer portfolioContract={portfolioContract} />
+          <PortfolioCompositionViewer />
         </TabsContent>
 
         <TabsContent value="fees" className="space-y-6">
-          <PortfolioFeeManager portfolioContract={portfolioContract} />
+          <PortfolioFeeManager />
         </TabsContent>
 
         <TabsContent value="state" className="space-y-6">
-          <PortfolioStateManager portfolioContract={portfolioContract} />
+          <PortfolioStateManager />
         </TabsContent>
 
         <TabsContent value="analytics" className="space-y-6">
-          <PortfolioAnalytics portfolioContract={portfolioContract} />
+          <PortfolioAnalytics />
         </TabsContent>
       </Tabs>
     </div>

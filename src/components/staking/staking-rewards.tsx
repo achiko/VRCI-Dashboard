@@ -1,18 +1,15 @@
 'use client';
 
 import { useState } from 'react';
-import { useContractQuery, useContractTx } from '@dedot/react';
-import { useWallet } from '@dedot/react-wallet';
+import { useContract, useContractTx } from 'typink';
+import type { StakingContractApi } from '@/lib/contracts/staking';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { CheckCircle, XCircle, DollarSign, TrendingUp } from 'lucide-react';
 
-interface StakingRewardsProps {
-  stakingContract: any;
-}
-
-export default function StakingRewards({ stakingContract }: StakingRewardsProps) {
+export default function StakingRewards() {
+  const { contract: stakingContract } = useContract<StakingContractApi>('staking');
   const { selectedAccount } = useWallet();
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<any>(null);

@@ -1,49 +1,27 @@
 'use client';
 
 import { useState } from 'react';
-import { useContractQuery } from '@dedot/react';
+import { useContract } from 'typink';
+import type { DexContractApi } from '@/lib/contracts/dex';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { CheckCircle, XCircle, Info, TrendingUp, Wallet, ArrowLeftRight } from 'lucide-react';
 
-interface DexOverviewProps {
-  dexContract: any;
-}
-
-export default function DexOverview({ dexContract }: DexOverviewProps) {
+export default function DexOverview() {
+  const { contract: dexContract } = useContract<DexContractApi>('dex');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Query hooks for DEX overview
-  const { data: totalPools, isLoading: isLoadingTotalPools } = useContractQuery(
-    dexContract,
-    'getTotalPools',
-    []
-  );
+  const [totalPools, setTotalPools] = useState<any>(null);
 
-  const { data: totalLiquidity, isLoading: isLoadingTotalLiquidity } = useContractQuery(
-    dexContract,
-    'getTotalLiquidity',
-    []
-  );
+  const [totalLiquidity, setTotalLiquidity] = useState<any>(null);
 
-  const { data: totalVolume, isLoading: isLoadingTotalVolume } = useContractQuery(
-    dexContract,
-    'getTotalVolume',
-    []
-  );
+  const [totalVolume, setTotalVolume] = useState<any>(null);
 
-  const { data: isPaused, isLoading: isLoadingPaused } = useContractQuery(
-    dexContract,
-    'isPaused',
-    []
-  );
+  const [isPaused, setIsPaused] = useState<any>(null);
 
-  const { data: feeRate, isLoading: isLoadingFeeRate } = useContractQuery(
-    dexContract,
-    'getFeeRate',
-    []
-  );
+  const [feeRate, setFeeRate] = useState<any>(null);
 
   const formatAmount = (amount: bigint) => {
     return `${(Number(amount) / 1e18).toFixed(4)}`;

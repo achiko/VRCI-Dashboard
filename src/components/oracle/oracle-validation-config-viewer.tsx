@@ -1,17 +1,15 @@
 'use client';
 
 import { useState } from 'react';
-import { useContractQuery } from '@dedot/react';
+import { useContract } from 'typink';
+import type { OracleContractApi } from '@/lib/contracts/oracle';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { CheckCircle, XCircle, Info, Settings } from 'lucide-react';
 
-interface OracleValidationConfigViewerProps {
-  oracleContract: any;
-}
-
-export default function OracleValidationConfigViewer({ oracleContract }: OracleValidationConfigViewerProps) {
+export default function OracleValidationConfigViewer() {
+  const { contract: oracleContract } = useContract<OracleContractApi>('oracle');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

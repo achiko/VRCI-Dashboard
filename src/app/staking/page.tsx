@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useContract } from '@dedot/react';
+import { useContract } from 'typink';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -67,23 +67,23 @@ export default function StakingPage() {
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
-          <StakingOverview stakingContract={stakingContract} />
+          <StakingOverview />
         </TabsContent>
 
         <TabsContent value="stake" className="space-y-6">
-          <StakingManager stakingContract={stakingContract} />
+          <StakingManager />
         </TabsContent>
 
         <TabsContent value="rewards" className="space-y-6">
-          <StakingRewards stakingContract={stakingContract} />
+          <StakingRewards />
         </TabsContent>
 
         <TabsContent value="unstake" className="space-y-6">
-          <StakingUnstaking stakingContract={stakingContract} />
+          <StakingUnstaking />
         </TabsContent>
 
         <TabsContent value="config" className="space-y-6">
-          <StakingConfiguration stakingContract={stakingContract} />
+          <StakingConfiguration />
         </TabsContent>
       </Tabs>
     </div>

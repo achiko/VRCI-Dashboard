@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { useContractQuery, useContractTx } from '@dedot/react';
-import { useWallet } from '@dedot/react-wallet';
+import { useContract, useContractTx } from 'typink';
+import type { PortfolioContractApi } from '@/lib/contracts/portfolio';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,11 +10,8 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { CheckCircle, XCircle, Plus, Minus, Wallet } from 'lucide-react';
 
-interface PortfolioTokenManagerProps {
-  portfolioContract: any;
-}
-
-export default function PortfolioTokenManager({ portfolioContract }: PortfolioTokenManagerProps) {
+export default function PortfolioTokenManager() {
+  const { contract: portfolioContract } = useContract<PortfolioContractApi>('portfolio');
   const { selectedAccount } = useWallet();
   const [tokenId, setTokenId] = useState('');
   const [amount, setAmount] = useState('');

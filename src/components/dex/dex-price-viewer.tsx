@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { useContractQuery } from '@dedot/react';
+import { useContract } from 'typink';
+import type { DexContractApi } from '@/lib/contracts/dex';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,11 +10,8 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { CheckCircle, XCircle, TrendingUp, DollarSign } from 'lucide-react';
 
-interface DexPriceViewerProps {
-  dexContract: any;
-}
-
-export default function DexPriceViewer({ dexContract }: DexPriceViewerProps) {
+export default function DexPriceViewer() {
+  const { contract: dexContract } = useContract<DexContractApi>('dex');
   const [tokenAddress, setTokenAddress] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<any>(null);

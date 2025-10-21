@@ -1,16 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { useContractQuery } from '@dedot/react';
+import { useContract } from 'typink';
+import type { PortfolioContractApi } from '@/lib/contracts/portfolio';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { CheckCircle, XCircle, TrendingUp, BarChart3 } from 'lucide-react';
 
-interface PortfolioAnalyticsProps {
-  portfolioContract: any;
-}
-
-export default function PortfolioAnalytics({ portfolioContract }: PortfolioAnalyticsProps) {
+export default function PortfolioAnalytics() {
+  const { contract: portfolioContract } = useContract<PortfolioContractApi>('portfolio');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

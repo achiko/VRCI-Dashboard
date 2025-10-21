@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { useContractQuery, useContractTx } from '@dedot/react';
-import { useWallet } from '@dedot/react-wallet';
+import { useContract, useContractTx } from 'typink';
+import type { DexContractApi } from '@/lib/contracts/dex';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,11 +10,8 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { CheckCircle, XCircle, Wallet, Plus } from 'lucide-react';
 
-interface DexPoolManagerProps {
-  dexContract: any;
-}
-
-export default function DexPoolManager({ dexContract }: DexPoolManagerProps) {
+export default function DexPoolManager() {
+  const { contract: dexContract } = useContract<DexContractApi>('dex');
   const { selectedAccount } = useWallet();
   const [tokenA, setTokenA] = useState('');
   const [tokenB, setTokenB] = useState('');

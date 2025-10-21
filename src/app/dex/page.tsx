@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useContract } from '@dedot/react';
+import { useContract } from 'typink';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -62,19 +62,19 @@ export default function DexPage() {
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
-          <DexOverview dexContract={dexContract} />
+          <DexOverview />
         </TabsContent>
 
         <TabsContent value="swap" className="space-y-6">
-          <DexSwap dexContract={dexContract} />
+          <DexSwap />
         </TabsContent>
 
         <TabsContent value="pools" className="space-y-6">
-          <DexPoolManager dexContract={dexContract} />
+          <DexPoolManager />
         </TabsContent>
 
         <TabsContent value="prices" className="space-y-6">
-          <DexPriceViewer dexContract={dexContract} />
+          <DexPriceViewer />
         </TabsContent>
       </Tabs>
     </div>

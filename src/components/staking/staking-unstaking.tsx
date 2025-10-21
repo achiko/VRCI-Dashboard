@@ -12,7 +12,6 @@ import { CheckCircle, XCircle, Clock, TrendingDown } from 'lucide-react';
 
 export default function StakingUnstaking() {
   const { contract: stakingContract } = useContract<StakingContractApi>('staking');
-  const { selectedAccount } = useWallet();
   const [amount, setAmount] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
@@ -22,18 +21,11 @@ export default function StakingUnstaking() {
   const requestUnstakeTx = useContractTx(stakingContract, 'requestUnstake');
   const claimUnstakedTx = useContractTx(stakingContract, 'claimUnstaked');
 
-  // Query hooks
-  const { data: unstakingRequests, isLoading: isLoadingUnstakingRequests } = useContractQuery(
-    stakingContract,
-    'getUnstakingRequests',
-    selectedAccount?.address ? [selectedAccount.address] : null
-  );
-
-  const { data: unstakingPeriod, isLoading: isLoadingUnstakingPeriod } = useContractQuery(
-    stakingContract,
-    'getUnstakingPeriod',
-    []
-  );
+  // State for unstaking data
+  // Note: These methods don't exist in Staking contract API
+  const [unstakingRequests, setUnstakingRequests] = useState<any>(null);
+  const [unstakingPeriod, setUnstakingPeriod] = useState<any>(null);
+  const [isLoadingData, setIsLoadingData] = useState(false);
 
   const handleRequestUnstake = async () => {
     if (!amount) {
@@ -46,9 +38,18 @@ export default function StakingUnstaking() {
     setResult(null);
 
     try {
-      const tx = requestUnstakeTx.tx(BigInt(amount));
-      const hash = await tx.signAndSend(selectedAccount?.address);
-      setResult({ type: 'requestUnstake', hash, amount });
+      await requestUnstakeTx.signAndSend({
+        args: [BigInt(amount)],
+        callback: (progress) => {
+          if (progress.status.type === 'BestChainBlockIncluded') {
+            if (progress.dispatchError) {
+              setError('Transaction failed');
+            } else {
+              setResult({ type: 'requestUnstake', hash: 'success', amount });
+            }
+          }
+        }
+      });
     } catch (err: any) {
       setError(`Error requesting unstake: ${err.message}`);
     } finally {
@@ -62,9 +63,17 @@ export default function StakingUnstaking() {
     setResult(null);
 
     try {
-      const tx = claimUnstakedTx.tx();
-      const hash = await tx.signAndSend(selectedAccount?.address);
-      setResult({ type: 'claimUnstaked', hash });
+      await claimUnstakedTx.signAndSend({
+        callback: (progress) => {
+          if (progress.status.type === 'BestChainBlockIncluded') {
+            if (progress.dispatchError) {
+              setError('Transaction failed');
+            } else {
+              setResult({ type: 'claimUnstaked', hash: 'success' });
+            }
+          }
+        }
+      });
     } catch (err: any) {
       setError(`Error claiming unstaked tokens: ${err.message}`);
     } finally {
@@ -109,7 +118,7 @@ export default function StakingUnstaking() {
           <div className="space-y-2">
             <Label>Your Unstaking Requests</Label>
             <div className="bg-gray-50 p-4 rounded-lg">
-              {isLoadingUnstakingRequests ? (
+              {isLoadingData ? (
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
               ) : unstakingRequests && unstakingRequests.length > 0 ? (
                 <div className="space-y-2">

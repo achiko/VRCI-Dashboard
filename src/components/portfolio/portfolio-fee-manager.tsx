@@ -12,28 +12,21 @@ import { CheckCircle, XCircle, DollarSign, Settings } from 'lucide-react';
 
 export default function PortfolioFeeManager() {
   const { contract: portfolioContract } = useContract<PortfolioContractApi>('portfolio');
-  const { selectedAccount } = useWallet();
   const [feeRate, setFeeRate] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
 
   // Transaction hooks
-  const setFeeConfigTx = useContractTx(portfolioContract, 'setFeeConfiguration');
-  const collectFeesTx = useContractTx(portfolioContract, 'collectFees');
+  const setFeeConfigTx = useContractTx(portfolioContract, 'setFeeConfig');
+  // Note: collectFees method doesn't exist in Portfolio contract API
+  // const collectFeesTx = useContractTx(portfolioContract, 'collectFees');
 
-  // Query hooks
-  const { data: feeConfiguration, isLoading: isLoadingFeeConfig } = useContractQuery(
-    portfolioContract,
-    'getFeeConfiguration',
-    []
-  );
-
-  const { data: collectedFees, isLoading: isLoadingCollectedFees } = useContractQuery(
-    portfolioContract,
-    'getCollectedFees',
-    []
-  );
+  // State for fee data
+  // Note: These methods don't exist in the actual Portfolio contract API
+  const [feeConfiguration, setFeeConfiguration] = useState<any>(null);
+  const [collectedFees, setCollectedFees] = useState<any>(null);
+  const [isLoadingData, setIsLoadingData] = useState(false);
 
   const handleSetFeeConfiguration = async () => {
     if (!feeRate) {
@@ -46,9 +39,22 @@ export default function PortfolioFeeManager() {
     setResult(null);
 
     try {
-      const tx = setFeeConfigTx.tx(parseFloat(feeRate));
-      const hash = await tx.signAndSend(selectedAccount?.address);
-      setResult({ type: 'setFeeConfiguration', hash, feeRate });
+      await setFeeConfigTx.signAndSend({
+        args: [{
+          buyFeeBp: parseFloat(feeRate) * 100,
+          sellFeeBp: parseFloat(feeRate) * 100,
+          streamingFeeBp: parseFloat(feeRate) * 100
+        }],
+        callback: (progress) => {
+          if (progress.status.type === 'BestChainBlockIncluded') {
+            if (progress.dispatchError) {
+              setError('Transaction failed');
+            } else {
+              setResult({ type: 'setFeeConfiguration', hash: 'success', feeRate });
+            }
+          }
+        }
+      });
     } catch (err: any) {
       setError(`Error setting fee configuration: ${err.message}`);
     } finally {
@@ -56,21 +62,22 @@ export default function PortfolioFeeManager() {
     }
   };
 
-  const handleCollectFees = async () => {
-    setIsLoading(true);
-    setError(null);
-    setResult(null);
+  // Note: collectFees method doesn't exist in Portfolio contract API
+  // const handleCollectFees = async () => {
+  //   setIsLoading(true);
+  //   setError(null);
+  //   setResult(null);
 
-    try {
-      const tx = collectFeesTx.tx();
-      const hash = await tx.signAndSend(selectedAccount?.address);
-      setResult({ type: 'collectFees', hash });
-    } catch (err: any) {
-      setError(`Error collecting fees: ${err.message}`);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  //   try {
+  //     const tx = collectFeesTx.tx();
+  //     const hash = await tx.signAndSend(selectedAccount?.address);
+  //     setResult({ type: 'collectFees', hash });
+  //   } catch (err: any) {
+  //     setError(`Error collecting fees: ${err.message}`);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
   const formatAmount = (amount: bigint) => {
     return `${(Number(amount) / 1e18).toFixed(4)} W3PI`;
@@ -97,7 +104,7 @@ export default function PortfolioFeeManager() {
           <div className="space-y-2">
             <Label>Current Fee Configuration</Label>
             <div className="bg-gray-50 p-4 rounded-lg">
-              {isLoadingFeeConfig ? (
+              {isLoadingData ? (
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
               ) : feeConfiguration ? (
                 <div className="space-y-2">
@@ -136,8 +143,8 @@ export default function PortfolioFeeManager() {
             </Button>
           </div>
 
-          {/* Collect Fees */}
-          <div className="space-y-4">
+          {/* Collect Fees - Method doesn't exist in Portfolio contract API */}
+          {/* <div className="space-y-4">
             <h3 className="font-medium">Collect Fees</h3>
             <div className="bg-gray-50 p-4 rounded-lg">
               <div className="flex items-center justify-between">
@@ -157,7 +164,7 @@ export default function PortfolioFeeManager() {
                 </Button>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* Results */}
           {result && (

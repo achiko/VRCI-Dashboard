@@ -13,42 +13,21 @@ export default function PortfolioOverview() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Query hooks for portfolio overview
-  const { data: owner, isLoading: isLoadingOwner } = useContractQuery(
-    portfolioContract,
-    'getOwner',
-    []
-  );
+  // State for portfolio overview
+  // Note: These methods don't exist in the actual Portfolio contract API
+  const [owner, setOwner] = useState<any>(null);
+  const [state, setState] = useState<any>(null);
+  const [deploymentTimestamp, setDeploymentTimestamp] = useState<any>(null);
+  const [isLoadingData, setIsLoadingData] = useState(false);
 
-  const { data: state, isLoading: isLoadingState } = useContractQuery(
-    portfolioContract,
-    'getState',
-    []
-  );
+  // Note: getTotalTokensHeld method doesn't exist in Portfolio contract API
+  // const [totalTokensHeld, setTotalTokensHeld] = useState<any>(null);
 
-  const { data: deploymentTimestamp, isLoading: isLoadingDeployment } = useContractQuery(
-    portfolioContract,
-    'getDeploymentTimestamp',
-    []
-  );
+  // Note: getTokenIds method doesn't exist in Portfolio contract API
+  // const [tokenIds, setTokenIds] = useState<any>(null);
 
-  const { data: totalTokensHeld, isLoading: isLoadingTokens } = useContractQuery(
-    portfolioContract,
-    'getTotalTokensHeld',
-    []
-  );
-
-  const { data: tokenIds, isLoading: isLoadingTokenIds } = useContractQuery(
-    portfolioContract,
-    'getTokenIds',
-    []
-  );
-
-  const { data: totalValue, isLoading: isLoadingValue } = useContractQuery(
-    portfolioContract,
-    'getTotalValue',
-    []
-  );
+  // Note: getTotalValue method doesn't exist in Portfolio contract API
+  // const [totalValue, setTotalValue] = useState<any>(null);
 
   const formatTimestamp = (timestamp: bigint) => {
     const date = new Date(Number(timestamp));
@@ -59,8 +38,7 @@ export default function PortfolioOverview() {
     return `${(Number(value) / 1e18).toFixed(4)} W3PI`;
   };
 
-  const isLoadingAny = isLoadingOwner || isLoadingState || isLoadingDeployment || 
-                      isLoadingTokens || isLoadingTokenIds || isLoadingValue;
+  const isLoadingAny = isLoadingData;
 
   return (
     <div className="space-y-6">
@@ -121,7 +99,8 @@ export default function PortfolioOverview() {
                   <span className="font-medium">Total Tokens</span>
                 </div>
                 <div className="text-2xl font-bold text-green-600">
-                  {totalTokensHeld || 0}
+                  {/* {totalTokensHeld || 0} */}
+                  N/A
                 </div>
               </div>
 
@@ -132,7 +111,8 @@ export default function PortfolioOverview() {
                   <span className="font-medium">Total Value</span>
                 </div>
                 <div className="text-2xl font-bold text-blue-600">
-                  {totalValue ? formatValue(totalValue) : 'N/A'}
+                  {/* {totalValue ? formatValue(totalValue) : 'N/A'} */}
+                  N/A
                 </div>
               </div>
 
@@ -143,7 +123,8 @@ export default function PortfolioOverview() {
                   <span className="font-medium">Token IDs</span>
                 </div>
                 <div className="text-sm">
-                  {tokenIds ? `${tokenIds.length} tokens` : 'N/A'}
+                  {/* {tokenIds ? `${tokenIds.length} tokens` : 'N/A'} */}
+                  N/A
                 </div>
               </div>
             </div>

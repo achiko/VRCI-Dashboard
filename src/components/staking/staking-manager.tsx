@@ -12,7 +12,6 @@ import { CheckCircle, XCircle, Wallet, TrendingUp } from 'lucide-react';
 
 export default function StakingManager() {
   const { contract: stakingContract } = useContract<StakingContractApi>('staking');
-  const { selectedAccount } = useWallet();
   const [amount, setAmount] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
@@ -21,18 +20,11 @@ export default function StakingManager() {
   // Transaction hooks
   const stakeTx = useContractTx(stakingContract, 'stake');
 
-  // Query hooks
-  const { data: stakeInfo, isLoading: isLoadingStakeInfo } = useContractQuery(
-    stakingContract,
-    'getStakeInfo',
-    selectedAccount?.address ? [selectedAccount.address] : null
-  );
-
-  const { data: totalStaked, isLoading: isLoadingTotalStaked } = useContractQuery(
-    stakingContract,
-    'getTotalStaked',
-    []
-  );
+  // State for staking data
+  // Note: These methods don't exist in Staking contract API
+  const [stakeInfo, setStakeInfo] = useState<any>(null);
+  const [totalStaked, setTotalStaked] = useState<any>(null);
+  const [isLoadingData, setIsLoadingData] = useState(false);
 
   const handleStake = async () => {
     if (!amount) {
@@ -45,9 +37,18 @@ export default function StakingManager() {
     setResult(null);
 
     try {
-      const tx = stakeTx.tx(BigInt(amount));
-      const hash = await tx.signAndSend(selectedAccount?.address);
-      setResult({ type: 'stake', hash, amount });
+      await stakeTx.signAndSend({
+        args: [BigInt(amount)],
+        callback: (progress) => {
+          if (progress.status.type === 'BestChainBlockIncluded') {
+            if (progress.dispatchError) {
+              setError('Transaction failed');
+            } else {
+              setResult({ type: 'stake', hash: 'success', amount });
+            }
+          }
+        }
+      });
     } catch (err: any) {
       setError(`Error staking: ${err.message}`);
     } finally {
@@ -76,7 +77,7 @@ export default function StakingManager() {
           <div className="space-y-2">
             <Label>Your Stake Info</Label>
             <div className="bg-gray-50 p-4 rounded-lg">
-              {isLoadingStakeInfo ? (
+              {isLoadingData ? (
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
               ) : stakeInfo ? (
                 <div className="space-y-2">

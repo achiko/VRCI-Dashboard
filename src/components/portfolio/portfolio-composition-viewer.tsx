@@ -12,24 +12,12 @@ export default function PortfolioCompositionViewer() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Query hooks for portfolio composition
-  const { data: composition, isLoading: isLoadingComposition } = useContractQuery(
-    portfolioContract,
-    'getPortfolioComposition',
-    []
-  );
-
-  const { data: tokenIds, isLoading: isLoadingTokenIds } = useContractQuery(
-    portfolioContract,
-    'getTokenIds',
-    []
-  );
-
-  const { data: totalValue, isLoading: isLoadingTotalValue } = useContractQuery(
-    portfolioContract,
-    'getTotalValue',
-    []
-  );
+  // State for portfolio composition
+  // Note: These methods don't exist in the actual Portfolio contract API
+  const [composition, setComposition] = useState<any>(null);
+  const [tokenIds, setTokenIds] = useState<any>(null);
+  const [totalValue, setTotalValue] = useState<any>(null);
+  const [isLoadingData, setIsLoadingData] = useState(false);
 
   const formatValue = (value: bigint) => {
     return `${(Number(value) / 1e18).toFixed(4)} W3PI`;
@@ -39,7 +27,7 @@ export default function PortfolioCompositionViewer() {
     return `${(value * 100).toFixed(2)}%`;
   };
 
-  const isLoadingAny = isLoadingComposition || isLoadingTokenIds || isLoadingTotalValue;
+  const isLoadingAny = isLoadingData;
 
   return (
     <div className="space-y-6">

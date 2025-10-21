@@ -12,7 +12,6 @@ import { CheckCircle, XCircle, Plus, Minus, Wallet } from 'lucide-react';
 
 export default function PortfolioTokenManager() {
   const { contract: portfolioContract } = useContract<PortfolioContractApi>('portfolio');
-  const { selectedAccount } = useWallet();
   const [tokenId, setTokenId] = useState('');
   const [amount, setAmount] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -20,27 +19,21 @@ export default function PortfolioTokenManager() {
   const [error, setError] = useState<string | null>(null);
 
   // Transaction hooks
-  const addTokenTx = useContractTx(portfolioContract, 'addToken');
-  const removeTokenTx = useContractTx(portfolioContract, 'removeToken');
-  const depositTx = useContractTx(portfolioContract, 'deposit');
-  const withdrawTx = useContractTx(portfolioContract, 'withdraw');
+  // Note: Some methods don't exist in Portfolio contract API
+  const addTokenHoldingTx = useContractTx(portfolioContract, 'addTokenHolding');
+  // const removeTokenTx = useContractTx(portfolioContract, 'removeToken');
+  // const depositTx = useContractTx(portfolioContract, 'deposit');
+  // const withdrawTx = useContractTx(portfolioContract, 'withdraw');
 
-  // Query hooks
-  const { data: tokenIds, isLoading: isLoadingTokenIds } = useContractQuery(
-    portfolioContract,
-    'getTokenIds',
-    []
-  );
-
-  const { data: tokenHolding, isLoading: isLoadingHolding } = useContractQuery(
-    portfolioContract,
-    'getTokenHolding',
-    tokenId ? [parseInt(tokenId)] : null
-  );
+  // State for token data
+  // Note: These methods don't exist in Portfolio contract API
+  const [tokenIds, setTokenIds] = useState<any>(null);
+  const [tokenHolding, setTokenHolding] = useState<any>(null);
+  const [isLoadingData, setIsLoadingData] = useState(false);
 
   const handleAddToken = async () => {
-    if (!tokenId) {
-      setError('Please enter a token ID');
+    if (!tokenId || !amount) {
+      setError('Please enter a token ID and amount');
       return;
     }
 
@@ -49,9 +42,18 @@ export default function PortfolioTokenManager() {
     setResult(null);
 
     try {
-      const tx = addTokenTx.tx(parseInt(tokenId));
-      const hash = await tx.signAndSend(selectedAccount?.address);
-      setResult({ type: 'addToken', hash, tokenId: parseInt(tokenId) });
+      await addTokenHoldingTx.signAndSend({
+        args: [parseInt(tokenId), BigInt(amount), 1000], // 1000 = 10% weight
+        callback: (progress) => {
+          if (progress.status.type === 'BestChainBlockIncluded') {
+            if (progress.dispatchError) {
+              setError('Transaction failed');
+            } else {
+              setResult({ type: 'addToken', hash: 'success', tokenId: parseInt(tokenId) });
+            }
+          }
+        }
+      });
     } catch (err: any) {
       setError(`Error adding token: ${err.message}`);
     } finally {
@@ -59,68 +61,69 @@ export default function PortfolioTokenManager() {
     }
   };
 
-  const handleRemoveToken = async () => {
-    if (!tokenId) {
-      setError('Please enter a token ID');
-      return;
-    }
+  // Note: These methods don't exist in Portfolio contract API
+  // const handleRemoveToken = async () => {
+  //   if (!tokenId) {
+  //     setError('Please enter a token ID');
+  //     return;
+  //   }
 
-    setIsLoading(true);
-    setError(null);
-    setResult(null);
+  //   setIsLoading(true);
+  //   setError(null);
+  //   setResult(null);
 
-    try {
-      const tx = removeTokenTx.tx(parseInt(tokenId));
-      const hash = await tx.signAndSend(selectedAccount?.address);
-      setResult({ type: 'removeToken', hash, tokenId: parseInt(tokenId) });
-    } catch (err: any) {
-      setError(`Error removing token: ${err.message}`);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  //   try {
+  //     const tx = removeTokenTx.tx(parseInt(tokenId));
+  //     const hash = await tx.signAndSend(selectedAccount?.address);
+  //     setResult({ type: 'removeToken', hash, tokenId: parseInt(tokenId) });
+  //   } catch (err: any) {
+  //     setError(`Error removing token: ${err.message}`);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
-  const handleDeposit = async () => {
-    if (!tokenId || !amount) {
-      setError('Please enter token ID and amount');
-      return;
-    }
+  // const handleDeposit = async () => {
+  //   if (!tokenId || !amount) {
+  //     setError('Please enter token ID and amount');
+  //     return;
+  //   }
 
-    setIsLoading(true);
-    setError(null);
-    setResult(null);
+  //   setIsLoading(true);
+  //   setError(null);
+  //   setResult(null);
 
-    try {
-      const tx = depositTx.tx(parseInt(tokenId), BigInt(amount));
-      const hash = await tx.signAndSend(selectedAccount?.address);
-      setResult({ type: 'deposit', hash, tokenId: parseInt(tokenId), amount });
-    } catch (err: any) {
-      setError(`Error depositing: ${err.message}`);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  //   try {
+  //     const tx = depositTx.tx(parseInt(tokenId), BigInt(amount));
+  //     const hash = await tx.signAndSend(selectedAccount?.address);
+  //     setResult({ type: 'deposit', hash, tokenId: parseInt(tokenId), amount });
+  //   } catch (err: any) {
+  //     setError(`Error depositing: ${err.message}`);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
-  const handleWithdraw = async () => {
-    if (!tokenId || !amount) {
-      setError('Please enter token ID and amount');
-      return;
-    }
+  // const handleWithdraw = async () => {
+  //   if (!tokenId || !amount) {
+  //     setError('Please enter token ID and amount');
+  //     return;
+  //   }
 
-    setIsLoading(true);
-    setError(null);
-    setResult(null);
+  //   setIsLoading(true);
+  //   setError(null);
+  //   setResult(null);
 
-    try {
-      const tx = withdrawTx.tx(parseInt(tokenId), BigInt(amount));
-      const hash = await tx.signAndSend(selectedAccount?.address);
-      setResult({ type: 'withdraw', hash, tokenId: parseInt(tokenId), amount });
-    } catch (err: any) {
-      setError(`Error withdrawing: ${err.message}`);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  //   try {
+  //     const tx = withdrawTx.tx(parseInt(tokenId), BigInt(amount));
+  //     const hash = await tx.signAndSend(selectedAccount?.address);
+  //     setResult({ type: 'withdraw', hash, tokenId: parseInt(tokenId), amount });
+  //   } catch (err: any) {
+  //     setError(`Error withdrawing: ${err.message}`);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
   return (
     <div className="space-y-6">
@@ -139,7 +142,7 @@ export default function PortfolioTokenManager() {
           <div className="space-y-2">
             <Label>Current Token IDs</Label>
             <div className="bg-gray-50 p-4 rounded-lg">
-              {isLoadingTokenIds ? (
+              {isLoadingData ? (
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
               ) : tokenIds ? (
                 <div className="flex flex-wrap gap-2">
@@ -178,7 +181,8 @@ export default function PortfolioTokenManager() {
                   <Plus className="h-4 w-4" />
                   Add Token
                 </Button>
-                <Button
+                {/* Note: removeToken method doesn't exist in Portfolio contract API */}
+                {/* <Button
                   onClick={handleRemoveToken}
                   disabled={!tokenId || isLoading}
                   variant="destructive"
@@ -186,12 +190,12 @@ export default function PortfolioTokenManager() {
                 >
                   <Minus className="h-4 w-4" />
                   Remove Token
-                </Button>
+                </Button> */}
               </div>
             </div>
 
-            {/* Deposit/Withdraw */}
-            <div className="space-y-4">
+            {/* Deposit/Withdraw - Methods don't exist in Portfolio contract API */}
+            {/* <div className="space-y-4">
               <h3 className="font-medium">Deposit/Withdraw</h3>
               <div className="space-y-2">
                 <Label>Amount</Label>
@@ -221,7 +225,7 @@ export default function PortfolioTokenManager() {
                   Withdraw
                 </Button>
               </div>
-            </div>
+            </div> */}
           </div>
 
           {/* Token Holding Info */}
@@ -229,7 +233,7 @@ export default function PortfolioTokenManager() {
             <div className="space-y-2">
               <Label>Token Holding Info</Label>
               <div className="bg-gray-50 p-4 rounded-lg">
-                {isLoadingHolding ? (
+                {isLoadingData ? (
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
                 ) : tokenHolding ? (
                   <div className="space-y-2">

@@ -26,7 +26,7 @@ export default function PortfolioAnalytics() {
     return `${(value * 100).toFixed(2)}%`;
   };
 
-  const isLoadingAny = isLoadingAnalytics || isLoadingPerformance || isLoadingHistorical;
+  const isLoadingAny = isLoadingData;
 
   return (
     <div className="space-y-6">

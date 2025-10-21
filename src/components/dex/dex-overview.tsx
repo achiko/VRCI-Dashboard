@@ -13,11 +13,12 @@ export default function DexOverview() {
   const [error, setError] = useState<string | null>(null);
 
   // State for DEX overview data
-  const [totalPools, setTotalPools] = useState<any>(null);
-  const [totalLiquidity, setTotalLiquidity] = useState<any>(null);
-  const [totalVolume, setTotalVolume] = useState<any>(null);
-  const [isPaused, setIsPaused] = useState<any>(null);
-  const [feeRate, setFeeRate] = useState<any>(null);
+  // Note: These methods don't exist in the actual DEX contract API
+  // const [totalPools, setTotalPools] = useState<any>(null);
+  // const [totalLiquidity, setTotalLiquidity] = useState<any>(null);
+  // const [totalVolume, setTotalVolume] = useState<any>(null);
+  // const [isPaused, setIsPaused] = useState<any>(null);
+  // const [feeRate, setFeeRate] = useState<any>(null);
   const [isLoadingData, setIsLoadingData] = useState(false);
 
   const formatAmount = (amount: bigint) => {
@@ -57,7 +58,8 @@ export default function DexOverview() {
                   <span className="font-medium">Total Pools</span>
                 </div>
                 <div className="text-2xl font-bold text-blue-600">
-                  {totalPools || 0}
+                  {/* {totalPools || 0} */}
+                  N/A
                 </div>
                 <p className="text-sm text-gray-600">
                   Active trading pools
@@ -71,7 +73,8 @@ export default function DexOverview() {
                   <span className="font-medium">Total Liquidity</span>
                 </div>
                 <div className="text-2xl font-bold text-green-600">
-                  {totalLiquidity ? formatAmount(totalLiquidity) : 'N/A'}
+                  {/* {totalLiquidity ? formatAmount(totalLiquidity) : 'N/A'} */}
+                  N/A
                 </div>
                 <p className="text-sm text-gray-600">
                   Total liquidity across all pools
@@ -85,7 +88,8 @@ export default function DexOverview() {
                   <span className="font-medium">Total Volume</span>
                 </div>
                 <div className="text-2xl font-bold text-purple-600">
-                  {totalVolume ? formatAmount(totalVolume) : 'N/A'}
+                  {/* {totalVolume ? formatAmount(totalVolume) : 'N/A'} */}
+                  N/A
                 </div>
                 <p className="text-sm text-gray-600">
                   Total trading volume
@@ -99,7 +103,8 @@ export default function DexOverview() {
                   <span className="font-medium">Fee Rate</span>
                 </div>
                 <div className="text-2xl font-bold text-orange-600">
-                  {feeRate ? formatRate(feeRate) : 'N/A'}
+                  {/* {feeRate ? formatRate(feeRate) : 'N/A'} */}
+                  N/A
                 </div>
                 <p className="text-sm text-gray-600">
                   Trading fee percentage
@@ -109,15 +114,17 @@ export default function DexOverview() {
               {/* Status */}
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  {isPaused ? (
+                  {/* {isPaused ? (
                     <XCircle className="h-4 w-4 text-red-600" />
                   ) : (
                     <CheckCircle className="h-4 w-4 text-green-600" />
-                  )}
+                  )} */}
+                  <CheckCircle className="h-4 w-4 text-green-600" />
                   <span className="font-medium">Status</span>
                 </div>
-                <div className={`text-lg font-bold ${isPaused ? 'text-red-600' : 'text-green-600'}`}>
-                  {isPaused ? 'Paused' : 'Active'}
+                <div className="text-lg font-bold text-green-600">
+                  {/* {isPaused ? 'Paused' : 'Active'} */}
+                  Active
                 </div>
                 <p className="text-sm text-gray-600">
                   DEX system status

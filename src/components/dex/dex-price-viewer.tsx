@@ -19,9 +19,10 @@ export default function DexPriceViewer() {
 
   // State for price data
   const [tokenPrice, setTokenPrice] = useState<any>(null);
-  const [totalLiquidity, setTotalLiquidity] = useState<any>(null);
-  const [totalVolume, setTotalVolume] = useState<any>(null);
-  const [feeRate, setFeeRate] = useState<any>(null);
+  // Note: These methods don't exist in the actual DEX contract API
+  // const [totalLiquidity, setTotalLiquidity] = useState<any>(null);
+  // const [totalVolume, setTotalVolume] = useState<any>(null);
+  // const [feeRate, setFeeRate] = useState<any>(null);
   const [isLoadingData, setIsLoadingData] = useState(false);
 
   const handleGetPrice = async () => {
@@ -77,19 +78,22 @@ export default function DexPriceViewer() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-blue-50 p-4 rounded-lg">
               <div className="text-2xl font-bold text-blue-600">
-                {totalLiquidity ? formatAmount(totalLiquidity) : 'Loading...'}
+                {/* {totalLiquidity ? formatAmount(totalLiquidity) : 'Loading...'} */}
+                N/A
               </div>
               <div className="text-sm text-gray-600">Total Liquidity</div>
             </div>
             <div className="bg-green-50 p-4 rounded-lg">
               <div className="text-2xl font-bold text-green-600">
-                {totalVolume ? formatAmount(totalVolume) : 'Loading...'}
+                {/* {totalVolume ? formatAmount(totalVolume) : 'Loading...'} */}
+                N/A
               </div>
               <div className="text-sm text-gray-600">Total Volume</div>
             </div>
             <div className="bg-purple-50 p-4 rounded-lg">
               <div className="text-2xl font-bold text-purple-600">
-                {feeRate ? formatRate(feeRate) : 'Loading...'}
+                {/* {feeRate ? formatRate(feeRate) : 'Loading...'} */}
+                N/A
               </div>
               <div className="text-sm text-gray-600">Fee Rate</div>
             </div>

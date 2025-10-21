@@ -24,8 +24,9 @@ export default function DexPoolManager() {
   const setPoolTx = useContractTx(dexContract, 'setPool');
 
   // State for pool data
-  const [totalPools, setTotalPools] = useState<any>(null);
-  const [poolInfo, setPoolInfo] = useState<any>(null);
+  // Note: These methods don't exist in the actual DEX contract API
+  // const [totalPools, setTotalPools] = useState<any>(null);
+  // const [poolInfo, setPoolInfo] = useState<any>(null);
   const [isLoadingData, setIsLoadingData] = useState(false);
 
   const handleSetPool = async () => {
@@ -80,13 +81,15 @@ export default function DexPoolManager() {
             <Label>Total Pools</Label>
             <div className="bg-blue-50 p-4 rounded-lg">
               <div className="text-2xl font-bold text-blue-600">
-                {totalPools || 0}
+                {/* {totalPools || 0} */}
+                N/A
               </div>
             </div>
           </div>
 
           {/* Pool Info */}
-          {poolInfo && (
+          {/* Note: poolInfo method doesn't exist in DEX contract API */}
+          {/* {poolInfo && (
             <div className="space-y-2">
               <Label>Pool Information</Label>
               <div className="bg-gray-50 p-4 rounded-lg">
@@ -98,7 +101,7 @@ export default function DexPoolManager() {
                 </div>
               </div>
             </div>
-          )}
+          )} */}
 
           {/* Set Pool */}
           <div className="space-y-4">

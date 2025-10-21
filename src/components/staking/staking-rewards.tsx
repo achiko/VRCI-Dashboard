@@ -5,12 +5,12 @@ import { useContract, useContractTx, useContractQuery } from 'typink';
 import type { StakingContractApi } from '@/lib/contracts/staking';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { CheckCircle, XCircle, DollarSign, TrendingUp } from 'lucide-react';
 
 export default function StakingRewards() {
   const { contract: stakingContract } = useContract<StakingContractApi>('staking');
-  const { selectedAccount } = useWallet();
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
@@ -18,24 +18,12 @@ export default function StakingRewards() {
   // Transaction hooks
   const claimRewardsTx = useContractTx(stakingContract, 'claimRewards');
 
-  // Query hooks
-  const { data: rewardRate, isLoading: isLoadingRewardRate } = useContractQuery(
-    stakingContract,
-    'getRewardRate',
-    []
-  );
-
-  const { data: totalRewards, isLoading: isLoadingTotalRewards } = useContractQuery(
-    stakingContract,
-    'getTotalRewards',
-    []
-  );
-
-  const { data: userRewards, isLoading: isLoadingUserRewards } = useContractQuery(
-    stakingContract,
-    'getUserRewards',
-    selectedAccount?.address ? [selectedAccount.address] : null
-  );
+  // State for staking rewards
+  // Note: These methods don't exist in Staking contract API
+  const [rewardRate, setRewardRate] = useState<any>(null);
+  const [totalRewards, setTotalRewards] = useState<any>(null);
+  const [userRewards, setUserRewards] = useState<any>(null);
+  const [isLoadingData, setIsLoadingData] = useState(false);
 
   const handleClaimRewards = async () => {
     setIsLoading(true);
@@ -43,9 +31,17 @@ export default function StakingRewards() {
     setResult(null);
 
     try {
-      const tx = claimRewardsTx.tx();
-      const hash = await tx.signAndSend(selectedAccount?.address);
-      setResult({ type: 'claimRewards', hash });
+      await claimRewardsTx.signAndSend({
+        callback: (progress) => {
+          if (progress.status.type === 'BestChainBlockIncluded') {
+            if (progress.dispatchError) {
+              setError('Transaction failed');
+            } else {
+              setResult({ type: 'claimRewards', hash: 'success' });
+            }
+          }
+        }
+      });
     } catch (err: any) {
       setError(`Error claiming rewards: ${err.message}`);
     } finally {

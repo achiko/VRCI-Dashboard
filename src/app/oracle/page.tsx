@@ -12,11 +12,13 @@ import { OracleEmergencyControls } from '@/components/oracle/oracle-emergency-co
 import { OracleInfoViewer } from '@/components/oracle/oracle-info-viewer';
 import { OracleAdvancedDataManager } from '@/components/oracle/oracle-advanced-data-manager';
 import { OracleDotUsdManager } from '@/components/oracle/oracle-dot-usd-manager';
+import OracleDotTokenManager from '@/components/oracle/oracle-dot-token-manager';
+import OracleValidationConfigViewer from '@/components/oracle/oracle-validation-config-viewer';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useTypink } from 'typink';
 import { Search, Upload, BarChart3, Settings, Shield, Clock, Database, Users, AlertTriangle, Info, DollarSign } from 'lucide-react';
 
-const validTabs = ['query', 'update', 'advanced', 'dot-usd', 'config', 'auth', 'emergency', 'info'] as const;
+const validTabs = ['query', 'update', 'advanced', 'dot-usd', 'dot-token', 'validation', 'config', 'auth', 'emergency', 'info'] as const;
 type ValidTab = typeof validTabs[number];
 
 function OraclePageContent() {
@@ -109,7 +111,7 @@ function OraclePageContent() {
                         <Tabs value={activeTab} onValueChange={handleTabChange}>
                             {/* Tab Navigation */}
                             <div className="flex flex-col sm:flex-row sm:items-center justify-center mb-6">
-                                <TabsList className="mt-4 sm:mt-0 grid grid-cols-4 lg:grid-cols-8 w-full sm:w-auto">
+                                <TabsList className="mt-4 sm:mt-0 grid grid-cols-5 lg:grid-cols-10 w-full sm:w-auto">
                                     <TabsTrigger value="query" className="flex items-center space-x-1 text-xs">
                                         <Search className="h-3 w-3" />
                                         <span className="hidden sm:inline">Query</span>
@@ -125,6 +127,14 @@ function OraclePageContent() {
                                     <TabsTrigger value="dot-usd" className="flex items-center space-x-1 text-xs">
                                         <DollarSign className="h-3 w-3" />
                                         <span className="hidden sm:inline">DOT/USD</span>
+                                    </TabsTrigger>
+                                    <TabsTrigger value="dot-token" className="flex items-center space-x-1 text-xs">
+                                        <DollarSign className="h-3 w-3" />
+                                        <span className="hidden sm:inline">DOT Token</span>
+                                    </TabsTrigger>
+                                    <TabsTrigger value="validation" className="flex items-center space-x-1 text-xs">
+                                        <Settings className="h-3 w-3" />
+                                        <span className="hidden sm:inline">Validation</span>
                                     </TabsTrigger>
                                     <TabsTrigger value="config" className="flex items-center space-x-1 text-xs">
                                         <Settings className="h-3 w-3" />
@@ -160,6 +170,14 @@ function OraclePageContent() {
 
                             <TabsContent value="dot-usd">
                                 <OracleDotUsdManager />
+                            </TabsContent>
+
+                            <TabsContent value="dot-token">
+                                <OracleDotTokenManager />
+                            </TabsContent>
+
+                            <TabsContent value="validation">
+                                <OracleValidationConfigViewer />
                             </TabsContent>
 
                             <TabsContent value="config">

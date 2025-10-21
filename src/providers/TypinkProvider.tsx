@@ -13,7 +13,7 @@ const PASSET_HUB_NETWORK = {
   chainId: 420420422,
   decimals: 10,
   symbol: "PAS",
-  logo: "https://raw.githubusercontent.com/dedotdev/typink/main/assets/networks/passet-hub.svg",
+  logo: "https://parachains.info/images/parachains/1688559044_assethub.svg",
   pjsUrl: "https://blockscout-passet-hub.parity-testnet.parity.io",
   faucetUrl: "https://faucet.passet-hub.parity-testnet.parity.io",
   providers: ["wss://passet-hub-paseo.ibp.network"]
@@ -21,12 +21,12 @@ const PASSET_HUB_NETWORK = {
 
 // Contract addresses on Passet Hub Testnet (actual deployed addresses)
 const CONTRACT_ADDRESSES = {
-  TOKEN: '0x873091e24278a4adb6a5fcf7c8a99b9c31179cc0', // Your deployed token contract
-  ORACLE: '0x0000000000000000000000000000000000000002', // To be deployed
-  REGISTRY: '0x0000000000000000000000000000000000000003', // To be deployed
-  PORTFOLIO: '0x0000000000000000000000000000000000000004', // To be deployed
-  STAKING: '0x0000000000000000000000000000000000000005', // To be deployed
-  DEX: '0x0000000000000000000000000000000000000006' // To be deployed
+  TOKEN: '0xf830b0c05889cbd05b13bf87bee1ca52755aafe8', // Your deployed token contract
+  ORACLE: '0xa7cc4e6f7459f6a120c7907e525c7f565daaf8ac', // To be deployed
+  REGISTRY: '0xa85587de037304d67fa88f5d23c1d4b820e0d4bf', // To be deployed
+  PORTFOLIO: '0xc9e68f98cb0dc6d3065fe89622026ea062dc7513', // To be deployed
+  STAKING: '0x02a76f98f814455a7d5c89f86f23c557c27de89c', // To be deployed
+  DEX: '0x5e0631f14dd2920bb582dd0ba6daf92f76ec4894' // To be deployed
 };
 
 // Import contract metadata for TypinkProvider
@@ -105,5 +105,5 @@ export function TypinkProvider({ children }: TypinkProviderProps) {
   );
 }
 
-// Export contract addresses for use in components
-export { CONTRACT_ADDRESSES, PASSET_HUB_NETWORK };
+// Export contract addresses and configurations for use in components
+export { CONTRACT_ADDRESSES, PASSET_HUB_NETWORK, deployments, supportedNetworks };

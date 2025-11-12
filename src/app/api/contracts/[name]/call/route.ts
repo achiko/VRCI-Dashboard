@@ -24,7 +24,7 @@ export async function POST(
       return NextResponse.json(
         {
           success: false,
-          error: `Validation error: ${validationResult.error.errors.map((e) => e.message).join(', ')}`,
+          error: `Validation error: ${validationResult.error.issues.map((e) => e.message).join(', ')}`,
         },
         { status: 400 }
       );
@@ -77,9 +77,10 @@ export async function POST(
     }
 
     // Execute the query
+    // For queries, gasLimit is optional and can be omitted
     const result = await contract.query[method](
       contractAddress,
-      { gasLimit: api.registry.createType('WeightV2', { refTime: 100000000000, proofSize: 1000000 }) },
+      {},
       ...args
     );
 

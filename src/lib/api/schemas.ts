@@ -28,6 +28,6 @@ export const logCreateSchema = z.object({
   method: z.string().min(1, 'Method name is required'),
   txHash: z.string().optional(),
   status: z.enum(['pending', 'success', 'failed']),
-  data: z.record(z.unknown()).optional(),
+  data: z.record(z.string(), z.unknown()).optional(),
 });
 

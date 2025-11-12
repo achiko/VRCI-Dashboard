@@ -4,12 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build",
+    "build": "DATABASE_URL=${DATABASE_URL:-postgresql://user:password@localhost:5432/db} prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
     "test": "bun test",
     "test:watch": "bun test --watch",
     "test:coverage": "bun test --coverage",
+    "postinstall": "prisma generate",
     "contracts:gen": "for f in ./src/contracts/schemas/*.json; do bunx dedot typink -m $f -o ./src/lib/contracts; done"
   },
   "dependencies": {

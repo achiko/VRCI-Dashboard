@@ -21,18 +21,24 @@ interface HealthData {
  */
 export async function GET(): Promise<NextResponse<ApiResponse<HealthData>>> {
   const startTime = Date.now();
-  const services = {
-    api: 'up' as const,
-    database: 'down' as const,
-    polkadot: 'down' as const,
+  const services: {
+    api: 'up' | 'down';
+    database: 'up' | 'down';
+    polkadot: 'up' | 'down';
+  } = {
+    api: 'up',
+    database: 'down',
+    polkadot: 'down',
   };
 
   // Check database connection
-  try {
-    await prisma.$queryRaw`SELECT 1`;
-    services.database = 'up';
-  } catch (error) {
-    console.error('Database health check failed:', error);
+  if (prisma) {
+    try {
+      await prisma.$queryRaw`SELECT 1`;
+      services.database = 'up';
+    } catch (error) {
+      console.error('Database health check failed:', error);
+    }
   }
 
   // Check Polkadot connection

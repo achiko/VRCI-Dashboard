@@ -9,6 +9,13 @@ import type { ApiResponse } from '@/lib/api/types';
  */
 export async function GET(request: Request): Promise<NextResponse<ApiResponse<unknown>>> {
   try {
+    if (!prisma) {
+      return NextResponse.json(
+        { success: false, error: 'Database not configured. Please set DATABASE_URL environment variable.' },
+        { status: 503 }
+      );
+    }
+
     const { searchParams } = new URL(request.url);
     const type = searchParams.get('type') || 'wallets';
     const walletId = searchParams.get('walletId');
@@ -64,6 +71,13 @@ export async function GET(request: Request): Promise<NextResponse<ApiResponse<un
  */
 export async function POST(request: Request): Promise<NextResponse<ApiResponse<unknown>>> {
   try {
+    if (!prisma) {
+      return NextResponse.json(
+        { success: false, error: 'Database not configured. Please set DATABASE_URL environment variable.' },
+        { status: 503 }
+      );
+    }
+
     const body = await request.json();
     const { type } = body;
 
@@ -74,7 +88,7 @@ export async function POST(request: Request): Promise<NextResponse<ApiResponse<u
           return NextResponse.json(
             {
               success: false,
-              error: `Validation error: ${validationResult.error.errors.map((e) => e.message).join(', ')}`,
+              error: `Validation error: ${validationResult.error.issues.map((e) => e.message).join(', ')}`,
             },
             { status: 400 }
           );
@@ -98,7 +112,7 @@ export async function POST(request: Request): Promise<NextResponse<ApiResponse<u
           return NextResponse.json(
             {
               success: false,
-              error: `Validation error: ${validationResult.error.errors.map((e) => e.message).join(', ')}`,
+              error: `Validation error: ${validationResult.error.issues.map((e) => e.message).join(', ')}`,
             },
             { status: 400 }
           );

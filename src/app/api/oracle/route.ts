@@ -56,7 +56,7 @@ export async function GET(request: Request): Promise<NextResponse<ApiResponse<Re
       return NextResponse.json(
         {
           success: false,
-          error: `Data validation failed: ${validationResult.error.errors.map((e) => e.message).join(', ')}`,
+          error: `Data validation failed: ${validationResult.error.issues.map((e) => e.message).join(', ')}`,
         },
         { status: 500 }
       );

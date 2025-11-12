@@ -27,7 +27,7 @@ export async function POST(
       return NextResponse.json(
         {
           success: false,
-          error: `Validation error: ${validationResult.error.errors.map((e) => e.message).join(', ')}`,
+          error: `Validation error: ${validationResult.error.issues.map((e) => e.message).join(', ')}`,
         },
         { status: 400 }
       );
@@ -85,21 +85,30 @@ export async function POST(
     }
 
     // Build the transaction
+    // Create WeightV2 using registry
     const gasLimit = api.registry.createType('WeightV2', {
       refTime: 100000000000,
       proofSize: 1000000,
-    });
+    }) as any; // Type assertion needed for Polkadot.js compatibility
 
     const storageDepositLimit = null;
-    const valueAmount = value ? api.registry.createType('Balance', value) : null;
-
+    
     // Create the extrinsic (unsigned transaction)
+    const txOptions: {
+      gasLimit: any;
+      storageDepositLimit: null;
+      value?: string;
+    } = {
+      gasLimit,
+      storageDepositLimit,
+    };
+    
+    if (value) {
+      txOptions.value = value;
+    }
+
     const extrinsic = contract.tx[method](
-      {
-        gasLimit,
-        storageDepositLimit,
-        value: valueAmount,
-      },
+      txOptions,
       ...args
     );
 

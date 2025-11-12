@@ -11,4 +11,6 @@ export { useHealthQuery } from './useHealthQuery';
 export { useOracleQuery, useOracleTokenQuery } from './useOracleQuery';
 export { useTokens, useCreateToken, useUpdateToken, useDeleteToken } from './useTokens';
 export type { Token, CreateTokenInput, UpdateTokenInput } from './useTokens';
+export { useWhitelist, useWhitelistCheck, useAddWhitelist, useRemoveWhitelist } from './useWhitelist';
+export type { WhitelistEntry, CreateWhitelistInput } from './useWhitelist';
 

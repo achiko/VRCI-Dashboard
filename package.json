@@ -2,6 +2,9 @@
   "name": "web",
   "version": "0.1.0",
   "private": true,
+  "prisma": {
+    "seed": "bun run prisma/seed.ts"
+  },
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "prisma generate && next build",
@@ -12,7 +15,8 @@
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
     "postinstall": "prisma generate",
-    "contracts:gen": "for f in ./src/contracts/schemas/*.json; do bunx dedot typink -m $f -o ./src/lib/contracts; done"
+    "contracts:gen": "for f in ./src/contracts/schemas/*.json; do bunx dedot typink -m $f -o ./src/lib/contracts; done",
+    "db:seed": "bunx prisma db seed"
   },
   "dependencies": {
     "@bprogress/core": "^1.3.4",

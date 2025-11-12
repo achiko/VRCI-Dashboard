@@ -56,3 +56,15 @@ model Token {
   @@index([symbol])
   @@index([enabled])
 }
+
+// Whitelisted wallet addresses for platform access
+model Whitelist {
+  id        String   @id @default(cuid())
+  address   String   @unique
+  addedBy   String?  // Address of admin who added this wallet
+  note      String?  // Optional note about why this wallet is whitelisted
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([address])
+}

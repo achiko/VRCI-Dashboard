@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { DashboardLayout } from '@/components/dashboard-layout';
+import { WalletAuthGuard } from '@/components/auth/wallet-auth-guard';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Providers from './providers';
@@ -27,9 +28,11 @@ export default function RootLayout({
       <body className={`${inter.className} min-h-screen`}>
         <Providers>
           <TypinkWrapper>
-            <DashboardLayout>
-              {children}
-            </DashboardLayout>
+            <WalletAuthGuard>
+              <DashboardLayout>
+                {children}
+              </DashboardLayout>
+            </WalletAuthGuard>
             {/* <ToastContainer
               position="bottom-right"
               autoClose={5000}

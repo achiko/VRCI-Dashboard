@@ -5,7 +5,8 @@ import { useTypink } from 'typink';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Info, TrendingUp, Wallet, Settings, ArrowLeftRight } from 'lucide-react';
+import { Info, TrendingUp, Wallet, Settings, ArrowLeftRight, Copy } from 'lucide-react';
+import { CONTRACT_ADDRESSES } from '@/providers/TypinkProvider';
 
 // Import DEX components
 import DexOverview from '@/components/dex/dex-overview';
@@ -24,6 +25,20 @@ export default function DexPage() {
         <CardHeader>
           <CardTitle className="text-3xl font-bold">DEX Dashboard</CardTitle>
           <CardDescription>Decentralized exchange for token swaps and liquidity management.</CardDescription>
+          <div className="mt-4 flex items-center gap-2">
+            <span className="text-sm text-gray-600 dark:text-gray-400 font-mono">
+              {CONTRACT_ADDRESSES.DEX}
+            </span>
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(CONTRACT_ADDRESSES.DEX);
+              }}
+              className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
+              title="Copy contract address"
+            >
+              <Copy className="h-4 w-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200" />
+            </button>
+          </div>
         </CardHeader>
       </Card>
 

@@ -16,7 +16,8 @@ import OracleDotTokenManager from '@/components/oracle/oracle-dot-token-manager'
 import OracleValidationConfigViewer from '@/components/oracle/oracle-validation-config-viewer';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useTypink } from 'typink';
-import { Search, Upload, BarChart3, Settings, Shield, Clock, Database, Users, AlertTriangle, Info, DollarSign } from 'lucide-react';
+import { Search, Upload, BarChart3, Settings, Shield, Clock, Database, Users, AlertTriangle, Info, DollarSign, Copy } from 'lucide-react';
+import { CONTRACT_ADDRESSES } from '@/providers/TypinkProvider';
 
 const validTabs = ['query', 'update', 'advanced', 'dot-usd', 'dot-token', 'validation', 'config', 'auth', 'emergency', 'info'] as const;
 type ValidTab = typeof validTabs[number];
@@ -80,6 +81,20 @@ function OraclePageContent() {
                     <p className="text-lg text-gray-600">
                         Complete price feeds and market data management
                     </p>
+                    <div className="mt-4 flex items-center gap-2">
+                        <span className="text-sm text-gray-600 dark:text-gray-400 font-mono">
+                            {CONTRACT_ADDRESSES.ORACLE}
+                        </span>
+                        <button
+                            onClick={() => {
+                                navigator.clipboard.writeText(CONTRACT_ADDRESSES.ORACLE);
+                            }}
+                            className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
+                            title="Copy contract address"
+                        >
+                            <Copy className="h-4 w-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200" />
+                        </button>
+                    </div>
                 </div>
 
                 {/* Contract Status Banner */}

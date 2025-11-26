@@ -13,7 +13,8 @@ import { RegistryConfigurationManager } from '@/components/registry/registry-con
 import { RegistryEventMonitor } from '@/components/registry/registry-event-monitor';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useTypink } from 'typink';
-import { Search, Edit, Info, Layers, BarChart3, Settings, Shield, Clock, Package, Activity } from 'lucide-react';
+import { Search, Edit, Info, Layers, BarChart3, Settings, Shield, Clock, Package, Activity, Copy } from 'lucide-react';
+import { CONTRACT_ADDRESSES } from '@/providers/TypinkProvider';
 import { RegistryRoleManager } from '@/components/registry/registry-role-manager';
 import { RegistryGracePeriodManager } from '@/components/registry/grace-period-manager';
 
@@ -79,6 +80,20 @@ function RegistryPageContent() {
                     <p className="text-lg text-gray-600">
                         Portfolio token management with advanced tier system and cross-contract integration
                     </p>
+                    <div className="mt-4 flex items-center gap-2">
+                        <span className="text-sm text-gray-600 dark:text-gray-400 font-mono">
+                            {CONTRACT_ADDRESSES.REGISTRY}
+                        </span>
+                        <button
+                            onClick={() => {
+                                navigator.clipboard.writeText(CONTRACT_ADDRESSES.REGISTRY);
+                            }}
+                            className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
+                            title="Copy contract address"
+                        >
+                            <Copy className="h-4 w-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200" />
+                        </button>
+                    </div>
                 </div>
 
                 {/* Contract Status Banner */}

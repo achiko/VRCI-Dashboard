@@ -10,7 +10,8 @@ import { TokenRoleManager } from '@/components/token/token-role-manager';
 import { TokenEventMonitor } from '@/components/token/token-event-monitor';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useTypink } from 'typink';
-import { Search, Send, Shield, Coins, Activity } from 'lucide-react';
+import { Search, Send, Shield, Coins, Activity, Copy } from 'lucide-react';
+import { CONTRACT_ADDRESSES } from '@/providers/TypinkProvider';
 
 const validTabs = ['query', 'manage', 'roles'] as const;
 type ValidTab = typeof validTabs[number];
@@ -74,6 +75,20 @@ function TokenPageContent() {
                     <p className="text-lg text-gray-600">
                         PSP22 fungible token with role-based access control and advanced minting/burning features
                     </p>
+                    <div className="mt-4 flex items-center gap-2">
+                        <span className="text-sm text-gray-600 dark:text-gray-400 font-mono">
+                            {CONTRACT_ADDRESSES.TOKEN}
+                        </span>
+                        <button
+                            onClick={() => {
+                                navigator.clipboard.writeText(CONTRACT_ADDRESSES.TOKEN);
+                            }}
+                            className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
+                            title="Copy contract address"
+                        >
+                            <Copy className="h-4 w-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200" />
+                        </button>
+                    </div>
                 </div>
 
                 {/* Contract Status Banner */}

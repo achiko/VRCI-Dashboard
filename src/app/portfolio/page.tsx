@@ -14,6 +14,7 @@ import PortfolioCompositionViewer from '@/components/portfolio/portfolio-composi
 import PortfolioFeeManager from '@/components/portfolio/portfolio-fee-manager';
 import PortfolioStateManager from '@/components/portfolio/portfolio-state-manager';
 import PortfolioAnalytics from '@/components/portfolio/portfolio-analytics';
+import PortfolioConfigManager from '@/components/portfolio/portfolio-config-manager';
 
 export default function PortfolioPage() {
   const { signer, connectedAccount } = useTypink();
@@ -36,7 +37,7 @@ export default function PortfolioPage() {
       )}
 
       <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value)} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-7">
           <TabsTrigger value="overview" className="flex items-center gap-2">
             <TrendingUp className="h-4 w-4" />
             Overview
@@ -60,6 +61,10 @@ export default function PortfolioPage() {
           <TabsTrigger value="analytics" className="flex items-center gap-2">
             <TrendingUp className="h-4 w-4" />
             Analytics
+          </TabsTrigger>
+          <TabsTrigger value="config" className="flex items-center gap-2">
+            <Settings className="h-4 w-4" />
+            Config
           </TabsTrigger>
         </TabsList>
 
@@ -85,6 +90,10 @@ export default function PortfolioPage() {
 
         <TabsContent value="analytics" className="space-y-6">
           <PortfolioAnalytics />
+        </TabsContent>
+
+        <TabsContent value="config" className="space-y-6">
+          <PortfolioConfigManager />
         </TabsContent>
       </Tabs>
     </div>

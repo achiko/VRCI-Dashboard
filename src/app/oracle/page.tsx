@@ -17,10 +17,10 @@ import OracleValidationConfigViewer from '@/components/oracle/oracle-validation-
 import { ConfigurationChecklist } from '@/components/config/configuration-checklist';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useTypink } from 'typink';
-import { Search, Upload, BarChart3, Settings, Shield, Clock, Database, Users, AlertTriangle, Info, DollarSign, Copy } from 'lucide-react';
+import { Search, Upload, BarChart3, Settings, Shield, Clock, Database, Users, AlertTriangle, Info, DollarSign, Copy, TrendingUp } from 'lucide-react';
 import { CONTRACT_ADDRESSES } from '@/providers/TypinkProvider';
 
-const validTabs = ['query', 'update', 'advanced', 'dot-usd', 'dot-token', 'validation', 'config', 'auth', 'emergency', 'info'] as const;
+const validTabs = ['prices', 'dot-usd', 'settings', 'admin'] as const;
 type ValidTab = typeof validTabs[number];
 
 function OraclePageContent() {
@@ -35,13 +35,13 @@ function OraclePageContent() {
     };
 
     const [activeTab, setActiveTab] = useState<ValidTab>(
-        isValidTab(urlTab) ? urlTab : 'query'
+        isValidTab(urlTab) ? urlTab : 'prices'
     );
 
     // Update URL when tab changes
     const updateUrl = (newTab: ValidTab) => {
         const currentParams = new URLSearchParams(searchParams.toString());
-        if (newTab !== 'query') {
+        if (newTab !== 'prices') {
             currentParams.set('tab', newTab);
         } else {
             currentParams.delete('tab');
@@ -59,8 +59,8 @@ function OraclePageContent() {
         const urlTab = searchParams.get('tab');
         if (isValidTab(urlTab) && urlTab !== activeTab) {
             setActiveTab(urlTab);
-        } else if (!urlTab && activeTab !== 'query') {
-            setActiveTab('query');
+        } else if (!urlTab && activeTab !== 'prices') {
+            setActiveTab('prices');
         }
     }, [searchParams, activeTab]);
 
@@ -127,89 +127,47 @@ function OraclePageContent() {
                         <Tabs value={activeTab} onValueChange={handleTabChange}>
                             {/* Tab Navigation */}
                             <div className="flex flex-col sm:flex-row sm:items-center justify-center mb-6">
-                                <TabsList className="mt-4 sm:mt-0 grid grid-cols-5 lg:grid-cols-10 w-full sm:w-auto">
-                                    <TabsTrigger value="query" className="flex items-center space-x-1 text-xs">
-                                        <Search className="h-3 w-3" />
-                                        <span className="hidden sm:inline">Query</span>
+                                <TabsList className="mt-4 sm:mt-0 grid grid-cols-2 lg:grid-cols-4 w-full sm:w-auto">
+                                    <TabsTrigger value="prices" className="flex items-center space-x-2">
+                                        <DollarSign className="h-4 w-4" />
+                                        <span>Token Prices</span>
                                     </TabsTrigger>
-                                    <TabsTrigger value="update" className="flex items-center space-x-1 text-xs">
-                                        <Upload className="h-3 w-3" />
-                                        <span className="hidden sm:inline">Update</span>
+                                    <TabsTrigger value="dot-usd" className="flex items-center space-x-2">
+                                        <TrendingUp className="h-4 w-4" />
+                                        <span>DOT/USD Feed</span>
                                     </TabsTrigger>
-                                    <TabsTrigger value="advanced" className="flex items-center space-x-1 text-xs">
-                                        <Database className="h-3 w-3" />
-                                        <span className="hidden sm:inline">Advanced</span>
+                                    <TabsTrigger value="settings" className="flex items-center space-x-2">
+                                        <Settings className="h-4 w-4" />
+                                        <span>Settings</span>
                                     </TabsTrigger>
-                                    <TabsTrigger value="dot-usd" className="flex items-center space-x-1 text-xs">
-                                        <DollarSign className="h-3 w-3" />
-                                        <span className="hidden sm:inline">DOT/USD</span>
-                                    </TabsTrigger>
-                                    <TabsTrigger value="dot-token" className="flex items-center space-x-1 text-xs">
-                                        <DollarSign className="h-3 w-3" />
-                                        <span className="hidden sm:inline">DOT Token</span>
-                                    </TabsTrigger>
-                                    <TabsTrigger value="validation" className="flex items-center space-x-1 text-xs">
-                                        <Settings className="h-3 w-3" />
-                                        <span className="hidden sm:inline">Validation</span>
-                                    </TabsTrigger>
-                                    <TabsTrigger value="config" className="flex items-center space-x-1 text-xs">
-                                        <Settings className="h-3 w-3" />
-                                        <span className="hidden sm:inline">Config</span>
-                                    </TabsTrigger>
-                                    <TabsTrigger value="auth" className="flex items-center space-x-1 text-xs">
-                                        <Users className="h-3 w-3" />
-                                        <span className="hidden sm:inline">Auth</span>
-                                    </TabsTrigger>
-                                    <TabsTrigger value="emergency" className="flex items-center space-x-1 text-xs">
-                                        <AlertTriangle className="h-3 w-3" />
-                                        <span className="hidden sm:inline">Emergency</span>
-                                    </TabsTrigger>
-                                    <TabsTrigger value="info" className="flex items-center space-x-1 text-xs">
-                                        <Info className="h-3 w-3" />
-                                        <span className="hidden sm:inline">Info</span>
+                                    <TabsTrigger value="admin" className="flex items-center space-x-2">
+                                        <Shield className="h-4 w-4" />
+                                        <span>Admin</span>
                                     </TabsTrigger>
                                 </TabsList>
                             </div>
 
                             {/* Tab Content */}
-                            <TabsContent value="query">
+                            <TabsContent value="prices" className="space-y-6">
                                 <OraclePriceFetcher />
-                            </TabsContent>
-
-                            <TabsContent value="update">
                                 <OraclePriceUpdater />
-                            </TabsContent>
-
-                            <TabsContent value="advanced">
                                 <OracleAdvancedDataManager />
                             </TabsContent>
 
-                            <TabsContent value="dot-usd">
+                            <TabsContent value="dot-usd" className="space-y-6">
                                 <OracleDotUsdManager />
-                            </TabsContent>
-
-                            <TabsContent value="dot-token">
                                 <OracleDotTokenManager />
                             </TabsContent>
 
-                            <TabsContent value="validation">
+                            <TabsContent value="settings" className="space-y-6">
                                 <OracleValidationConfigViewer />
-                            </TabsContent>
-
-                            <TabsContent value="config">
                                 <OracleConfigManager />
-                            </TabsContent>
-
-                            <TabsContent value="auth">
                                 <OracleAuthorizationManager />
                             </TabsContent>
 
-                            <TabsContent value="emergency">
-                                <OracleEmergencyControls />
-                            </TabsContent>
-
-                            <TabsContent value="info">
+                            <TabsContent value="admin" className="space-y-6">
                                 <ConfigurationChecklist />
+                                <OracleEmergencyControls />
                                 <OracleInfoViewer />
                             </TabsContent>
                         </Tabs>

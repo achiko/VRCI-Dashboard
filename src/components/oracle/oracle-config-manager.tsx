@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Settings, Shield, Clock, Percent, Save } from 'lucide-react';
 import { txToaster } from '@/utils/txToaster';
+import { LabelWithHelp } from '@/components/ui/field-help';
 
 export function OracleConfigManager() {
     const { contract: oracleContract } = useContract<OracleContractApi>('oracle');
@@ -123,21 +124,21 @@ export function OracleConfigManager() {
                         </h3>
                         <div className="space-y-3">
                             <div className="space-y-2">
-                                <label htmlFor="maxDeviation" className="text-sm font-medium">
-                                    Maximum Deviation (%)
-                                </label>
+                                <LabelWithHelp
+                                    htmlFor="maxDeviation"
+                                    helpText="The maximum allowed price deviation in basis points (1 basis point = 0.01%). This prevents sudden large price changes that could indicate errors or manipulation. For example, 2000 basis points = 20% maximum change. If a price update would change the price by more than this percentage, it will be rejected. This protects against accidental large updates or malicious price manipulation."
+                                >
+                                    Maximum Deviation (basis points)
+                                </LabelWithHelp>
                                 <Input
                                     id="maxDeviation"
                                     type="number"
                                     step="0.1"
-                                    placeholder="e.g., 20 (for 20%)"
+                                    placeholder="e.g., 2000 (for 20%)"
                                     value={maxDeviation}
                                     onChange={(e) => setMaxDeviation(e.target.value)}
                                     disabled={isLoading}
                                 />
-                                <p className="text-xs text-gray-500">
-                                    Maximum allowed price change in percentage (e.g., 20 = 20% max change)
-                                </p>
                             </div>
                             <Button
                                 onClick={handleSetMaxDeviation}
@@ -158,9 +159,12 @@ export function OracleConfigManager() {
                         </h3>
                         <div className="space-y-3">
                             <div className="space-y-2">
-                                <label htmlFor="stalenessThreshold" className="text-sm font-medium">
+                                <LabelWithHelp
+                                    htmlFor="stalenessThreshold"
+                                    helpText="The time in seconds after which price data is considered stale. If the last update was more than this threshold ago, the price is marked as stale. For example, 3600 seconds = 1 hour. Stale prices may be rejected by other contracts or trigger warnings. This helps ensure price data is kept up-to-date and prevents using outdated information for critical operations."
+                                >
                                     Staleness Threshold (seconds)
-                                </label>
+                                </LabelWithHelp>
                                 <Input
                                     id="stalenessThreshold"
                                     type="number"
@@ -169,9 +173,6 @@ export function OracleConfigManager() {
                                     onChange={(e) => setStalenessThreshold(e.target.value)}
                                     disabled={isLoading}
                                 />
-                                <p className="text-xs text-gray-500">
-                                    Time after which price data is considered stale (3600 = 1 hour, 1800 = 30 minutes)
-                                </p>
                             </div>
                             <Button
                                 onClick={handleSetStalenessThreshold}
@@ -192,9 +193,12 @@ export function OracleConfigManager() {
                         </h3>
                         <div className="space-y-3">
                             <div className="space-y-2">
-                                <label htmlFor="minUpdateInterval" className="text-sm font-medium">
+                                <LabelWithHelp
+                                    htmlFor="minUpdateInterval"
+                                    helpText="The minimum time in seconds that must pass between price updates for the same token. This prevents spam updates and ensures price updates are meaningful. For example, 60 seconds means you can only update a token's price once per minute. This helps prevent rapid-fire updates that could be used to manipulate prices or waste gas fees."
+                                >
                                     Minimum Update Interval (seconds)
-                                </label>
+                                </LabelWithHelp>
                                 <Input
                                     id="minUpdateInterval"
                                     type="number"

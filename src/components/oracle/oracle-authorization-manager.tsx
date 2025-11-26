@@ -8,8 +8,11 @@ import type { OracleContractApi } from '@/lib/contracts/oracle';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { UserPlus, UserMinus, Users, Shield, CheckCircle } from 'lucide-react';
+import { UserPlus, UserMinus, Users, Shield, CheckCircle, XCircle, RefreshCw } from 'lucide-react';
 import { txToaster } from '@/utils/txToaster';
+import { LabelWithHelp } from '@/components/ui/field-help';
+import { Badge } from '@/components/ui/badge';
+import { useContractQuery } from 'typink';
 
 export function OracleAuthorizationManager() {
     const { contract: oracleContract } = useContract<OracleContractApi>('oracle');
@@ -111,9 +114,12 @@ export function OracleAuthorizationManager() {
                         </h3>
                         <div className="space-y-3">
                             <div className="space-y-2">
-                                <label htmlFor="updaterAddress" className="text-sm font-medium">
+                                <LabelWithHelp
+                                    htmlFor="updaterAddress"
+                                    helpText="The account address (SS58 format) that will be granted permission to update oracle prices. Authorized updaters can update token prices, market cap, and volume data without needing owner permissions. For production, you should have multiple authorized updaters to ensure price feeds remain updated. Only the contract owner can add or remove updaters."
+                                >
                                     Updater Address
-                                </label>
+                                </LabelWithHelp>
                                 <Input
                                     id="updaterAddress"
                                     placeholder="Enter account address (e.g., 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY)"
@@ -122,9 +128,6 @@ export function OracleAuthorizationManager() {
                                     className="font-mono text-sm"
                                     disabled={isLoading}
                                 />
-                                <p className="text-xs text-gray-500">
-                                    Grant this address permission to update oracle prices
-                                </p>
                             </div>
                             <Button
                                 onClick={handleAddUpdater}
@@ -145,9 +148,12 @@ export function OracleAuthorizationManager() {
                         </h3>
                         <div className="space-y-3">
                             <div className="space-y-2">
-                                <label htmlFor="removeAddress" className="text-sm font-medium">
+                                <LabelWithHelp
+                                    htmlFor="removeAddress"
+                                    helpText="The account address (SS58 format) that will have its update permissions revoked. Once removed, this address will no longer be able to update oracle prices. Only the contract owner can remove updaters. Make sure you have other updaters configured before removing one to avoid service disruption."
+                                >
                                     Address to Remove
-                                </label>
+                                </LabelWithHelp>
                                 <Input
                                     id="removeAddress"
                                     placeholder="Enter account address to remove"
@@ -156,9 +162,6 @@ export function OracleAuthorizationManager() {
                                     className="font-mono text-sm"
                                     disabled={isLoading}
                                 />
-                                <p className="text-xs text-gray-500">
-                                    Revoke update permissions from this address
-                                </p>
                             </div>
                             <Button
                                 onClick={handleRemoveUpdater}
@@ -180,9 +183,12 @@ export function OracleAuthorizationManager() {
                         </h3>
                         <div className="space-y-3">
                             <div className="space-y-2">
-                                <label htmlFor="checkAddress" className="text-sm font-medium">
+                                <LabelWithHelp
+                                    htmlFor="checkAddress"
+                                    helpText="Enter an account address (SS58 format) to check if it has authorization to update oracle prices. This is a read-only query that doesn't require a transaction. The result will show whether the address is currently authorized as an updater."
+                                >
                                     Address to Check
-                                </label>
+                                </LabelWithHelp>
                                 <Input
                                     id="checkAddress"
                                     placeholder="Enter account address to check"
@@ -190,9 +196,6 @@ export function OracleAuthorizationManager() {
                                     onChange={(e) => setCheckAddress(e.target.value)}
                                     className="font-mono text-sm"
                                 />
-                                <p className="text-xs text-gray-500">
-                                    Check if this address is authorized to update prices
-                                </p>
                             </div>
                             <Button
                                 onClick={handleCheckAuthorization}

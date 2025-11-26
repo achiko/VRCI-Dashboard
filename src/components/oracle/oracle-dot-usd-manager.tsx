@@ -12,6 +12,7 @@ import { DollarSign, Clock, AlertTriangle, RefreshCw, TrendingUp, CheckCircle, X
 import { txToaster } from '@/utils/txToaster';
 import { Badge } from '@/components/ui/badge';
 import { useContractQuery } from 'typink';
+import { LabelWithHelp } from '@/components/ui/field-help';
 
 export function OracleDotUsdManager() {
     const { contract: oracleContract } = useContract<OracleContractApi>('oracle');
@@ -210,9 +211,12 @@ export function OracleDotUsdManager() {
                     <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
                         <div className="space-y-4">
                             <div className="space-y-2">
-                                <label htmlFor="dotPrice" className="text-sm font-medium">
+                                <LabelWithHelp
+                                    htmlFor="dotPrice"
+                                    helpText="The DOT/USD price is critical for all USD-denominated calculations in the system. It's used by the Registry contract to convert USD thresholds to plancks for tier calculations. Enter the current market price of DOT in USD (e.g., 6.50 for $6.50). The price is stored with 9 decimal places internally (1 USD = 10^9 units). This should be updated regularly (hourly or daily) by authorized price updaters."
+                                >
                                     DOT Price in USD
-                                </label>
+                                </LabelWithHelp>
                                 <Input
                                     id="dotPrice"
                                     type="number"
@@ -223,9 +227,6 @@ export function OracleDotUsdManager() {
                                     onChange={(e) => setDotPrice(e.target.value)}
                                     disabled={isLoading}
                                 />
-                                <p className="text-xs text-gray-500">
-                                    Enter the current DOT price in USD (e.g., 6.50 for $6.50)
-                                </p>
                             </div>
 
                             <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded border border-blue-300 dark:border-blue-700">
@@ -262,9 +263,12 @@ export function OracleDotUsdManager() {
                     <div className="p-4 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
                         <div className="space-y-4">
                             <div className="space-y-2">
-                                <label htmlFor="emergencyPrice" className="text-sm font-medium text-red-700">
+                                <LabelWithHelp
+                                    htmlFor="emergencyPrice"
+                                    helpText="Emergency price override allows the contract owner to bypass all validation checks and set a DOT/USD price directly. Use this only when normal price updates fail or when immediate price correction is needed. This function bypasses staleness checks, deviation limits, and update intervals. Only the contract owner can execute this function."
+                                >
                                     Emergency DOT Price (USD)
-                                </label>
+                                </LabelWithHelp>
                                 <Input
                                     id="emergencyPrice"
                                     type="number"

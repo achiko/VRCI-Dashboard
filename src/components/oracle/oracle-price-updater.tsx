@@ -10,6 +10,7 @@ import { Input } from '../ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Upload, DollarSign, TrendingUp, AlertCircle, CheckCircle, Loader } from 'lucide-react';
 import { txToaster } from '@/utils/txToaster';
+import { LabelWithHelp } from '@/components/ui/field-help';
 
 export function OraclePriceUpdater() {
     const { contract: oracleContract } = useContract<OracleContractApi>('oracle');
@@ -176,9 +177,12 @@ export function OraclePriceUpdater() {
             <CardContent className="space-y-6">
                 {/* Token Address Input */}
                 <div className="space-y-2">
-                    <label htmlFor="update-token-address" className="text-sm font-medium">
+                    <LabelWithHelp
+                        htmlFor="update-token-address"
+                        helpText="The token contract address (H160 format) for which you want to update price data. This should be the address of the token contract deployed on the network. If left blank, the system will use a dummy token address for testing purposes. Only authorized updaters or the contract owner can update prices."
+                    >
                         Token Address (optional)
-                    </label>
+                    </LabelWithHelp>
                     <Input
                         id="update-token-address"
                         placeholder="Enter token address or leave blank for dummy token"
@@ -234,9 +238,12 @@ export function OraclePriceUpdater() {
                             <span>Update Price</span>
                         </h3>
                         <div className="space-y-2">
-                            <label htmlFor="price" className="text-sm font-medium">
+                            <LabelWithHelp
+                                htmlFor="price"
+                                helpText="The current price of the token in PAS (the native token of Passet Hub). Enter the price as a decimal number (e.g., 1.5 for 1.5 PAS per token). The price is stored internally in plancks (1 PAS = 10^10 plancks), so the value is automatically converted. This price is used for portfolio valuation and rebalancing calculations."
+                            >
                                 Price (in PAS tokens)
-                            </label>
+                            </LabelWithHelp>
                             <Input
                                 id="price"
                                 type="number"
@@ -247,9 +254,6 @@ export function OraclePriceUpdater() {
                                 className="text-sm"
                                 disabled={isLoading}
                             />
-                            <p className="text-xs text-gray-500">
-                                Enter the price in PAS tokens (e.g., 1.5 = 1.5 PAS)
-                            </p>
                         </div>
                         <Button
                             onClick={handleUpdatePrice}
@@ -275,9 +279,12 @@ export function OraclePriceUpdater() {
                         </h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <label htmlFor="marketCap" className="text-sm font-medium">
+                                <LabelWithHelp
+                                    htmlFor="marketCap"
+                                    helpText="The total market capitalization of the token in PAS tokens. Market cap is calculated as: price × total supply. Enter the value as a decimal number (e.g., 100000 for 100,000 PAS). This value is used by the Registry contract to determine token tiers based on market cap thresholds."
+                                >
                                     Market Cap (in PAS tokens)
-                                </label>
+                                </LabelWithHelp>
                                 <Input
                                     id="marketCap"
                                     type="number"
@@ -290,9 +297,12 @@ export function OraclePriceUpdater() {
                                 />
                             </div>
                             <div className="space-y-2">
-                                <label htmlFor="volume" className="text-sm font-medium">
+                                <LabelWithHelp
+                                    htmlFor="volume"
+                                    helpText="The 24-hour trading volume of the token in PAS tokens. This represents the total amount of tokens traded in the last 24 hours. Enter the value as a decimal number (e.g., 50000 for 50,000 PAS). Volume data is used for liquidity analysis and tier calculations in the Registry contract."
+                                >
                                     24h Volume (in PAS tokens)
-                                </label>
+                                </LabelWithHelp>
                                 <Input
                                     id="volume"
                                     type="number"

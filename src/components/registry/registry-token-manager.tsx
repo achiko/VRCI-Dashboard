@@ -444,14 +444,17 @@ export function RegistryTokenManager() {
                                     Token Contract Address *
                                 </label>
                                 <AddressInput
-                                    placeholder="Enter token contract address (e.g., 5GrwvaEF5zXb26...)"
+                                    placeholder="Enter token contract address (e.g., 0x... or 5GrwvaEF5zXb26...)"
                                     value={tokenContract}
                                     onChange={setTokenContract}
                                     className="font-mono text-sm"
                                     disabled={isLoading}
+                                    format="both"
+                                    withIdentityLookup={false}
+                                    withIdentitySearch={false}
                                 />
                                 <p className="text-xs text-gray-600 dark:text-gray-400">
-                                    The contract address of the token to be registered
+                                    The contract address of the token to be registered (hexadecimal or SS58 format)
                                 </p>
                             </div>
                             <div className="space-y-2">
@@ -459,14 +462,17 @@ export function RegistryTokenManager() {
                                     Oracle Contract Address *
                                 </label>
                                 <AddressInput
-                                    placeholder="Enter oracle contract address"
+                                    placeholder="Enter oracle contract address (e.g., 0x... or 5GrwvaEF5zXb26...)"
                                     value={oracleContract}
                                     onChange={setOracleContract}
                                     className="font-mono text-sm"
                                     disabled={isLoading}
+                                    format="both"
+                                    withIdentityLookup={false}
+                                    withIdentitySearch={false}
                                 />
                                 <p className="text-xs text-gray-600 dark:text-gray-400">
-                                    The oracle contract that provides price data for this token
+                                    The oracle contract that provides price data for this token (hexadecimal or SS58 format)
                                 </p>
                             </div>
                         </div>

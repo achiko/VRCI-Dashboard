@@ -24,6 +24,7 @@ import { Identicon } from "@polkadot/react-identicon";
 import { type IconTheme } from "@polkadot/react-identicon/types";
 import type { UseQueryResult } from "@tanstack/react-query";
 import { ethers } from "ethers";
+import { isHex } from "@polkadot/util";
 
 import { Check, CircleCheck, Copy, Loader2 } from "lucide-react";
 import { forwardRef, type ReactNode, useEffect, useRef, useState } from "react";
@@ -716,10 +717,35 @@ export function validateAddress(
     return { isValid: false, type: "unknown", error: "Address is required" };
   }
 
+  const trimmedAddress = address.trim();
+
+  // Check for hexadecimal contract addresses (0x... format)
+  // This is valid for Polkadot contract addresses
+  if (trimmedAddress.startsWith("0x") && isHex(trimmedAddress)) {
+    // Validate hex address length (should be 20 bytes = 40 hex chars + 0x prefix = 42 chars for contract addresses)
+    // Or 32 bytes = 64 hex chars + 0x prefix = 66 chars for account addresses
+    const hexLength = trimmedAddress.length;
+    if (hexLength === 42 || hexLength === 66) {
+      // Determine type based on format preference
+      let addressType: "eth" | "ss58" = "ss58";
+      if (format === "eth") {
+        addressType = "eth";
+      } else if (format === "both") {
+        // For "both", prefer SS58 for Polkadot contract addresses
+        addressType = "ss58";
+      }
+      return {
+        isValid: true,
+        type: addressType,
+        normalizedAddress: trimmedAddress.toLowerCase(),
+      };
+    }
+  }
+
   // SS58 validation
   if (format === "ss58" || format === "both") {
     try {
-      const decoded = decodeAddress(address);
+      const decoded = decodeAddress(trimmedAddress);
 
       // Check if the decoded address has the proper length (32 bytes for a public key)
       if (decoded.length !== 32) {
@@ -734,6 +760,17 @@ export function validateAddress(
       };
     } catch {
       if (format === "ss58") {
+        // If it's a hex address, accept it as valid contract address
+        if (trimmedAddress.startsWith("0x") && isHex(trimmedAddress)) {
+          const hexLength = trimmedAddress.length;
+          if (hexLength === 42 || hexLength === 66) {
+            return {
+              isValid: true,
+              type: "ss58",
+              normalizedAddress: trimmedAddress.toLowerCase(),
+            };
+          }
+        }
         return {
           isValid: false,
           type: "unknown",
@@ -746,7 +783,7 @@ export function validateAddress(
   // Ethereum validation
   if (format === "eth" || format === "both") {
     try {
-      const normalized = ethers.getAddress(address);
+      const normalized = ethers.getAddress(trimmedAddress);
       return {
         isValid: true,
         type: "eth",

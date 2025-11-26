@@ -38,11 +38,23 @@ export function useIdentitySearch(
       }
 
       try {
+        // Check if identity pallet exists
+        if (!peopleClient.query.identity) {
+          console.warn("Identity pallet not available on this chain");
+          return [];
+        }
+
         // Get all identity entries using Dedot API
         const storageQuery = peopleClient.query.identity
           .identityOf as unknown as {
           entries(): Promise<[AccountId32, PalletIdentityRegistration][]>;
         };
+        
+        if (!storageQuery || typeof storageQuery.entries !== "function") {
+          console.warn("Identity pallet entries method not available");
+          return [];
+        }
+
         const entries = await storageQuery.entries();
 
         const MAX_RESULTS = 10;

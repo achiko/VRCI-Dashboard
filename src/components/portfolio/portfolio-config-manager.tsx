@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { CheckCircle, XCircle, Settings, RefreshCw, Copy } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { LabelWithHelp } from '@/components/ui/field-help';
 
 export default function PortfolioConfigManager() {
   const { contract: portfolioContract } = useContract<PortfolioContractApi>('portfolio');
@@ -373,7 +374,12 @@ export default function PortfolioConfigManager() {
 
             {/* Registry Contract Form */}
             <div className="space-y-2">
-              <Label htmlFor="registry-address">Registry Contract Address</Label>
+              <LabelWithHelp
+                htmlFor="registry-address"
+                helpText="The Registry contract address (H160 format: 0x followed by 40 hex characters). The Registry contract manages token registrations and tier classifications. The Portfolio contract needs this reference to query token information and validate token tiers during portfolio operations. This enables cross-contract calls between Portfolio and Registry."
+              >
+                Registry Contract Address
+              </LabelWithHelp>
               <div className="flex gap-2">
                 <Input
                   id="registry-address"
@@ -402,7 +408,12 @@ export default function PortfolioConfigManager() {
 
             {/* Token Contract Form */}
             <div className="space-y-2">
-              <Label htmlFor="token-address">Token Contract Address (W3PI)</Label>
+              <LabelWithHelp
+                htmlFor="token-address"
+                helpText="The W3PI Token contract address (H160 format: 0x followed by 40 hex characters). The Token contract is used for minting and burning operations. The Portfolio contract needs this reference to mint W3PI tokens when users deposit assets and burn tokens when users withdraw. This is essential for the portfolio's tokenization mechanism."
+              >
+                Token Contract Address (W3PI)
+              </LabelWithHelp>
               <div className="flex gap-2">
                 <Input
                   id="token-address"
@@ -431,7 +442,12 @@ export default function PortfolioConfigManager() {
 
             {/* DEX Contract Form */}
             <div className="space-y-2">
-              <Label htmlFor="dex-address">DEX Contract Address</Label>
+              <LabelWithHelp
+                htmlFor="dex-address"
+                helpText="The DEX contract address (H160 format: 0x followed by 40 hex characters). The DEX contract handles token swaps during portfolio rebalancing operations. The Portfolio contract needs this reference to execute trades when rebalancing the portfolio to maintain target weights. This enables automatic token swaps without manual intervention."
+              >
+                DEX Contract Address
+              </LabelWithHelp>
               <div className="flex gap-2">
                 <Input
                   id="dex-address"
@@ -460,7 +476,12 @@ export default function PortfolioConfigManager() {
 
             {/* Oracle Contract Form */}
             <div className="space-y-2">
-              <Label htmlFor="oracle-address">Oracle Contract Address</Label>
+              <LabelWithHelp
+                htmlFor="oracle-address"
+                helpText="The Oracle contract address (H160 format: 0x followed by 40 hex characters). The Oracle contract provides price feeds for portfolio valuation. The Portfolio contract needs this reference to get real-time token prices for calculating portfolio value, determining rebalancing needs, and performing USD-denominated calculations."
+              >
+                Oracle Contract Address
+              </LabelWithHelp>
               <div className="flex gap-2">
                 <Input
                   id="oracle-address"

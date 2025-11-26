@@ -12,6 +12,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { CheckCircle, XCircle, Settings, Clock, RefreshCw, Copy, Wallet } from 'lucide-react';
 import { decodeAddress } from '@polkadot/keyring';
+import { LabelWithHelp } from '@/components/ui/field-help';
 
 export default function StakingConfiguration() {
   const { contract: stakingContract } = useContract<StakingContractApi>('staking');
@@ -624,7 +625,12 @@ export default function StakingConfiguration() {
           {/* Set W3PI Token Address */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label htmlFor="w3pi-token-address">W3PI Token Contract Address</Label>
+              <LabelWithHelp
+                htmlFor="w3pi-token-address"
+                helpText="The W3PI Token contract address (H160 format: 0x followed by 40 hex characters). This reference allows the Staking contract to interact with the token for staking operations. This enables users to stake their W3PI tokens and earn rewards. The contract needs this reference to transfer tokens during stake, unstake, and reward distribution operations."
+              >
+                W3PI Token Contract Address
+              </LabelWithHelp>
               {w3piTokenSet && (
                 <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
                   <CheckCircle className="h-3 w-3 mr-1" />
@@ -661,7 +667,12 @@ export default function StakingConfiguration() {
           {/* Set Registry Address */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label htmlFor="registry-address">Registry Contract Address</Label>
+              <LabelWithHelp
+                htmlFor="registry-address"
+                helpText="The Registry contract address (H160 format: 0x followed by 40 hex characters). This reference allows the Staking contract to query token tier information. This is used to determine staking rewards based on the user's portfolio tier. The contract needs this reference to calculate appropriate reward rates for different tier levels."
+              >
+                Registry Contract Address
+              </LabelWithHelp>
               {registrySet && (
                 <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
                   <CheckCircle className="h-3 w-3 mr-1" />
@@ -698,7 +709,12 @@ export default function StakingConfiguration() {
           {/* Set Fee Wallet Address */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label htmlFor="fee-wallet-address">Fee Wallet Address</Label>
+              <LabelWithHelp
+                htmlFor="fee-wallet-address"
+                helpText="The fee wallet address where staking fees are collected. When users stake or unstake tokens, a portion of the fees goes to this wallet. The address can be in H160 format (0x...) or SS58 format (Polkadot account address). SS58 addresses are automatically converted to H160 format. This wallet receives fees from all staking operations."
+              >
+                Fee Wallet Address
+              </LabelWithHelp>
               {feeWalletSet && (
                 <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
                   <CheckCircle className="h-3 w-3 mr-1" />

@@ -10,6 +10,7 @@ import { Input } from '../ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { TrendingUp, DollarSign, RefreshCw, Search, AlertCircle } from 'lucide-react';
 import { formatBalance } from 'typink';
+import { LabelWithHelp } from '@/components/ui/field-help';
 
 export function OraclePriceFetcher() {
     const { contract: oracleContract } = useContract<OracleContractApi>('oracle');
@@ -163,9 +164,12 @@ export function OraclePriceFetcher() {
             <CardContent className="space-y-6">
                 {/* Token Address Input */}
                 <div className="space-y-2">
-                    <label htmlFor="token-address" className="text-sm font-medium">
+                    <LabelWithHelp
+                        htmlFor="token-address"
+                        helpText="The token contract address (H160 format) for which you want to query price data. This should be the address of the token contract deployed on the network. If left blank, the system will use a dummy token address for testing purposes. You can query price, market cap, and volume data for any registered token."
+                    >
                         Token Address (optional)
-                    </label>
+                    </LabelWithHelp>
                     <Input
                         id="token-address"
                         placeholder="Enter token address or leave blank for dummy token"

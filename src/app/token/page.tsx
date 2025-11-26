@@ -66,7 +66,7 @@ function TokenPageContent() {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-            <div className="max-w-6xl mx-auto p-8">
+            <div className=" mx-auto p-8">
                 {/* Header */}
                 <div className="mb-8">
                     <h1 className="text-3xl font-bold text-gray-900 mb-1">

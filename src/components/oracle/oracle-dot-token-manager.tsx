@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { CheckCircle, XCircle, Info } from 'lucide-react';
+import { LabelWithHelp } from '../ui/field-help';
 
 export default function OracleDotTokenManager() {
   const { contract: oracleContract } = useContract<OracleContractApi>('oracle');
@@ -91,9 +92,15 @@ export default function OracleDotTokenManager() {
 
           {/* Check if Token is DOT Token */}
           <div className="space-y-2">
-            <Label>Check if Token is DOT Token</Label>
+            <LabelWithHelp
+              htmlFor="dot-token-check"
+              helpText="Enter a token contract address (H160 format, 0x...) to check if it is the DOT token configured in the oracle. The DOT token is used for USD price feeds in registry tier calculations. This is a read-only query that doesn't require a transaction."
+            >
+              Check if Token is DOT Token
+            </LabelWithHelp>
             <div className="flex gap-2">
               <Input
+                id="dot-token-check"
                 value={tokenAddress}
                 onChange={(e) => setTokenAddress(e.target.value)}
                 placeholder="Enter token address (0x...)"

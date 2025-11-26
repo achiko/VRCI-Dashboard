@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertTriangle, Play, Pause, Shield, DollarSign } from 'lucide-react';
 import { txToaster } from '@/utils/txToaster';
+import { LabelWithHelp } from '@/components/ui/field-help';
 
 export function OracleEmergencyControls() {
     const { contract: oracleContract } = useContract<OracleContractApi>('oracle');
@@ -204,9 +205,12 @@ export function OracleEmergencyControls() {
                         </h3>
                         <div className="space-y-4">
                             <div className="space-y-2">
-                                <label htmlFor="emergencyTokenAddress" className="text-sm font-medium">
+                                <LabelWithHelp
+                                    htmlFor="emergencyTokenAddress"
+                                    helpText="The token contract address (H160 format) for which you want to override price data. This emergency override bypasses all validation checks including staleness, deviation limits, and update intervals. Use only when normal price updates fail or immediate correction is needed. Only the contract owner can execute this function."
+                                >
                                     Token Address
-                                </label>
+                                </LabelWithHelp>
                                 <Input
                                     id="emergencyTokenAddress"
                                     placeholder="Enter token address"
@@ -218,9 +222,12 @@ export function OracleEmergencyControls() {
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div className="space-y-2">
-                                    <label htmlFor="emergencyPrice" className="text-sm font-medium text-red-700">
+                                    <LabelWithHelp
+                                        htmlFor="emergencyPrice"
+                                        helpText="Emergency price override value in PAS tokens. This bypasses all validation checks. Enter as a decimal number (e.g., 1.5 for 1.5 PAS per token). This is required for emergency overrides. Use with extreme caution as it can set any price regardless of previous values or market conditions."
+                                    >
                                         Price (PAS) *
-                                    </label>
+                                    </LabelWithHelp>
                                     <Input
                                         id="emergencyPrice"
                                         type="number"
@@ -247,9 +254,12 @@ export function OracleEmergencyControls() {
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <label htmlFor="emergencyVolume" className="text-sm font-medium">
+                                    <LabelWithHelp
+                                        htmlFor="emergencyVolume"
+                                        helpText="Optional emergency 24h volume override in PAS tokens. If provided, this will override the volume value. Enter as a decimal number (e.g., 10000 for 10,000 PAS). This is optional - if left empty, the volume will not be updated in the emergency override."
+                                    >
                                         24h Volume (PAS)
-                                    </label>
+                                    </LabelWithHelp>
                                     <Input
                                         id="emergencyVolume"
                                         type="number"

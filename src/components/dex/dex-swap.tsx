@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { CheckCircle, XCircle, ArrowLeftRight, TrendingUp } from 'lucide-react';
+import { LabelWithHelp } from '@/components/ui/field-help';
 
 export default function DexSwap() {
   const { contract: dexContract } = useContract<DexContractApi>('dex');
@@ -79,16 +80,28 @@ export default function DexSwap() {
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>From Token</Label>
+                <LabelWithHelp
+                  htmlFor="fromToken"
+                  helpText="The token contract address (H160 format: 0x...) you want to swap FROM. This is the token you're selling/exchanging. The token must be supported by the DEX and have sufficient liquidity. Enter the full contract address of the token you want to swap."
+                >
+                  From Token
+                </LabelWithHelp>
                 <Input
+                  id="fromToken"
                   value={fromToken}
                   onChange={(e) => setFromToken(e.target.value)}
                   placeholder="Enter token address"
                 />
               </div>
               <div className="space-y-2">
-                <Label>To Token</Label>
+                <LabelWithHelp
+                  htmlFor="toToken"
+                  helpText="The token contract address (H160 format: 0x...) you want to swap TO. This is the token you're buying/receiving. The token must be supported by the DEX and have sufficient liquidity. Enter the full contract address of the token you want to receive."
+                >
+                  To Token
+                </LabelWithHelp>
                 <Input
+                  id="toToken"
                   value={toToken}
                   onChange={(e) => setToToken(e.target.value)}
                   placeholder="Enter token address"
@@ -97,8 +110,14 @@ export default function DexSwap() {
             </div>
 
             <div className="space-y-2">
-              <Label>Amount</Label>
+              <LabelWithHelp
+                htmlFor="swapAmount"
+                helpText="The amount of tokens to swap from the 'From Token'. Enter the amount in the token's native units (e.g., if the token has 18 decimals, enter 1.0 for 1 token). The DEX will calculate how much of the 'To Token' you'll receive based on current exchange rates and liquidity pools."
+              >
+                Amount
+              </LabelWithHelp>
               <Input
+                id="swapAmount"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="Enter amount to swap"
@@ -107,8 +126,14 @@ export default function DexSwap() {
             </div>
 
             <div className="space-y-2">
-              <Label>Swap Path (optional)</Label>
+              <LabelWithHelp
+                htmlFor="swapPath"
+                helpText="Optional swap path for multi-hop swaps. If you want to swap through intermediate tokens, enter a comma-separated list of token addresses. For example: '0xTokenA,0xTokenB' would swap From Token → TokenA → TokenB → To Token. If left empty, the DEX will attempt a direct swap or find the best path automatically."
+              >
+                Swap Path (optional)
+              </LabelWithHelp>
               <Input
+                id="swapPath"
                 value={path}
                 onChange={(e) => setPath(e.target.value)}
                 placeholder="Enter swap path (comma-separated)"

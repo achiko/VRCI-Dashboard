@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Database, TrendingUp, DollarSign, BarChart3 } from 'lucide-react';
 import { txToaster } from '@/utils/txToaster';
+import { LabelWithHelp } from '@/components/ui/field-help';
 
 export function OracleAdvancedDataManager() {
     const { contract: oracleContract } = useContract<OracleContractApi>('oracle');
@@ -160,9 +161,12 @@ export function OracleAdvancedDataManager() {
                 <CardContent className="space-y-6">
                     {/* Token Address Input */}
                     <div className="space-y-2">
-                        <label htmlFor="advancedTokenAddress" className="text-sm font-medium">
+                        <LabelWithHelp
+                            htmlFor="advancedTokenAddress"
+                            helpText="The token contract address (H160 format) for which you want to update comprehensive data. This should be the address of the token contract deployed on the network. If left blank, the system will use a dummy token address for testing. Advanced updates allow you to set price, market cap, and volume in a single transaction."
+                        >
                             Token Address (optional)
-                        </label>
+                        </LabelWithHelp>
                         <Input
                             id="advancedTokenAddress"
                             placeholder="Enter token address or leave blank for dummy token"
@@ -219,9 +223,12 @@ export function OracleAdvancedDataManager() {
                             </h3>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div className="space-y-2">
-                                    <label htmlFor="completePrice" className="text-sm font-medium">
+                                    <LabelWithHelp
+                                        htmlFor="completePrice"
+                                        helpText="The current price of the token in PAS (native token of Passet Hub). Enter as a decimal number (e.g., 1.5 for 1.5 PAS per token). This is required for complete token data updates. The price is stored internally in plancks (1 PAS = 10^10 plancks)."
+                                    >
                                         Price (PAS) *
-                                    </label>
+                                    </LabelWithHelp>
                                     <div className="relative">
                                         <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                                         <Input
@@ -238,9 +245,12 @@ export function OracleAdvancedDataManager() {
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <label htmlFor="completeMarketCap" className="text-sm font-medium">
+                                    <LabelWithHelp
+                                        htmlFor="completeMarketCap"
+                                        helpText="The total market capitalization of the token in PAS tokens. Market cap = price × total supply. Enter as a decimal number (e.g., 100000 for 100,000 PAS). This is required for complete token data updates and is used by the Registry contract for tier calculations."
+                                    >
                                         Market Cap (PAS) *
-                                    </label>
+                                    </LabelWithHelp>
                                     <div className="relative">
                                         <TrendingUp className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                                         <Input
@@ -257,9 +267,12 @@ export function OracleAdvancedDataManager() {
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <label htmlFor="completeVolume" className="text-sm font-medium">
+                                    <LabelWithHelp
+                                        htmlFor="completeVolume"
+                                        helpText="The 24-hour trading volume of the token in PAS tokens. This represents the total amount of tokens traded in the last 24 hours. Enter as a decimal number (e.g., 10000 for 10,000 PAS). This is required for complete token data updates and is used for liquidity analysis."
+                                    >
                                         24h Volume (PAS) *
-                                    </label>
+                                    </LabelWithHelp>
                                     <div className="relative">
                                         <BarChart3 className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                                         <Input
@@ -301,9 +314,12 @@ export function OracleAdvancedDataManager() {
                             </h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <label htmlFor="marketMarketCap" className="text-sm font-medium">
+                                    <LabelWithHelp
+                                        htmlFor="marketMarketCap"
+                                        helpText="The total market capitalization of the token in PAS tokens. Market cap = price × total supply. Enter as a decimal number (e.g., 100000 for 100,000 PAS). This is required for market data updates and is used by the Registry contract for tier calculations."
+                                    >
                                         Market Cap (PAS) *
-                                    </label>
+                                    </LabelWithHelp>
                                     <div className="relative">
                                         <TrendingUp className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                                         <Input
@@ -320,9 +336,12 @@ export function OracleAdvancedDataManager() {
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <label htmlFor="marketVolume" className="text-sm font-medium">
+                                    <LabelWithHelp
+                                        htmlFor="marketVolume"
+                                        helpText="The 24-hour trading volume of the token in PAS tokens. This represents the total amount of tokens traded in the last 24 hours. Enter as a decimal number (e.g., 10000 for 10,000 PAS). This is required for market data updates and is used for liquidity analysis."
+                                    >
                                         24h Volume (PAS) *
-                                    </label>
+                                    </LabelWithHelp>
                                     <div className="relative">
                                         <BarChart3 className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                                         <Input

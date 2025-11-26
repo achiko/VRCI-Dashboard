@@ -7,7 +7,8 @@ import { TokenForm } from '@/components/admin/token-form';
 import { TokenList } from '@/components/admin/token-list';
 import { TokenTable } from '@/components/admin/token-table';
 import { WhitelistManager } from '@/components/admin/whitelist-manager';
-import { Settings, Plus, List, Table2, Shield } from 'lucide-react';
+import { TokenRegistrationManager } from '@/components/admin/token-registration-manager';
+import { Settings, Plus, List, Table2, Shield, Database } from 'lucide-react';
 
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<string>('table');
@@ -27,7 +28,7 @@ export default function AdminPage() {
       </Card>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="table" className="flex items-center gap-2">
             <Table2 className="h-4 w-4" />
             Table View
@@ -39,6 +40,10 @@ export default function AdminPage() {
           <TabsTrigger value="add" className="flex items-center gap-2">
             <Plus className="h-4 w-4" />
             Add Token
+          </TabsTrigger>
+          <TabsTrigger value="register" className="flex items-center gap-2">
+            <Database className="h-4 w-4" />
+            Register Tokens
           </TabsTrigger>
           <TabsTrigger value="whitelist" className="flex items-center gap-2">
             <Shield className="h-4 w-4" />
@@ -56,6 +61,10 @@ export default function AdminPage() {
 
         <TabsContent value="add" className="space-y-6">
           <TokenForm />
+        </TabsContent>
+
+        <TabsContent value="register" className="space-y-6">
+          <TokenRegistrationManager />
         </TabsContent>
 
         <TabsContent value="whitelist" className="space-y-6">

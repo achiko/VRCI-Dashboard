@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Send, Users, Plus, Minus, TrendingUp, TrendingDown, CheckCircle, XCircle, Loader2, AlertCircle } from 'lucide-react';
+import { LabelWithHelp } from '@/components/ui/field-help';
 
 interface ManagementState {
     type: 'idle' | 'pending' | 'success' | 'error';
@@ -457,9 +458,12 @@ export function TokenManager() {
                         </h3>
                         <div className="space-y-4">
                             <div className="space-y-2">
-                                <label htmlFor="recipient" className="text-sm font-medium">
+                                <LabelWithHelp
+                                    htmlFor="recipient"
+                                    helpText="The recipient address (H160 format: 0x...) that will receive the tokens. This can be any valid account address on the network. The tokens will be transferred from your account to this address. Make sure the recipient address is correct as transfers are irreversible."
+                                >
                                     Recipient Address *
-                                </label>
+                                </LabelWithHelp>
                                 <Input
                                     id="recipient"
                                     placeholder="Enter recipient address"
@@ -470,9 +474,12 @@ export function TokenManager() {
                                 />
                             </div>
                             <div className="space-y-2">
-                                <label htmlFor="amount" className="text-sm font-medium">
+                                <LabelWithHelp
+                                    htmlFor="amount"
+                                    helpText="The amount of W3PI tokens to transfer. Enter the amount as a decimal number (e.g., 100.5 for 100.5 tokens). The token has 12 decimals, so 1 token = 1,000,000,000,000 (10^12) base units. Make sure you have sufficient balance in your account to cover the transfer."
+                                >
                                     Amount (tokens) *
-                                </label>
+                                </LabelWithHelp>
                                 <Input
                                     id="amount"
                                     type="number"
@@ -509,9 +516,12 @@ export function TokenManager() {
                         </h3>
                         <div className="space-y-4">
                             <div className="space-y-2">
-                                <label htmlFor="spender" className="text-sm font-medium">
+                                <LabelWithHelp
+                                    htmlFor="spender"
+                                    helpText="The spender address (H160 format: 0x...) that will be allowed to spend your tokens. This is typically a contract address (like DEX, Portfolio, or Staking contracts) that needs permission to transfer tokens on your behalf. The spender can transfer up to the allowance amount you set."
+                                >
                                     Spender Address *
-                                </label>
+                                </LabelWithHelp>
                                 <Input
                                     id="spender"
                                     placeholder="Enter spender address"
@@ -522,9 +532,12 @@ export function TokenManager() {
                                 />
                             </div>
                             <div className="space-y-2">
-                                <label htmlFor="allowanceAmount" className="text-sm font-medium">
+                                <LabelWithHelp
+                                    htmlFor="allowanceAmount"
+                                    helpText="The maximum amount of tokens the spender can transfer from your account. Enter as a decimal number (e.g., 1000 for 1,000 tokens). The spender can transfer tokens up to this amount without requiring additional approvals. Set to 0 to revoke an existing allowance. This is useful for DeFi protocols that need to move tokens on your behalf."
+                                >
                                     Allowance Amount (tokens) *
-                                </label>
+                                </LabelWithHelp>
                                 <Input
                                     id="allowanceAmount"
                                     type="number"
@@ -561,9 +574,12 @@ export function TokenManager() {
                         </h3>
                         <div className="space-y-4">
                             <div className="space-y-2">
-                                <label htmlFor="mintAmount" className="text-sm font-medium">
+                                <LabelWithHelp
+                                    htmlFor="mintAmount"
+                                    helpText="The amount of new W3PI tokens to mint (create). Enter as a decimal number (e.g., 1000 for 1,000 tokens). Minting increases the total supply of tokens. Only accounts with minting permissions (typically the Portfolio contract or admin) can mint tokens. Minting is used when users deposit assets into portfolios."
+                                >
                                     Amount (tokens) *
-                                </label>
+                                </LabelWithHelp>
                                 <Input
                                     id="mintAmount"
                                     type="number"
@@ -576,9 +592,12 @@ export function TokenManager() {
                                 />
                             </div>
                             <div className="space-y-2">
-                                <label htmlFor="mintRecipient" className="text-sm font-medium">
+                                <LabelWithHelp
+                                    htmlFor="mintRecipient"
+                                    helpText="Optional recipient address (H160 format: 0x...) for the minted tokens. If left empty, tokens will be minted to your account. If specified, tokens will be minted directly to this address. This is useful for minting tokens to specific accounts or contracts."
+                                >
                                     Recipient Address (optional)
-                                </label>
+                                </LabelWithHelp>
                                 <Input
                                     id="mintRecipient"
                                     placeholder="Leave empty to mint to your account"
@@ -613,9 +632,12 @@ export function TokenManager() {
                         </h3>
                         <div className="space-y-4">
                             <div className="space-y-2">
-                                <label htmlFor="burnAmount" className="text-sm font-medium">
+                                <LabelWithHelp
+                                    htmlFor="burnAmount"
+                                    helpText="The amount of W3PI tokens to burn (destroy). Enter as a decimal number (e.g., 100 for 100 tokens). Burning permanently removes tokens from circulation, reducing the total supply. Only accounts with burning permissions (typically the Portfolio contract or admin) can burn tokens. Burning is used when users withdraw assets from portfolios."
+                                >
                                     Amount (tokens) *
-                                </label>
+                                </LabelWithHelp>
                                 <Input
                                     id="burnAmount"
                                     type="number"
@@ -628,9 +650,12 @@ export function TokenManager() {
                                 />
                             </div>
                             <div className="space-y-2">
-                                <label htmlFor="burnTarget" className="text-sm font-medium">
+                                <LabelWithHelp
+                                    htmlFor="burnTarget"
+                                    helpText="Optional target address (H160 format: 0x...) to burn tokens from. If left empty, tokens will be burned from your account. If specified, tokens will be burned from this address. You must have permission to burn from the target address (typically requires being the owner or having a burn allowance)."
+                                >
                                     Target Address (optional)
-                                </label>
+                                </LabelWithHelp>
                                 <Input
                                     id="burnTarget"
                                     placeholder="Leave empty to burn from your account"

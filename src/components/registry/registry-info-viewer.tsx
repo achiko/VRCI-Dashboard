@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Info, User, Package, CheckCircle, RefreshCw, AlertCircle, Shield, Crown, Users, Loader2, XCircle } from 'lucide-react';
+import { RegistryTokensList } from './registry-tokens-list';
 
 interface InfoState {
     type: 'idle' | 'loading' | 'success' | 'error';
@@ -263,6 +264,13 @@ export function RegistryInfoViewer() {
                                 )}
                             </div>
                         </>
+                    )}
+
+                    {/* Registered Tokens List */}
+                    {registryInfo && registryInfo.tokenCount > 0 && (
+                        <div className="mt-6">
+                            <RegistryTokensList />
+                        </div>
                     )}
                 </CardContent>
             </Card>

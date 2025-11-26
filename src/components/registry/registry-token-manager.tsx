@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { AddressInput } from '@/components/address-input.dedot';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { LabelWithHelp } from '@/components/ui/field-help';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
@@ -440,9 +441,12 @@ export function RegistryTokenManager() {
                         </h3>
                         <div className="space-y-4">
                             <div className="space-y-2">
-                                <label htmlFor="tokenContract" className="text-sm font-medium">
+                                <LabelWithHelp
+                                    htmlFor="tokenContract"
+                                    helpText="The contract address of the token to be registered in the Registry. This should be the H160 format address (0x...) or SS58 format address of the token contract deployed on the network. The token must be a valid ERC20-compatible contract. Once registered, the token can be added to portfolios and used in the ecosystem. The Registry will automatically calculate the token's tier based on market cap and volume data from the oracle."
+                                >
                                     Token Contract Address *
-                                </label>
+                                </LabelWithHelp>
                                 <AddressInput
                                     placeholder="Enter token contract address (e.g., 0x... or 5GrwvaEF5zXb26...)"
                                     value={tokenContract}
@@ -453,14 +457,14 @@ export function RegistryTokenManager() {
                                     withIdentityLookup={false}
                                     withIdentitySearch={false}
                                 />
-                                <p className="text-xs text-gray-600 dark:text-gray-400">
-                                    The contract address of the token to be registered (hexadecimal or SS58 format)
-                                </p>
                             </div>
                             <div className="space-y-2">
-                                <label htmlFor="oracleContract" className="text-sm font-medium">
+                                <LabelWithHelp
+                                    htmlFor="oracleContract"
+                                    helpText="The Oracle contract address that will provide price data for this token. This should be the H160 format address (0x...) or SS58 format address of the Oracle contract. The Oracle contract must have price feeds configured for this token. The Registry uses oracle price data to calculate market cap, determine token tiers, and perform USD-denominated calculations."
+                                >
                                     Oracle Contract Address *
-                                </label>
+                                </LabelWithHelp>
                                 <AddressInput
                                     placeholder="Enter oracle contract address (e.g., 0x... or 5GrwvaEF5zXb26...)"
                                     value={oracleContract}
@@ -505,9 +509,12 @@ export function RegistryTokenManager() {
                         </h3>
                         <div className="space-y-4">
                             <div className="space-y-2">
-                                <label htmlFor="updateTokenId" className="text-sm font-medium">
+                                <LabelWithHelp
+                                    htmlFor="updateTokenId"
+                                    helpText="The unique token ID assigned when the token was registered in the Registry. Token IDs are sequential numbers starting from 1. You can find the token ID by querying the Registry or checking the token registration transaction. This ID is used to identify which token's data you want to update."
+                                >
                                     Token ID *
-                                </label>
+                                </LabelWithHelp>
                                 <Input
                                     id="updateTokenId"
                                     type="number"
@@ -520,9 +527,12 @@ export function RegistryTokenManager() {
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div className="space-y-2">
-                                    <label htmlFor="balance" className="text-sm font-medium">
+                                    <LabelWithHelp
+                                        htmlFor="balance"
+                                        helpText="The token balance in PAS (native token of Passet Hub). This represents the total supply or circulating supply of the token. Enter as a decimal number (e.g., 1000000 for 1,000,000 PAS). This value is used along with price to calculate market cap, which determines the token's tier. Balance should be updated regularly to reflect current token supply."
+                                    >
                                         Balance (PAS) *
-                                    </label>
+                                    </LabelWithHelp>
                                     <div className="relative">
                                         <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                                         <Input
@@ -539,9 +549,12 @@ export function RegistryTokenManager() {
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <label htmlFor="weightInvestment" className="text-sm font-medium">
+                                    <LabelWithHelp
+                                        htmlFor="weightInvestment"
+                                        helpText="The investment weight in basis points (0-10000, where 10000 = 100%). This represents the target allocation percentage for this token in portfolios. For example, 2500 = 25% allocation. The weight is used during portfolio rebalancing to determine target token amounts. Total weights across all tokens in a portfolio should sum to 10000 (100%)."
+                                    >
                                         Weight (0-10000) *
-                                    </label>
+                                    </LabelWithHelp>
                                     <div className="relative">
                                         <TrendingUp className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                                         <Input
@@ -558,9 +571,12 @@ export function RegistryTokenManager() {
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <label htmlFor="tier" className="text-sm font-medium">
+                                    <LabelWithHelp
+                                        htmlFor="tier"
+                                        helpText="The token tier level (0-5, where 0 = None, 1-4 = Tier1-Tier4). Tiers are typically calculated automatically based on market cap thresholds, but can be manually set. Higher tiers (Tier4) represent larger market cap tokens. The tier affects staking rewards and portfolio eligibility. Tier 0 (None) means the token is not eligible for portfolio inclusion."
+                                    >
                                         Tier (0-5) *
-                                    </label>
+                                    </LabelWithHelp>
                                     <div className="relative">
                                         <Layers className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                                         <Input
@@ -654,9 +670,12 @@ export function RegistryTokenManager() {
                         </h3>
                         <div className="space-y-4">
                             <div className="space-y-2">
-                                <label htmlFor="removeTokenId" className="text-sm font-medium">
+                                <LabelWithHelp
+                                    htmlFor="removeTokenId"
+                                    helpText="The unique token ID of the token to remove from the Registry. Token IDs are assigned when tokens are registered. Removing a token will delete all its data from the Registry. This action is irreversible. Only remove tokens that are no longer needed or have been deprecated. Make sure no active portfolios are using this token before removal."
+                                >
                                     Token ID to Remove *
-                                </label>
+                                </LabelWithHelp>
                                 <Input
                                     id="removeTokenId"
                                     type="number"

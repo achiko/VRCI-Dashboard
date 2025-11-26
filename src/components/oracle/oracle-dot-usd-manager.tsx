@@ -8,8 +8,10 @@ import type { OracleContractApi } from '@/lib/contracts/oracle';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { DollarSign, Clock, AlertTriangle, RefreshCw, TrendingUp } from 'lucide-react';
+import { DollarSign, Clock, AlertTriangle, RefreshCw, TrendingUp, CheckCircle, XCircle } from 'lucide-react';
 import { txToaster } from '@/utils/txToaster';
+import { Badge } from '@/components/ui/badge';
+import { useContractQuery } from 'typink';
 
 export function OracleDotUsdManager() {
     const { contract: oracleContract } = useContract<OracleContractApi>('oracle');
@@ -22,6 +24,22 @@ export function OracleDotUsdManager() {
 
     const updateDotUsdPriceTx = useContractTx(oracleContract, 'updateDotUsdPrice');
     const emergencyDotPriceOverrideTx = useContractTx(oracleContract, 'emergencyDotPriceOverride');
+
+    // Query hooks for verification
+    const dotPriceQuery = useContractQuery({
+        contract: oracleContract,
+        fn: 'getDotUsdPrice'
+    });
+
+    const dotPriceStaleQuery = useContractQuery({
+        contract: oracleContract,
+        fn: 'isDotPriceStale'
+    });
+
+    const dotPriceLastUpdateQuery = useContractQuery({
+        contract: oracleContract,
+        fn: 'getDotPriceLastUpdate'
+    });
 
     const toaster = txToaster();
 
@@ -318,6 +336,160 @@ export function OracleDotUsdManager() {
                         >
                             $10.25
                         </Button>
+                    </div>
+                </CardContent>
+            </Card>
+
+            {/* Verification Section - Step 2.3 */}
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center space-x-2">
+                        <CheckCircle className="h-5 w-5" />
+                        <span>Oracle Functionality Verification</span>
+                    </CardTitle>
+                    <CardDescription>
+                        Verify that the Oracle contract is functioning correctly (Step 2.3)
+                    </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                    <div className="flex justify-between items-center">
+                        <Button
+                            onClick={() => {
+                                dotPriceQuery.refresh();
+                                dotPriceStaleQuery.refresh();
+                                dotPriceLastUpdateQuery.refresh();
+                                loadDotPriceData();
+                            }}
+                            disabled={!oracleContract}
+                            variant="outline"
+                            size="sm"
+                        >
+                            <RefreshCw className="h-4 w-4 mr-2" />
+                            Verify Oracle
+                        </Button>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {/* DOT/USD Price Verification */}
+                        <div className="space-y-2 p-4 border rounded-lg">
+                            <div className="flex items-center justify-between">
+                                <span className="text-sm font-medium">DOT/USD Price</span>
+                                {dotPriceQuery.isLoading ? (
+                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                                ) : dotPriceQuery.data ? (
+                                    <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                                        <CheckCircle className="h-3 w-3 mr-1" />
+                                        Available
+                                    </Badge>
+                                ) : (
+                                    <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
+                                        <XCircle className="h-3 w-3 mr-1" />
+                                        Not Set
+                                    </Badge>
+                                )}
+                            </div>
+                            <div className="text-xs font-mono text-gray-600 dark:text-gray-400">
+                                {dotPriceQuery.isLoading ? 'Loading...' : 
+                                 dotPriceQuery.data ? 
+                                    `$${(Number(dotPriceQuery.data) / 1_000_000_000).toFixed(2)}` : 
+                                    'No price data'}
+                            </div>
+                            <div className="text-xs text-gray-500 dark:text-gray-500">
+                                Status: {dotPriceQuery.isLoading ? 'Querying...' : 
+                                        dotPriceQuery.error ? 'Error' : 
+                                        dotPriceQuery.data ? 'Success' : 'No data'}
+                            </div>
+                        </div>
+
+                        {/* Price Staleness Check */}
+                        <div className="space-y-2 p-4 border rounded-lg">
+                            <div className="flex items-center justify-between">
+                                <span className="text-sm font-medium">Price Staleness</span>
+                                {dotPriceStaleQuery.isLoading ? (
+                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                                ) : dotPriceStaleQuery.data === false ? (
+                                    <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                                        <CheckCircle className="h-3 w-3 mr-1" />
+                                        Fresh
+                                    </Badge>
+                                ) : (
+                                    <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
+                                        <AlertTriangle className="h-3 w-3 mr-1" />
+                                        Stale
+                                    </Badge>
+                                )}
+                            </div>
+                            <div className="text-xs text-gray-600 dark:text-gray-400">
+                                {dotPriceStaleQuery.isLoading ? 'Loading...' : 
+                                 dotPriceStaleQuery.data === false ? 
+                                    'Price data is fresh and up-to-date' : 
+                                    'Price data may be outdated'}
+                            </div>
+                        </div>
+
+                        {/* Last Update Time */}
+                        <div className="space-y-2 p-4 border rounded-lg">
+                            <div className="flex items-center justify-between">
+                                <span className="text-sm font-medium">Last Update</span>
+                                {dotPriceLastUpdateQuery.isLoading ? (
+                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                                ) : dotPriceLastUpdateQuery.data ? (
+                                    <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                                        <Clock className="h-3 w-3 mr-1" />
+                                        Updated
+                                    </Badge>
+                                ) : (
+                                    <Badge variant="outline" className="bg-gray-50 text-gray-700 border-gray-200">
+                                        <Clock className="h-3 w-3 mr-1" />
+                                        Never
+                                    </Badge>
+                                )}
+                            </div>
+                            <div className="text-xs text-gray-600 dark:text-gray-400">
+                                {dotPriceLastUpdateQuery.isLoading ? 'Loading...' : 
+                                 dotPriceLastUpdateQuery.data ? 
+                                    new Date(Number(dotPriceLastUpdateQuery.data)).toLocaleString() : 
+                                    'No update timestamp'}
+                            </div>
+                        </div>
+
+                        {/* Oracle Health Status */}
+                        <div className="space-y-2 p-4 border rounded-lg">
+                            <div className="flex items-center justify-between">
+                                <span className="text-sm font-medium">Oracle Health</span>
+                                {dotPriceQuery.isLoading || dotPriceStaleQuery.isLoading ? (
+                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                                ) : dotPriceQuery.data && dotPriceStaleQuery.data === false ? (
+                                    <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                                        <CheckCircle className="h-3 w-3 mr-1" />
+                                        Healthy
+                                    </Badge>
+                                ) : (
+                                    <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
+                                        <AlertTriangle className="h-3 w-3 mr-1" />
+                                        Needs Attention
+                                    </Badge>
+                                )}
+                            </div>
+                            <div className="text-xs text-gray-600 dark:text-gray-400">
+                                {dotPriceQuery.isLoading || dotPriceStaleQuery.isLoading ? 'Checking...' : 
+                                 dotPriceQuery.data && dotPriceStaleQuery.data === false ? 
+                                    'Oracle is functioning correctly' : 
+                                    'Oracle may need price update or configuration'}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Verification Summary */}
+                    <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                        <p className="text-sm font-medium text-blue-800 dark:text-blue-200 mb-2">
+                            Verification Summary (Step 2.3)
+                        </p>
+                        <ul className="text-xs text-blue-700 dark:text-blue-300 space-y-1 list-disc list-inside">
+                            <li>✓ Get current DOT/USD price: {dotPriceQuery.data ? 'Success' : 'Not available'}</li>
+                            <li>✓ Check price staleness: {dotPriceStaleQuery.data !== undefined ? 'Success' : 'Not available'}</li>
+                            <li>✓ Get last update time: {dotPriceLastUpdateQuery.data ? 'Success' : 'Not available'}</li>
+                        </ul>
                     </div>
                 </CardContent>
             </Card>

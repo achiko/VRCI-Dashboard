@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useContract, useContractTx, useContractQuery } from 'typink';
 import type { PortfolioContractApi } from '@/lib/contracts/portfolio';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,170 +8,287 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { CheckCircle, XCircle, DollarSign, Settings } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { CheckCircle, XCircle, DollarSign, Settings, Loader2, RefreshCw } from 'lucide-react';
+import { LabelWithHelp } from '@/components/ui/field-help';
+import { txToaster } from '@/utils/txToaster';
 
 export default function PortfolioFeeManager() {
   const { contract: portfolioContract } = useContract<PortfolioContractApi>('portfolio');
-  const [feeRate, setFeeRate] = useState('');
+  const [buyFeeBp, setBuyFeeBp] = useState('');
+  const [sellFeeBp, setSellFeeBp] = useState('');
+  const [streamingFeeBp, setStreamingFeeBp] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
 
   // Transaction hooks
   const setFeeConfigTx = useContractTx(portfolioContract, 'setFeeConfig');
-  // Note: collectFees method doesn't exist in Portfolio contract API
-  // const collectFeesTx = useContractTx(portfolioContract, 'collectFees');
 
-  // State for fee data
-  // Note: These methods don't exist in the actual Portfolio contract API
-  const [feeConfiguration, setFeeConfiguration] = useState<any>(null);
-  const [collectedFees, setCollectedFees] = useState<any>(null);
-  const [isLoadingData, setIsLoadingData] = useState(false);
+  // Query current fee configuration
+  const feeConfigQuery = useContractQuery({
+    contract: portfolioContract,
+    fn: 'getFeeConfig',
+  });
+
+  // Load current fee configuration
+  useEffect(() => {
+    if (feeConfigQuery.data) {
+      const config = feeConfigQuery.data;
+      setBuyFeeBp(String(config.buyFeeBp || ''));
+      setSellFeeBp(String(config.sellFeeBp || ''));
+      setStreamingFeeBp(String(config.streamingFeeBp || ''));
+    }
+  }, [feeConfigQuery.data]);
 
   const handleSetFeeConfiguration = async () => {
-    if (!feeRate) {
-      setError('Please enter a fee rate');
+    if (!buyFeeBp || !sellFeeBp || !streamingFeeBp) {
+      setError('Please enter all fee values');
+      return;
+    }
+
+    const buyFee = parseInt(buyFeeBp);
+    const sellFee = parseInt(sellFeeBp);
+    const streamingFee = parseInt(streamingFeeBp);
+
+    if (isNaN(buyFee) || buyFee < 0 || buyFee > 10000) {
+      setError('Buy fee must be between 0 and 10000 basis points');
+      return;
+    }
+
+    if (isNaN(sellFee) || sellFee < 0 || sellFee > 10000) {
+      setError('Sell fee must be between 0 and 10000 basis points');
+      return;
+    }
+
+    if (isNaN(streamingFee) || streamingFee < 0 || streamingFee > 10000) {
+      setError('Streaming fee must be between 0 and 10000 basis points');
       return;
     }
 
     setIsLoading(true);
     setError(null);
     setResult(null);
+    const toaster = txToaster('Setting fee configuration...');
 
     try {
+      toaster.onTxPending();
+      
       await setFeeConfigTx.signAndSend({
         args: [{
-          buyFeeBp: parseFloat(feeRate) * 100,
-          sellFeeBp: parseFloat(feeRate) * 100,
-          streamingFeeBp: parseFloat(feeRate) * 100
+          buyFeeBp: buyFee,
+          sellFeeBp: sellFee,
+          streamingFeeBp: streamingFee,
         }],
         callback: (progress) => {
-          if (progress.status.type === 'BestChainBlockIncluded') {
-            if (progress.dispatchError) {
-              setError('Transaction failed');
-            } else {
-              setResult({ type: 'setFeeConfiguration', hash: 'success', feeRate });
-            }
+          toaster.onTxProgress(progress);
+          if (progress.status.type === 'BestChainBlockIncluded' && !progress.dispatchError) {
+            setResult({ 
+              type: 'setFeeConfiguration', 
+              hash: 'success',
+              buyFeeBp: buyFee,
+              sellFeeBp: sellFee,
+              streamingFeeBp: streamingFee,
+            });
+            feeConfigQuery.refresh();
           }
-        }
+        },
       });
     } catch (err: any) {
+      console.error('Error setting fee configuration:', err);
+      toaster.onTxError(err instanceof Error ? err : new Error('Unknown error'));
       setError(`Error setting fee configuration: ${err.message}`);
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Note: collectFees method doesn't exist in Portfolio contract API
-  // const handleCollectFees = async () => {
-  //   setIsLoading(true);
-  //   setError(null);
-  //   setResult(null);
-
-  //   try {
-  //     const tx = collectFeesTx.tx();
-  //     const hash = await tx.signAndSend(selectedAccount?.address);
-  //     setResult({ type: 'collectFees', hash });
-  //   } catch (err: any) {
-  //     setError(`Error collecting fees: ${err.message}`);
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
-
-  const formatAmount = (amount: bigint) => {
-    return `${(Number(amount) / 1e18).toFixed(4)} W3PI`;
-  };
-
-  const formatRate = (rate: number) => {
-    return `${(rate * 100).toFixed(2)}%`;
+  const currentConfig = feeConfigQuery.data;
+  const formatBasisPoints = (bp: number) => {
+    return `${(bp / 100).toFixed(2)}%`;
   };
 
   return (
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <DollarSign className="h-5 w-5" />
-            Fee Management
-          </CardTitle>
-          <CardDescription>
-            Configure and manage portfolio fees
-          </CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <DollarSign className="h-5 w-5" />
+                Fee Configuration
+              </CardTitle>
+              <CardDescription>
+                Configure buy, sell, and streaming fees for the portfolio (Phase 4.3)
+              </CardDescription>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => feeConfigQuery.refresh()}
+              disabled={feeConfigQuery.isLoading}
+            >
+              {feeConfigQuery.isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <RefreshCw className="h-4 w-4" />
+              )}
+            </Button>
+          </div>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Current Fee Configuration */}
-          <div className="space-y-2">
-            <Label>Current Fee Configuration</Label>
-            <div className="bg-gray-50 p-4 rounded-lg">
-              {isLoadingData ? (
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-              ) : feeConfiguration ? (
-                <div className="space-y-2">
-                  <div><strong>Fee Rate:</strong> {formatRate(feeConfiguration.feeRate || 0)}</div>
-                  <div><strong>Collected Fees:</strong> {formatAmount(feeConfiguration.collectedFees || BigInt(0))}</div>
-                  <div><strong>Last Collection:</strong> {feeConfiguration.lastCollection || 'Never'}</div>
+          {currentConfig && (
+            <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+              <h3 className="text-sm font-semibold text-blue-800 dark:text-blue-200 mb-3">
+                Current Fee Configuration
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <div className="text-xs text-blue-600 dark:text-blue-400 mb-1">Buy Fee</div>
+                  <div className="text-lg font-bold text-blue-900 dark:text-blue-100">
+                    {formatBasisPoints(currentConfig.buyFeeBp)}
+                  </div>
+                  <div className="text-xs text-blue-500 dark:text-blue-400">
+                    {currentConfig.buyFeeBp} basis points
+                  </div>
                 </div>
-              ) : (
-                <span className="text-gray-500">No fee configuration</span>
-              )}
+                <div>
+                  <div className="text-xs text-blue-600 dark:text-blue-400 mb-1">Sell Fee</div>
+                  <div className="text-lg font-bold text-blue-900 dark:text-blue-100">
+                    {formatBasisPoints(currentConfig.sellFeeBp)}
+                  </div>
+                  <div className="text-xs text-blue-500 dark:text-blue-400">
+                    {currentConfig.sellFeeBp} basis points
+                  </div>
+                </div>
+                <div>
+                  <div className="text-xs text-blue-600 dark:text-blue-400 mb-1">Streaming Fee</div>
+                  <div className="text-lg font-bold text-blue-900 dark:text-blue-100">
+                    {formatBasisPoints(currentConfig.streamingFeeBp)}
+                  </div>
+                  <div className="text-xs text-blue-500 dark:text-blue-400">
+                    {currentConfig.streamingFeeBp} basis points (annual)
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Set Fee Configuration */}
           <div className="space-y-4">
             <h3 className="font-medium">Set Fee Configuration</h3>
-            <div className="space-y-2">
-              <Label>Fee Rate (0.01 = 1%)</Label>
-              <Input
-                value={feeRate}
-                onChange={(e) => setFeeRate(e.target.value)}
-                placeholder="Enter fee rate (e.g., 0.01 for 1%)"
-                type="number"
-                step="0.01"
-                min="0"
-                max="1"
-              />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <LabelWithHelp
+                  htmlFor="buyFeeBp"
+                  helpText="Buy fee in basis points (1 bp = 0.01%). This fee is charged when users buy/mint W3PI tokens by depositing assets into the portfolio. Example: 55 = 0.55%. Enter a value between 0 and 10000."
+                >
+                  Buy Fee (basis points) *
+                </LabelWithHelp>
+                <Input
+                  id="buyFeeBp"
+                  value={buyFeeBp}
+                  onChange={(e) => setBuyFeeBp(e.target.value)}
+                  placeholder="e.g., 55 (for 0.55%)"
+                  type="number"
+                  min="0"
+                  max="10000"
+                  disabled={isLoading}
+                />
+                {buyFeeBp && !isNaN(parseInt(buyFeeBp)) && (
+                  <p className="text-xs text-gray-500">
+                    = {formatBasisPoints(parseInt(buyFeeBp))}
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <LabelWithHelp
+                  htmlFor="sellFeeBp"
+                  helpText="Sell fee in basis points (1 bp = 0.01%). This fee is charged when users sell/burn W3PI tokens by withdrawing assets from the portfolio. Example: 95 = 0.95%. Enter a value between 0 and 10000."
+                >
+                  Sell Fee (basis points) *
+                </LabelWithHelp>
+                <Input
+                  id="sellFeeBp"
+                  value={sellFeeBp}
+                  onChange={(e) => setSellFeeBp(e.target.value)}
+                  placeholder="e.g., 95 (for 0.95%)"
+                  type="number"
+                  min="0"
+                  max="10000"
+                  disabled={isLoading}
+                />
+                {sellFeeBp && !isNaN(parseInt(sellFeeBp)) && (
+                  <p className="text-xs text-gray-500">
+                    = {formatBasisPoints(parseInt(sellFeeBp))}
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <LabelWithHelp
+                  htmlFor="streamingFeeBp"
+                  helpText="Streaming fee in basis points (1 bp = 0.01%). This is an annual fee charged continuously based on portfolio value. Example: 195 = 1.95% annual. Enter a value between 0 and 10000. This fee is calculated and collected over time."
+                >
+                  Streaming Fee (basis points) *
+                </LabelWithHelp>
+                <Input
+                  id="streamingFeeBp"
+                  value={streamingFeeBp}
+                  onChange={(e) => setStreamingFeeBp(e.target.value)}
+                  placeholder="e.g., 195 (for 1.95% annual)"
+                  type="number"
+                  min="0"
+                  max="10000"
+                  disabled={isLoading}
+                />
+                {streamingFeeBp && !isNaN(parseInt(streamingFeeBp)) && (
+                  <p className="text-xs text-gray-500">
+                    = {formatBasisPoints(parseInt(streamingFeeBp))} annual
+                  </p>
+                )}
+              </div>
             </div>
+
+            {/* Recommended Values */}
+            <Alert>
+              <AlertDescription>
+                <strong>Recommended values from Real World Scenario:</strong> Buy: 55 bp (0.55%), Sell: 95 bp (0.95%), Streaming: 195 bp (1.95% annual)
+              </AlertDescription>
+            </Alert>
+
             <Button
               onClick={handleSetFeeConfiguration}
-              disabled={!feeRate || isLoading}
-              className="flex items-center gap-2"
+              disabled={!buyFeeBp || !sellFeeBp || !streamingFeeBp || isLoading || setFeeConfigTx.inBestBlockProgress}
+              className="w-full"
             >
-              <Settings className="h-4 w-4" />
-              Set Fee Configuration
+              {isLoading || setFeeConfigTx.inBestBlockProgress ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Setting Fee Configuration...
+                </>
+              ) : (
+                <>
+                  <Settings className="h-4 w-4 mr-2" />
+                  Set Fee Configuration
+                </>
+              )}
             </Button>
           </div>
 
-          {/* Collect Fees - Method doesn't exist in Portfolio contract API */}
-          {/* <div className="space-y-4">
-            <h3 className="font-medium">Collect Fees</h3>
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="font-medium">Available Fees</div>
-                  <div className="text-sm text-gray-600">
-                    {collectedFees ? formatAmount(collectedFees) : 'Loading...'}
-                  </div>
-                </div>
-                <Button
-                  onClick={handleCollectFees}
-                  disabled={isLoading}
-                  className="flex items-center gap-2"
-                >
-                  <DollarSign className="h-4 w-4" />
-                  Collect Fees
-                </Button>
-              </div>
-            </div>
-          </div> */}
-
           {/* Results */}
-          {result && (
+          {result && result.type === 'setFeeConfiguration' && (
             <Alert className="border-green-200 bg-green-50">
               <CheckCircle className="h-4 w-4 text-green-600" />
               <AlertDescription>
-                {result.type} transaction submitted: {result.hash}
+                Fee configuration updated successfully:
+                <ul className="list-disc list-inside mt-2 text-sm">
+                  <li>Buy Fee: {formatBasisPoints(result.buyFeeBp)} ({result.buyFeeBp} bp)</li>
+                  <li>Sell Fee: {formatBasisPoints(result.sellFeeBp)} ({result.sellFeeBp} bp)</li>
+                  <li>Streaming Fee: {formatBasisPoints(result.streamingFeeBp)} ({result.streamingFeeBp} bp annual)</li>
+                </ul>
               </AlertDescription>
             </Alert>
           )}
@@ -184,14 +301,16 @@ export default function PortfolioFeeManager() {
           )}
 
           {/* Information */}
-          <div className="text-sm text-gray-600 space-y-2">
-            <p><strong>Fee Management:</strong></p>
-            <ul className="list-disc list-inside space-y-1 ml-4">
-              <li>Configure fee rates for portfolio operations</li>
-              <li>Collect accumulated fees from trading activities</li>
-              <li>Automatic fee calculation based on portfolio performance</li>
-              <li>Integration with Registry tier system for dynamic fees</li>
-            </ul>
+          <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border">
+            <h4 className="text-sm font-medium mb-2">Fee Structure Information</h4>
+            <div className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
+              <p><strong>Buy Fee:</strong> Charged when users deposit assets and mint W3PI tokens</p>
+              <p><strong>Sell Fee:</strong> Charged when users withdraw assets and burn W3PI tokens</p>
+              <p><strong>Streaming Fee:</strong> Annual fee calculated continuously based on portfolio value</p>
+              <p className="mt-2 text-amber-600 dark:text-amber-400">
+                <strong>Note:</strong> All fees are in basis points (1 bp = 0.01%). Maximum is 10000 bp (100%).
+              </p>
+            </div>
           </div>
         </CardContent>
       </Card>

@@ -14,6 +14,7 @@ import StakingManager from '@/components/staking/staking-manager';
 import StakingRewards from '@/components/staking/staking-rewards';
 import StakingUnstaking from '@/components/staking/staking-unstaking';
 import StakingConfiguration from '@/components/staking/staking-configuration';
+import { ConfigurationChecklist } from '@/components/config/configuration-checklist';
 
 export default function StakingPage() {
   const { signer, connectedAccount } = useTypink();
@@ -74,6 +75,7 @@ export default function StakingPage() {
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
+          <ConfigurationChecklist />
           <StakingOverview />
         </TabsContent>
 
@@ -90,6 +92,7 @@ export default function StakingPage() {
         </TabsContent>
 
         <TabsContent value="config" className="space-y-6">
+          <ConfigurationChecklist />
           <StakingConfiguration />
         </TabsContent>
       </Tabs>

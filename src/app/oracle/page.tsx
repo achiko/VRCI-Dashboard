@@ -14,6 +14,7 @@ import { OracleAdvancedDataManager } from '@/components/oracle/oracle-advanced-d
 import { OracleDotUsdManager } from '@/components/oracle/oracle-dot-usd-manager';
 import OracleDotTokenManager from '@/components/oracle/oracle-dot-token-manager';
 import OracleValidationConfigViewer from '@/components/oracle/oracle-validation-config-viewer';
+import { ConfigurationChecklist } from '@/components/config/configuration-checklist';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useTypink } from 'typink';
 import { Search, Upload, BarChart3, Settings, Shield, Clock, Database, Users, AlertTriangle, Info, DollarSign, Copy } from 'lucide-react';
@@ -72,7 +73,7 @@ function OraclePageContent() {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-            <div className="max-w-6xl mx-auto p-8">
+            <div className=" mx-auto p-8">
                 {/* Header */}
                 <div className="mb-8">
                     <h1 className="text-3xl font-bold text-gray-900 mb-1">
@@ -208,6 +209,7 @@ function OraclePageContent() {
                             </TabsContent>
 
                             <TabsContent value="info">
+                                <ConfigurationChecklist />
                                 <OracleInfoViewer />
                             </TabsContent>
                         </Tabs>
@@ -221,7 +223,7 @@ function OraclePageContent() {
                             <p className="text-gray-600 mb-6">
                                 Connect your wallet to interact with the oracle contract
                             </p>
-                            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 mt-6">
+                            <div className="grid w-full grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 mt-6">
                                 <div className="p-4 bg-gray-50 rounded-lg">
                                     <Search className="h-6 w-6 text-gray-400 mx-auto mb-2" />
                                     <div className="text-xs font-medium text-gray-700">Query</div>
@@ -361,7 +363,7 @@ function OraclePageContent() {
                                 </div>
                                 <div className="flex justify-between">
                                     <span className="text-gray-600">Framework:</span>
-                                    <span className="text-gray-900">ink! v5.1.0</span>
+                                    <span className="text-gray-900">ink! v6.0.0</span>
                                 </div>
                             </div>
                         </div>

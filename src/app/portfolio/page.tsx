@@ -16,6 +16,7 @@ import PortfolioFeeManager from '@/components/portfolio/portfolio-fee-manager';
 import PortfolioStateManager from '@/components/portfolio/portfolio-state-manager';
 import PortfolioAnalytics from '@/components/portfolio/portfolio-analytics';
 import PortfolioConfigManager from '@/components/portfolio/portfolio-config-manager';
+import { ConfigurationChecklist } from '@/components/config/configuration-checklist';
 
 export default function PortfolioPage() {
   const { signer, connectedAccount } = useTypink();
@@ -84,6 +85,7 @@ export default function PortfolioPage() {
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
+          <ConfigurationChecklist />
           <PortfolioOverview />
         </TabsContent>
 
@@ -108,6 +110,7 @@ export default function PortfolioPage() {
         </TabsContent>
 
         <TabsContent value="config" className="space-y-6">
+          <ConfigurationChecklist />
           <PortfolioConfigManager />
         </TabsContent>
       </Tabs>

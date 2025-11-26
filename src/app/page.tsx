@@ -6,10 +6,14 @@ import { NetworkStatusCard } from '@/components/cards/network-status-card';
 import { WalletStatusCard } from '@/components/cards/wallet-status-card';
 import { ContractsStatusCard } from '@/components/cards/contracts-status-card';
 import { QuickActionsSection } from '@/components/sections/quick-actions-section';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Copy } from 'lucide-react';
 import { useTypink } from 'typink';
 
 export default function HomePage() {
   const { signer, connectedAccount } = useTypink();
+  const USDC_ADDRESS = '0xd81f336aa2d51efaf4466d764e1c75ef29044c55';
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -29,6 +33,32 @@ export default function HomePage() {
           <NetworkStatusCard />
           <WalletStatusCard />
           <ContractsStatusCard />
+        </div>
+
+        {/* Reference Contracts */}
+        <div className="mb-8">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg font-semibold text-gray-800">
+                USDC Testnet Reference
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-sm text-gray-500 mb-1">USDC Contract Address</p>
+                <p className="font-mono text-sm break-all text-gray-900">{USDC_ADDRESS}</p>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => navigator.clipboard.writeText(USDC_ADDRESS)}
+                className="flex items-center gap-2"
+              >
+                <Copy className="h-4 w-4" />
+                Copy Address
+              </Button>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Quick Actions */}

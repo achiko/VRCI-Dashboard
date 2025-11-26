@@ -62,6 +62,23 @@ export function OracleDotUsdManager() {
         }
     };
 
+    const SCALE_DECIMALS = 18;
+
+    const convertToScaledBigInt = (value: string): bigint => {
+        const sanitized = value.trim();
+        const isNegative = sanitized.startsWith('-');
+        if (isNegative) {
+            throw new Error('Price cannot be negative');
+        }
+
+        const [wholePart, decimalPart = ''] = sanitized.split('.');
+        const normalizedDecimals = decimalPart.padEnd(SCALE_DECIMALS, '0').slice(0, SCALE_DECIMALS);
+
+        const whole = BigInt(wholePart || '0') * BigInt(10) ** BigInt(SCALE_DECIMALS);
+        const decimals = BigInt(normalizedDecimals || '0');
+        return whole + decimals;
+    };
+
     const handleUpdateDotPrice = async () => {
         if (!oracleContract || !dotPrice) {
             setError('Please enter a valid DOT price');
@@ -76,8 +93,7 @@ export function OracleDotUsdManager() {
 
         setError(null);
         try {
-            // Convert to scaled format (9 decimal places)
-            const scaledPrice = BigInt(Math.floor(priceNum * 1_000_000_000));
+            const scaledPrice = convertToScaledBigInt(dotPrice);
 
             await updateDotUsdPriceTx.signAndSend({
                 args: [scaledPrice],
@@ -110,7 +126,7 @@ export function OracleDotUsdManager() {
 
         setError(null);
         try {
-            const scaledPrice = BigInt(Math.floor(priceNum * 1_000_000_000));
+            const scaledPrice = convertToScaledBigInt(emergencyPrice);
 
             await emergencyDotPriceOverrideTx.signAndSend({
                 args: [scaledPrice],

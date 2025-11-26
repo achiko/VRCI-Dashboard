@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { CheckCircle, XCircle, Info } from 'lucide-react';
+import { CheckCircle, XCircle, Info, Copy } from 'lucide-react';
 import { LabelWithHelp } from '../ui/field-help';
 
 export default function OracleDotTokenManager() {
@@ -57,6 +57,20 @@ export default function OracleDotTokenManager() {
     }
   };
 
+  const formatAddress = (address: unknown): string => {
+    if (!address) return '';
+    if (typeof address === 'string') return address;
+    if (typeof (address as any)?.address === 'function') {
+      return (address as any).address();
+    }
+    if (typeof (address as any)?.toString === 'function') {
+      return (address as any).toString();
+    }
+    return '';
+  };
+
+  const formattedDotTokenAddress = formatAddress(dotTokenAddress);
+
   return (
     <div className="space-y-6">
       <Card>
@@ -75,11 +89,23 @@ export default function OracleDotTokenManager() {
             <Label>Current DOT Token Address</Label>
             <div className="flex items-center gap-2">
               <Input
-                value={dotTokenAddress?.toString() || ''}
+                value={formattedDotTokenAddress}
                 readOnly
                 className="font-mono text-sm"
                 placeholder="Loading..."
               />
+              {formattedDotTokenAddress && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  onClick={() => navigator.clipboard.writeText(formattedDotTokenAddress)}
+                  className="h-8 w-8"
+                  aria-label="Copy DOT token address"
+                >
+                  <Copy className="h-4 w-4" />
+                </Button>
+              )}
               {isLoadingAddress ? (
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
               ) : dotTokenAddress ? (

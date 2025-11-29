@@ -14,6 +14,7 @@ import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { CheckCircle, XCircle, Loader2, RefreshCw, Database, ExternalLink, AlertCircle } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { txToaster } from '@/utils/txToaster';
 import { LabelWithHelp } from '@/components/ui/field-help';
 
@@ -25,6 +26,7 @@ interface TokenRegistrationStatus {
 }
 
 export function TokenRegistrationManager() {
+  const router = useRouter();
   const { data: tokens, isLoading: tokensLoading, refetch: refetchTokens } = useTokens();
   const { contract: registryContract } = useContract<RegistryContractApi>('registry');
   const { contract: oracleContract } = useContract<OracleContractApi>('oracle');
@@ -330,7 +332,15 @@ export function TokenRegistrationManager() {
                     const isUpdatingTokenPrice = isUpdatingPrice[token.symbol] || false;
 
                     return (
-                      <TableRow key={token.id}>
+                      <TableRow 
+                        key={token.id}
+                        className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800"
+                        onClick={() => {
+                          if (deployedToken?.contractAddress) {
+                            router.push(`/admin/token/${deployedToken.contractAddress}`);
+                          }
+                        }}
+                      >
                         <TableCell>
                           <div>
                             <div className="font-medium">{token.symbol}</div>

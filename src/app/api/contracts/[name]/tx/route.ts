@@ -33,7 +33,7 @@ export async function POST(
       );
     }
 
-    const { method, args = [], signer, value } = validationResult.data;
+    const { method, args = [], signer, value, address } = validationResult.data;
 
     // Load contract metadata
     const metadataPath = path.join(
@@ -53,9 +53,11 @@ export async function POST(
 
     const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf-8'));
 
-    // Get contract address from environment
+    // Get contract address from request body or environment
     const contractAddress =
-      process.env[`NEXT_PUBLIC_${name.toUpperCase()}_ADDRESS`] || '';
+      address ||
+      process.env[`NEXT_PUBLIC_${name.toUpperCase()}_ADDRESS`] ||
+      '';
 
     if (!contractAddress) {
       return NextResponse.json(
@@ -75,11 +77,33 @@ export async function POST(
     const api = await getPolkadotClient();
     const contract = new ContractPromise(api, metadata, contractAddress);
 
-    // Find the method in metadata
-    const message = contract.abi.messages.find((m) => m.identifier === method);
+    // Find the method in metadata - try multiple formats
+    // First try exact match, then try camelCase variations
+    let message = contract.abi.messages.find((m) => m.identifier === method);
+    
     if (!message) {
+      // Try camelCase version (e.g., "mintTo" -> "mintTo")
+      message = contract.abi.messages.find((m) => {
+        const camelCase = m.identifier.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
+        return camelCase === method || m.identifier === method;
+      });
+    }
+    
+    if (!message) {
+      // Try snake_case version (e.g., "mintTo" -> "mint_to")
+      message = contract.abi.messages.find((m) => {
+        const snakeCase = method.replace(/([A-Z])/g, '_$1').toLowerCase();
+        return m.identifier === snakeCase || m.identifier === method;
+      });
+    }
+    
+    if (!message) {
+      const availableMethods = contract.abi.messages.map((m) => m.identifier).slice(0, 20);
       return NextResponse.json(
-        { success: false, error: `Method ${method} not found` },
+        { 
+          success: false, 
+          error: `Method ${method} not found. Available methods: ${availableMethods.join(', ')}` 
+        },
         { status: 400 }
       );
     }

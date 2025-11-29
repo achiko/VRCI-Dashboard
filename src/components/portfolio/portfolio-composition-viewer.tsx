@@ -61,13 +61,13 @@ export default function PortfolioCompositionViewer() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="flex items-center gap-2">
-                <PieChart className="h-5 w-5" />
-                Portfolio Composition
-              </CardTitle>
-              <CardDescription>
+          <CardTitle className="flex items-center gap-2">
+            <PieChart className="h-5 w-5" />
+            Portfolio Composition
+          </CardTitle>
+          <CardDescription>
                 View current portfolio composition and token holdings (Phase 4.4 Verification)
-              </CardDescription>
+          </CardDescription>
             </div>
             <Button
               variant="outline"
@@ -171,7 +171,7 @@ export default function PortfolioCompositionViewer() {
                   </AlertDescription>
                 </Alert>
               )}
-            </div>
+                </div>
           ) : (
             <div className="text-center py-8 text-gray-500">
               <PieChart className="h-12 w-12 mx-auto mb-4 text-gray-400" />

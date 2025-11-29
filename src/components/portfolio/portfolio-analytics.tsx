@@ -95,13 +95,13 @@ export default function PortfolioAnalytics() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="flex items-center gap-2">
-                <BarChart3 className="h-5 w-5" />
-                Portfolio Analytics
-              </CardTitle>
-              <CardDescription>
+          <CardTitle className="flex items-center gap-2">
+            <BarChart3 className="h-5 w-5" />
+            Portfolio Analytics
+          </CardTitle>
+          <CardDescription>
                 Index value, performance metrics, and analytics (Phase 4.4 Verification)
-              </CardDescription>
+          </CardDescription>
             </div>
             <Button
               variant="outline"
@@ -151,7 +151,7 @@ export default function PortfolioAnalytics() {
                 <p className="text-sm text-blue-600 dark:text-blue-400 mt-2">
                   Index value relative to $100 baseline
                 </p>
-              </div>
+                    </div>
 
               {/* Performance */}
               <div className="p-6 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-lg border border-green-200 dark:border-green-800">
@@ -218,7 +218,7 @@ export default function PortfolioAnalytics() {
                           Disabled
                         </Badge>
                       )}
-                    </div>
+                      </div>
                   </div>
                   <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border">
                     <div className="text-xs text-gray-600 dark:text-gray-400 mb-2">Last Update</div>

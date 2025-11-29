@@ -114,13 +114,13 @@ export default function PortfolioFeeManager() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="flex items-center gap-2">
-                <DollarSign className="h-5 w-5" />
+          <CardTitle className="flex items-center gap-2">
+            <DollarSign className="h-5 w-5" />
                 Fee Configuration
-              </CardTitle>
-              <CardDescription>
+          </CardTitle>
+          <CardDescription>
                 Configure buy, sell, and streaming fees for the portfolio (Phase 4.3)
-              </CardDescription>
+          </CardDescription>
             </div>
             <Button
               variant="outline"
@@ -227,20 +227,20 @@ export default function PortfolioFeeManager() {
                 )}
               </div>
 
-              <div className="space-y-2">
+            <div className="space-y-2">
                 <LabelWithHelp
                   htmlFor="streamingFeeBp"
                   helpText="Streaming fee in basis points (1 bp = 0.01%). This is an annual fee charged continuously based on portfolio value. Example: 195 = 1.95% annual. Enter a value between 0 and 10000. This fee is calculated and collected over time."
                 >
                   Streaming Fee (basis points) *
                 </LabelWithHelp>
-                <Input
+              <Input
                   id="streamingFeeBp"
                   value={streamingFeeBp}
                   onChange={(e) => setStreamingFeeBp(e.target.value)}
                   placeholder="e.g., 195 (for 1.95% annual)"
-                  type="number"
-                  min="0"
+                type="number"
+                min="0"
                   max="10000"
                   disabled={isLoading}
                 />
@@ -272,7 +272,7 @@ export default function PortfolioFeeManager() {
               ) : (
                 <>
                   <Settings className="h-4 w-4 mr-2" />
-                  Set Fee Configuration
+              Set Fee Configuration
                 </>
               )}
             </Button>

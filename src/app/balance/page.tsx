@@ -1,8 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useTypink } from 'typink';
-import { useContract, useContractQuery } from 'typink';
+import { useTypink, useContract, useContractQuery } from 'typink';
 import type { TokenContractApi } from '@/lib/contracts/token';
 import type { RegistryContractApi } from '@/lib/contracts/registry';
 import { CONTRACT_ADDRESSES } from '@/providers/TypinkProvider';
@@ -14,6 +13,7 @@ import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { DollarSign, Wallet, Loader2, RefreshCw, AlertCircle, Copy, CheckCircle } from 'lucide-react';
 import tokenMetadata from '@/contracts/metadata/token.json';
+import { decodeAddress } from '@polkadot/util-crypto';
 
 interface TokenBalance {
   symbol: string;
@@ -40,8 +40,31 @@ export default function BalancePage() {
     fn: 'getTokenCount',
   });
 
-  // Get user address
-  const userAddress = connectedAccount?.address;
+  // Get user address and convert to H160 if needed
+  const rawUserAddress = connectedAccount?.address;
+  
+  // Helper function to convert SS58 to H160
+  const convertSS58ToH160 = (ss58Address: string): string => {
+    try {
+      // Check if already H160 format (0x...)
+      if (ss58Address.startsWith('0x') && ss58Address.length === 42) {
+        return ss58Address.toLowerCase();
+      }
+      // Convert SS58 to H160
+      const decoded = decodeAddress(ss58Address);
+      // Take first 20 bytes (H160 format)
+      const h160Bytes = decoded.slice(0, 20);
+      // Convert to hex string with 0x prefix
+      return '0x' + Array.from(h160Bytes)
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('');
+    } catch (error) {
+      // If conversion fails, return as-is (might already be H160)
+      return ss58Address;
+    }
+  };
+  
+  const userAddress = rawUserAddress ? convertSS58ToH160(rawUserAddress) : undefined;
 
   // Load all token balances
   const loadBalances = async () => {
@@ -67,12 +90,17 @@ export default function BalancePage() {
           const symbolResult = await w3piTokenContract.query.psp22MetadataTokenSymbol();
           const decimalsResult = await w3piTokenContract.query.psp22MetadataTokenDecimals();
           
+          const w3piDecimals = Number(decimalsResult.data);
+          const validW3piDecimals = (!isNaN(w3piDecimals) && w3piDecimals >= 0 && w3piDecimals <= 255) 
+            ? w3piDecimals 
+            : 18;
+          
           tokenBalances.push({
             symbol: symbolResult.data || 'W3PI',
             name: nameResult.data || 'W3PI Token',
             contractAddress: CONTRACT_ADDRESSES.TOKEN,
             balance,
-            decimals: Number(decimalsResult.data || 18),
+            decimals: validW3piDecimals,
             isLoading: false,
           });
         } catch (err: any) {
@@ -97,7 +125,7 @@ export default function BalancePage() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              method: 'psp22BalanceOf',
+              method: 'psp22::balanceOf',
               args: [userAddress],
               address: usdcToken.contractAddress,
             }),
@@ -105,15 +133,38 @@ export default function BalancePage() {
           
           if (response.ok) {
             const data = await response.json();
-            if (data.success && data.data !== undefined) {
-              // Handle different response formats
+            if (data.success && data.data !== undefined && data.data !== null) {
+              // Handle different response formats from Polkadot.js ContractPromise
               let balance = 0n;
+              
+              // Polkadot.js often returns numbers as strings with commas
               if (typeof data.data === 'string') {
-                balance = BigInt(data.data.replace(/,/g, ''));
+                const cleaned = data.data.replace(/,/g, '').trim();
+                if (cleaned && !isNaN(Number(cleaned))) {
+                  balance = BigInt(cleaned);
+                }
               } else if (typeof data.data === 'number') {
                 balance = BigInt(data.data);
-              } else if (data.data && typeof data.data.toString === 'function') {
-                balance = BigInt(data.data.toString().replace(/,/g, ''));
+              } else if (typeof data.data === 'object' && data.data !== null) {
+                // Handle object responses (e.g., { Ok: "123456" } or { value: "123456" })
+                if ('Ok' in data.data && data.data.Ok) {
+                  const okValue = data.data.Ok;
+                  balance = typeof okValue === 'string' 
+                    ? BigInt(okValue.replace(/,/g, ''))
+                    : BigInt(okValue);
+                } else if ('value' in data.data) {
+                  const value = data.data.value;
+                  balance = typeof value === 'string'
+                    ? BigInt(value.replace(/,/g, ''))
+                    : BigInt(value);
+                } else {
+                  // Try to extract number from object
+                  const str = JSON.stringify(data.data);
+                  const match = str.match(/\d+/);
+                  if (match) {
+                    balance = BigInt(match[0]);
+                  }
+                }
               }
               
               tokenBalances.push({
@@ -125,7 +176,7 @@ export default function BalancePage() {
                 isLoading: false,
               });
             } else {
-              // No error, just zero balance or query failed silently
+              // No error, just zero balance
               tokenBalances.push({
                 symbol: usdcToken.symbol,
                 name: usdcToken.name,
@@ -137,7 +188,7 @@ export default function BalancePage() {
             }
           } else {
             const errorData = await response.json().catch(() => ({ error: 'Request failed' }));
-            throw new Error(errorData.error || 'API request failed');
+            throw new Error(errorData.error || `API request failed: ${response.status}`);
           }
         } catch (err: any) {
           console.error('Error loading USDC balance:', err);
@@ -154,13 +205,17 @@ export default function BalancePage() {
       }
 
       // 3. Registered Tokens from Registry
+      console.log('registryContract', registryContract);
       if (registryContract) {
         await tokenCountQuery.refresh();
         const count = Number(tokenCountQuery.data || 0);
 
         for (let id = 1; id <= count; id++) {
           try {
+            console.log('id', id);
+            // Get basic token data for contract address first
             const tokenDataResult = await registryContract.query.getBasicTokenData(id);
+            console.log('tokenDataResult', tokenDataResult);
             if (!tokenDataResult.data) continue;
 
             let tokenData: any = null;
@@ -172,17 +227,40 @@ export default function BalancePage() {
               tokenData = tokenDataResult.data;
             }
 
+            console.log('tokenData', tokenData);
+
             if (!tokenData || !tokenData.tokenContract) continue;
 
-            // Extract contract address
+            // Extract contract address from AccountId32 object
             let contractAddress: string = 'Unknown';
             if (tokenData.tokenContract) {
               if (typeof tokenData.tokenContract === 'string') {
                 contractAddress = tokenData.tokenContract;
-              } else if (typeof (tokenData.tokenContract as any)?.address === 'function') {
-                contractAddress = (tokenData.tokenContract as any).address();
-              } else if (typeof (tokenData.tokenContract as any)?.toString === 'function') {
-                contractAddress = (tokenData.tokenContract as any).toString();
+              } else if (tokenData.tokenContract && typeof tokenData.tokenContract === 'object') {
+                // Handle AccountId32 object - it has a 'raw' property with the address
+                const accountId = tokenData.tokenContract as any;
+                
+                if (accountId.raw) {
+                  // AccountId32.raw is a 32-byte address (66 hex chars with 0x)
+                  // Extract last 20 bytes (40 hex chars) for EVM address format
+                  const rawAddress = accountId.raw;
+                  if (typeof rawAddress === 'string') {
+                    if (rawAddress.startsWith('0x') && rawAddress.length === 66) {
+                      // 32-byte address: extract last 20 bytes (40 hex chars)
+                      contractAddress = '0x' + rawAddress.slice(-40);
+                    } else {
+                      contractAddress = rawAddress;
+                    }
+                  } else {
+                    contractAddress = String(rawAddress);
+                  }
+                } else if (typeof accountId.address === 'function') {
+                  contractAddress = accountId.address();
+                } else if (typeof accountId.toString === 'function') {
+                  contractAddress = accountId.toString();
+                } else {
+                  contractAddress = String(tokenData.tokenContract);
+                }
               } else {
                 contractAddress = String(tokenData.tokenContract);
               }
@@ -193,10 +271,92 @@ export default function BalancePage() {
               ? contractAddress.toLowerCase() 
               : `0x${contractAddress.toLowerCase()}`;
 
-            // Find matching deployed token
+            // Find matching deployed token (this will override name/symbol if found)
             const deployedToken = Object.values(DEPLOYED_TOKENS).find(
               (t) => 'contractAddress' in t && typeof t.contractAddress === 'string' && t.contractAddress.toLowerCase() === normalizedAddress
             );
+            
+            // Query token metadata directly from the token contract using Typink (like W3PI)
+            // Typink automatically unwraps Option<String> types
+            let tokenName = `Token ${id}`;
+            let tokenSymbol = `TKN${id}`;
+            let tokenDecimals = 18;
+            
+            // Query token metadata and balance using Typink's contract query system (exactly like W3PI)
+            // Create the contract instance once and reuse it for both metadata and balance queries
+            let tokenContract: any = null;
+            try {
+              if (w3piTokenContract) {
+                // Use Typink's contract query system directly (same as W3PI)
+                // Access the underlying API and create a contract instance with the token address
+                // Typink contracts use dedot's ContractApi internally
+                // Try multiple ways to access the API
+                let contractApi = (w3piTokenContract as any).api;
+                
+                // If api is not directly available, try accessing it through other properties
+                if (!contractApi) {
+                  contractApi = (w3piTokenContract as any).contractApi;
+                }
+                if (!contractApi) {
+                  contractApi = (w3piTokenContract as any)._api;
+                }
+                if (!contractApi && (w3piTokenContract as any).query) {
+                  // If query exists, try to get API from the query object
+                  contractApi = (w3piTokenContract as any).query.api;
+                }
+                
+                const contractAddress = normalizedAddress as `0x${string}`;
+                
+                if (contractApi) {
+                  // Import Contract from dedot (what Typink uses under the hood)
+                  const { Contract } = await import('dedot/contracts');
+                  
+                  // Create a new contract instance with the token address and metadata
+                  // This is exactly how Typink creates contracts internally
+                  tokenContract = new Contract(contractApi, tokenMetadata, contractAddress);
+                  
+                  if (tokenContract && tokenContract.query) {
+                    // Query metadata using the same pattern as W3PI
+                    // Typink/dedot automatically unwraps Option<String> types
+                    const nameResult = await tokenContract.query.psp22MetadataTokenName();
+                    const symbolResult = await tokenContract.query.psp22MetadataTokenSymbol();
+                    const decimalsResult = await tokenContract.query.psp22MetadataTokenDecimals();
+                    
+                    // Typink automatically extracts the value from Option<String>
+                    if (nameResult?.data) {
+                      tokenName = String(nameResult.data).trim();
+                    }
+                    if (symbolResult?.data) {
+                      tokenSymbol = String(symbolResult.data).trim();
+                    }
+                    if (decimalsResult?.data !== undefined) {
+                      const parsedDecimals = Number(decimalsResult.data);
+                      if (!isNaN(parsedDecimals) && parsedDecimals >= 0 && parsedDecimals <= 255) {
+                        tokenDecimals = parsedDecimals;
+                      }
+                    }
+                  } else {
+                    console.warn(`Token contract instance created but query not available for token ${id}`);
+                  }
+                } else {
+                  console.warn(`Contract API not available for token ${id}. w3piTokenContract keys:`, Object.keys(w3piTokenContract || {}));
+                }
+              } else {
+                console.warn(`W3PI token contract not available for token ${id}`);
+              }
+            } catch (metadataErr) {
+              console.warn(`Failed to fetch metadata for token ${id} using Typink:`, metadataErr);
+              // If Typink fails, the defaults (Token ${id}, TKN${id}) will be used
+            }
+            
+            // Use deployed token name/symbol if available, otherwise use queried metadata
+            const finalName = deployedToken?.name || tokenName;
+            const finalSymbol = deployedToken?.symbol || tokenSymbol;
+            // Ensure decimals is always a valid number (0-255), default to 18
+            const rawDecimals = deployedToken?.decimals ?? tokenDecimals;
+            const finalDecimals = (typeof rawDecimals === 'number' && !isNaN(rawDecimals) && rawDecimals >= 0 && rawDecimals <= 255)
+              ? rawDecimals
+              : 18;
 
             // Skip if already added (USDC)
             if (normalizedAddress === usdcToken?.contractAddress?.toLowerCase()) {
@@ -209,66 +369,174 @@ export default function BalancePage() {
             );
             
             if (!alreadyAdded) {
-              // Query balance for this token using API route
+              // Query balance - try Typink contract instance first, fallback to API route
+              let balance = 0n;
+              let balanceError: string | undefined = undefined;
+              
               try {
-                const response = await fetch(`/api/contracts/token/call`, {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({
-                    method: 'psp22BalanceOf',
-                    args: [userAddress],
-                    address: normalizedAddress,
-                  }),
-                });
-                
-                if (response.ok) {
-                  const data = await response.json();
-                  if (data.success && data.data !== undefined) {
-                    // Handle different response formats
-                    let balance = 0n;
-                    if (typeof data.data === 'string') {
-                      balance = BigInt(data.data.replace(/,/g, ''));
-                    } else if (typeof data.data === 'number') {
-                      balance = BigInt(data.data);
-                    } else if (data.data && typeof data.data.toString === 'function') {
-                      balance = BigInt(data.data.toString().replace(/,/g, ''));
-                    }
-                    
-                    tokenBalances.push({
-                      symbol: deployedToken?.symbol || `Token ${id}`,
-                      name: deployedToken?.name || `Token ${id}`,
-                      contractAddress: normalizedAddress,
-                      balance,
-                      decimals: deployedToken?.decimals || 18,
-                      isLoading: false,
-                    });
-                  } else {
-                    // No error, just zero balance or query failed silently
-                    tokenBalances.push({
-                      symbol: deployedToken?.symbol || `Token ${id}`,
-                      name: deployedToken?.name || `Token ${id}`,
-                      contractAddress: normalizedAddress,
-                      balance: 0n,
-                      decimals: deployedToken?.decimals || 18,
-                      isLoading: false,
-                    });
-                  }
+                // First, try using the contract instance we created for metadata
+                if (tokenContract && tokenContract.query) {
+                  const balanceResult = await tokenContract.query.psp22BalanceOf(userAddress as `0x${string}`);
+                  balance = balanceResult.data || 0n;
                 } else {
-                  const errorData = await response.json().catch(() => ({ error: 'Request failed' }));
-                  throw new Error(errorData.error || 'API request failed');
+                  // Fallback: use API route if contract instance is not available
+                  throw new Error('Contract instance not available, using API route');
                 }
-              } catch (err: any) {
-                console.error(`Error loading balance for token ${id}:`, err);
-                tokenBalances.push({
-                  symbol: deployedToken?.symbol || `Token ${id}`,
-                  name: deployedToken?.name || `Token ${id}`,
-                  contractAddress: normalizedAddress,
-                  balance: 0n,
-                  decimals: deployedToken?.decimals || 18,
-                  isLoading: false,
-                  error: err.message || 'Failed to query balance',
-                });
+              } catch (typinkErr: any) {
+                // If Typink fails, use API route as fallback
+                console.log(`[Token ${id}] Typink failed, using API route.`);
+                console.log(`[Token ${id}] User address (H160): ${userAddress}`);
+                console.log(`[Token ${id}] User address (original SS58): ${rawUserAddress}`);
+                console.log(`[Token ${id}] Token address: ${normalizedAddress}`);
+                
+                // Try with H160 first, then SS58 if H160 returns 0
+                let addressToTry = userAddress;
+                let response: Response;
+                let responseData: any;
+                
+                try {
+                  response = await fetch(`/api/contracts/token/call`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      method: 'psp22::balanceOf',
+                      args: [addressToTry],
+                      address: normalizedAddress,
+                    }),
+                  });
+                  
+                  responseData = await response.json();
+                  console.log(`[Token ${id}] API response with H160 (${addressToTry}):`, JSON.stringify(responseData, null, 2));
+                  console.log(`[Token ${id}] API response data type:`, typeof responseData.data);
+                  console.log(`[Token ${id}] API response data value:`, responseData.data);
+                  
+                  // If balance is 0 and we have SS58 address, try with SS58
+                  if (response.ok && responseData.success && responseData.data === 0 && rawUserAddress && !rawUserAddress.startsWith('0x')) {
+                    console.log(`[Token ${id}] Balance is 0 with H160, trying with SS58 address: ${rawUserAddress}`);
+                    addressToTry = rawUserAddress;
+                    
+                    response = await fetch(`/api/contracts/token/call`, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        method: 'psp22::balanceOf',
+                        args: [addressToTry],
+                        address: normalizedAddress,
+                      }),
+                    });
+                    
+                    responseData = await response.json();
+                    console.log(`[Token ${id}] API response with SS58 (${addressToTry}):`, JSON.stringify(responseData, null, 2));
+                  }
+                  
+                  if (response.ok) {
+                    if (responseData.success && responseData.data !== undefined && responseData.data !== null) {
+                      // Parse balance from API response
+                      let parsedBalance: bigint | null = null;
+                      
+                      if (typeof responseData.data === 'string') {
+                        const cleaned = responseData.data.replace(/,/g, '').trim();
+                        if (cleaned && !isNaN(Number(cleaned))) {
+                          parsedBalance = BigInt(cleaned);
+                        }
+                      } else if (typeof responseData.data === 'number') {
+                        parsedBalance = BigInt(responseData.data);
+                      } else if (typeof responseData.data === 'object' && responseData.data !== null) {
+                        // Handle object responses - log the structure
+                        console.log(`[Token ${id}] Response data structure:`, JSON.stringify(responseData.data, null, 2));
+                        
+                        // Try to extract BigInt/U256 value from various formats
+                        const extractBigInt = (obj: any): bigint | null => {
+                          if (obj === null || obj === undefined) return null;
+                          
+                          // Direct BigInt string representation
+                          if (typeof obj === 'string') {
+                            const cleaned = obj.replace(/,/g, '').trim();
+                            if (cleaned && !isNaN(Number(cleaned))) {
+                              return BigInt(cleaned);
+                            }
+                          }
+                          
+                          // Number (unlikely for large balances, but possible)
+                          if (typeof obj === 'number') {
+                            return BigInt(obj);
+                          }
+                          
+                          // Object with Ok/Some/value
+                          if (typeof obj === 'object') {
+                            // Try Ok variant
+                            if ('Ok' in obj && obj.Ok !== null && obj.Ok !== undefined) {
+                              return extractBigInt(obj.Ok);
+                            }
+                            if ('ok' in obj && obj.ok !== null && obj.ok !== undefined) {
+                              return extractBigInt(obj.ok);
+                            }
+                            
+                            // Try Some variant
+                            if ('Some' in obj && obj.Some !== null && obj.Some !== undefined) {
+                              return extractBigInt(obj.Some);
+                            }
+                            if ('some' in obj && obj.some !== null && obj.some !== undefined) {
+                              return extractBigInt(obj.some);
+                            }
+                            
+                            // Try value property
+                            if ('value' in obj && obj.value !== null && obj.value !== undefined) {
+                              return extractBigInt(obj.value);
+                            }
+                            
+                            // Try data property
+                            if ('data' in obj && obj.data !== null && obj.data !== undefined) {
+                              return extractBigInt(obj.data);
+                            }
+                            
+                            // Try to find any numeric string property
+                            for (const key in obj) {
+                              if (key !== 'isOk' && key !== 'isErr' && typeof obj[key] === 'string') {
+                                const cleaned = obj[key].replace(/,/g, '').trim();
+                                if (cleaned && !isNaN(Number(cleaned)) && cleaned.length > 0) {
+                                  return BigInt(cleaned);
+                                }
+                              }
+                            }
+                          }
+                          
+                          return null;
+                        };
+                        
+                        parsedBalance = extractBigInt(responseData.data);
+                      }
+                      
+                      if (parsedBalance !== null) {
+                        balance = parsedBalance;
+                        console.log(`[Token ${id}] Parsed balance: ${balance.toString()}`);
+                      } else {
+                        console.warn(`[Token ${id}] Could not parse balance from response:`, responseData.data);
+                        balanceError = 'Could not parse balance from API response';
+                      }
+                    } else {
+                      console.warn(`[Token ${id}] API returned success but no data:`, responseData);
+                      balanceError = 'API returned no balance data';
+                    }
+                  } else {
+                    balanceError = responseData.error || `API request failed: ${response.status}`;
+                    console.error(`[Token ${id}] API error:`, balanceError);
+                  }
+                } catch (apiErr: any) {
+                  balanceError = apiErr.message || 'Failed to query balance via API route';
+                  console.error(`[Token ${id}] Error loading balance via API route:`, apiErr);
+                }
               }
+              
+              tokenBalances.push({
+                symbol: finalSymbol,
+                name: finalName,
+                contractAddress: normalizedAddress,
+                balance,
+                decimals: finalDecimals,
+                isLoading: false,
+                ...(balanceError && { error: balanceError }),
+              });
             }
           } catch (err) {
             console.warn(`Failed to load token ${id}:`, err);
@@ -293,10 +561,15 @@ export default function BalancePage() {
   }, [userAddress, w3piTokenContract, registryContract]);
 
   const formatBalance = (balance: bigint, decimals: number) => {
-    const divisor = BigInt(10 ** decimals);
+    // Ensure decimals is a valid number, default to 18 if invalid
+    const validDecimals = (typeof decimals === 'number' && !isNaN(decimals) && decimals >= 0 && decimals <= 255) 
+      ? decimals 
+      : 18;
+    
+    const divisor = BigInt(10 ** validDecimals);
     const wholePart = balance / divisor;
     const fractionalPart = balance % divisor;
-    const fractionalStr = fractionalPart.toString().padStart(decimals, '0');
+    const fractionalStr = fractionalPart.toString().padStart(validDecimals, '0');
     const trimmedFractional = fractionalStr.replace(/0+$/, '');
     
     if (trimmedFractional === '') {

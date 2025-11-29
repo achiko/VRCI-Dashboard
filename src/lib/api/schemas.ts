@@ -15,6 +15,7 @@ export const contractTxSchema = z.object({
   args: z.array(z.unknown()).optional().default([]),
   signer: z.string().optional(),
   value: z.string().optional(),
+  address: z.string().optional(), // Support dynamic contract addresses
 });
 
 export const walletCreateSchema = z.object({

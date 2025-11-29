@@ -33,8 +33,8 @@ export default function RootLayout({
                 {children}
               </DashboardLayout>
             </WalletAuthGuard>
-            {/* <ToastContainer
-              position="bottom-right"
+            <ToastContainer
+              position="top-right"
               autoClose={5000}
               hideProgressBar={false}
               newestOnTop={false}
@@ -44,7 +44,7 @@ export default function RootLayout({
               draggable
               pauseOnHover
               theme="light"
-            /> */}
+            />
           </TypinkWrapper>
         </Providers>
       </body>

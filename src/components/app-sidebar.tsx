@@ -13,6 +13,7 @@ import {
   ArrowLeftRight,
   Settings,
   FileCode,
+  DollarSign,
 } from "lucide-react"
 import { NavMain } from "@/components/nav-main"
 import { NavUser } from "@/components/nav-user"
@@ -32,6 +33,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       title: "Dashboard",
       url: "/",
       icon: Home,
+    },
+    {
+      title: "Balance",
+      url: "/balance",
+      icon: DollarSign,
     },
     {
       title: "Contracts",

@@ -16,11 +16,11 @@ import {
 } from '@/components/dashboard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { USDC_TOKEN_ADDRESS } from '@/lib/contract-addresses';
 import { Copy, BookOpen, MessageCircle, Github } from 'lucide-react';
 
 export default function HomePage() {
   const { signer, connectedAccount } = useTypink();
-  const USDC_ADDRESS = '0xd81f336aa2d51efaf4466d764e1c75ef29044c55';
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-indigo-50">
@@ -90,13 +90,13 @@ export default function HomePage() {
               <CardContent className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <p className="text-sm text-gray-500 mb-1">Contract Address</p>
-                  <p className="font-mono text-xs break-all text-gray-900">{USDC_ADDRESS}</p>
+                  <p className="font-mono text-xs break-all text-gray-900">{USDC_TOKEN_ADDRESS}</p>
                 </div>
                 <Button
                   type="button"
                   variant="outline"
                   size="sm"
-                  onClick={() => navigator.clipboard.writeText(USDC_ADDRESS)}
+                  onClick={() => navigator.clipboard.writeText(USDC_TOKEN_ADDRESS)}
                   className="flex items-center gap-2"
                 >
                   <Copy className="h-4 w-4" />

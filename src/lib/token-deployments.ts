@@ -1,4 +1,6 @@
 // Token deployment addresses from TOKEN_DEPLOYMENTS.md
+import { USDC_TOKEN_ADDRESS } from '@/lib/contract-addresses';
+
 export const DEPLOYED_TOKENS = {
   POLYX: {
     name: 'Polymesh',
@@ -52,7 +54,7 @@ export const DEPLOYED_TOKENS = {
   USDC: {
     name: 'USD Coin',
     symbol: 'USDC',
-    contractAddress: '0xd81f336aa2d51efaf4466d764e1c75ef29044c55',
+    contractAddress: USDC_TOKEN_ADDRESS,
     totalSupply: '1000000000000000000000000000',
     decimals: 18,
   },
@@ -63,4 +65,3 @@ export type DeployedTokenSymbol = keyof typeof DEPLOYED_TOKENS;
 export function getDeployedToken(symbol: string): typeof DEPLOYED_TOKENS[keyof typeof DEPLOYED_TOKENS] | undefined {
   return DEPLOYED_TOKENS[symbol.toUpperCase() as DeployedTokenSymbol];
 }
-

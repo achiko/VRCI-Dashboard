@@ -13,6 +13,7 @@ import { CheckCircle, XCircle, Wallet, Plus, Loader2, RefreshCw, AlertTriangle, 
 import { LabelWithHelp } from '@/components/ui/field-help';
 import { txToaster } from '@/utils/txToaster';
 import { DEPLOYED_TOKENS, getDeployedToken } from '@/lib/token-deployments';
+import { USDC_TOKEN_ADDRESS } from '@/lib/contract-addresses';
 
 export default function DexPoolManager() {
   const { contract: dexContract } = useContract<DexContractApi>('dex');
@@ -188,7 +189,7 @@ export default function DexPoolManager() {
                 </div>
               </div>
               <p className="text-xs text-gray-500">
-                Click a token to set it as Token A or Token B. USDC address: <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded">0xd81f336aa2d51efaf4466d764e1c75ef29044c55</code>
+                Click a token to set it as Token A or Token B. USDC address: <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded">{USDC_TOKEN_ADDRESS}</code>
               </p>
             </div>
           )}
@@ -220,7 +221,7 @@ export default function DexPoolManager() {
               <div className="space-y-2">
                 <LabelWithHelp
                   htmlFor="tokenB"
-                  helpText="The contract address of the second token in the pool (Token B). Enter a valid hex address starting with 0x. This token will be paired with Token A to create a trading pair. Typically USDC (0xd81f336aa2d51efaf4466d764e1c75ef29044c55) for testnet."
+                  helpText={`The contract address of the second token in the pool (Token B). Enter a valid hex address starting with 0x. This token will be paired with Token A to create a trading pair. Typically USDC (${USDC_TOKEN_ADDRESS}) for testnet.`}
                 >
                   Token B Address *
                 </LabelWithHelp>

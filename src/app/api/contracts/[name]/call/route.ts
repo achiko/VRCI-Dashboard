@@ -150,6 +150,7 @@ export async function POST(
       .replace(/_([a-z])/g, (_: string, letter: string) => letter.toUpperCase());
     
     // Execute the query using ContractPromise method
+    // TODO: callerAddress is hardcoded and needs investigation.
     const callerAddress = '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY';
     const gasLimit = api.registry.createType('WeightV2', {
       refTime: 100000000000,
@@ -293,4 +294,3 @@ export async function POST(
     );
   }
 }
-
